@@ -102,6 +102,8 @@ button{font:inherit;cursor:pointer}a{color:var(--blue)}
 .bars{display:flex;align-items:flex-end;gap:6px;height:80px;margin-top:6px}.bars div{flex:1;text-align:center;font-size:10px;font-weight:800;color:var(--mut)}.bars i{display:block;background:var(--blue);border-radius:6px 6px 0 0;min-height:3px;margin-bottom:3px}
 .bd{display:inline-grid;place-items:center;width:58px;height:58px;border-radius:16px;background:#fff7de;border:2px solid #f3dd8b;font-size:28px;margin:4px}.bd.off{filter:grayscale(1);opacity:.4}
 .toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--navy);color:#fff;padding:10px 18px;border-radius:14px;font-weight:800;z-index:70;max-width:90%;text-align:center}
+@media (min-width:768px){.wrap,.lh,.lb,.lf>div,.fb>div,.sheet{max-width:720px}.q{font-size:32px}.ch button{font-size:22px;padding:18px 20px}.node{width:92px;height:92px;font-size:36px}.pm{width:80px;height:80px}.hero img{width:240px;height:240px}.nav button{max-width:150px;font-size:13px}.btn{font-size:18px}.sheet{border-radius:24px;margin-bottom:3vh}#modal{align-items:center;justify-content:center}.w{font-size:20px;padding:12px 18px}.grades,.avs{grid-template-columns:repeat(6,1fr)}.passage{font-size:19px}.inp{font-size:34px}}
+@media (min-width:768px) and (orientation:landscape){.wrap{max-width:760px}}
 </style></head><body>
 <div class="wrap" id="app"></div><nav class="nav" id="nav"></nav>
 <div id="lesson"><div class="lh"><button class="x" data-act="quit" aria-label="Quit">✕</button><div class="bar"><i id="pb"></i></div><div class="hearts" id="hh"></div></div>
@@ -113,6 +115,7 @@ button{font:inherit;cursor:pointer}a{color:var(--blue)}
 <script>
 /* ============ CONFIG ============ */
 const BILLING={checkoutUrl:'',/* set to a Stripe Payment Link / RevenueCat web checkout to take real payments. Empty = test mode (no charge). */
+ rcApiKey:'',/* RevenueCat public iOS SDK key (appl_...). Set before App Store build. */
  prices:{plus:{month:7.99,year:59.99},family:{month:12.99,year:89.99}},trialDays:7,currency:'$'};
 const SUBJ={math:{n:"Math",c:"#d62828",e:"➕",units:[["Warm-up","Counting, adding and shapes"],["Number power","Place value and patterns"],["Brain stretch","Word problems and puzzles"]]},
  read:{n:"Reading",c:"#1d5fd1",e:"📖",units:[["Word wiz","Synonyms and opposites"],["Grammar gym","Sentences that sound right"],["Story time","Spelling and comprehension"]]},
@@ -160,6 +163,14 @@ function confetti(){const c=$('cf'),x=c.getContext('2d');c.width=innerWidth;c.he
 function modal(h,full){const m=$('modal');m.innerHTML=`<div class="sheet ${full?'full':''}">${h}</div>`;m.style.display='flex';m.onclick=e=>{if(e.target===m&&!m.dataset.lock)closeModal()}}
 function closeModal(){const m=$('modal');m.style.display='none';m.innerHTML='';delete m.dataset.lock}
 const XB=`<button class="xx" data-act="close" aria-label="Close">✕</button>`;
+/* ============ NATIVE (Capacitor / iOS) ============ */
+const CAP=window.Capacitor||null,NATIVE=!!(CAP&&CAP.isNativePlatform&&CAP.isNativePlatform());
+const PL=n=>CAP&&CAP.Plugins&&CAP.Plugins[n];
+const SITE='https://maplehilllearning.com';
+function openUrl(u){const b=PL('Browser');if(NATIVE&&b)b.open({url:u});else window.open(u,'_blank')}
+let RCOK=false,PKG={};
+async function rcInit(){const rc=PL('Purchases');if(!NATIVE||!rc||!BILLING.rcApiKey)return;try{await rc.configure({apiKey:BILLING.rcApiKey});RCOK=true;await rcSync();const o=await rc.getOfferings();const pk=(o.current&&o.current.availablePackages)||[];pk.forEach(x=>{PKG[x.identifier]=x;const m=x.identifier.match(/^(plus|family)_(month|year)/);if(m&&x.product&&x.product.price)BILLING.prices[m[1]][m[2]]=x.product.price})}catch(e){console.log('rc',e)}}
+async function rcSync(){const rc=PL('Purchases');if(!RCOK)return;try{const r=await rc.getCustomerInfo();const a=(r.customerInfo||r).entitlements.active||{};S.plan=a.family?{tier:'family',per:'year'}:(a.plus?{tier:'plus',per:'year'}:null);save();render()}catch(e){}}
 /* ============ RENDER ============ */
 function topbar(p){const goalPct=Math.min(100,Math.round(p.q.xp/p.goal*100));
  return `<div class="top"><div class="chip" data-act="tab" data-a="me"><img src="${av(p.av)}" width="26" height="26" alt="">${p.name}</div><div style="display:flex;gap:5px"><div class="chip" data-act="tab" data-a="me">🔥${p.streak}</div><div class="chip" data-act="tab" data-a="quests">💎${p.gems}</div><div class="chip" data-act="${isPlus()?'tab':'heartinfo'}" data-a="me">${isPlus()?'❤️∞':'❤️'+p.hearts}</div>${isPlus()?'':'<div class="chip plus" data-act="paywall">PLUS</div>'}</div></div>`}
@@ -213,7 +224,7 @@ function vMe(p){const L=LEAGUES[p.league];const t=dk(),d0=pd(t);const first=new 
  ${isPlus()?`<div class="card" style="border-color:var(--purple)"><h3>✨ Maple Leap ${S.plan.tier=='family'?'Family':'Plus'}</h3>No ads · Unlimited hearts · Mistakes practice. Manage in the Parent Zone.</div>`:`<div class="card" style="border-color:var(--purple);background:#f8f3ff"><h3>Try Maple Leap Plus</h3>No ads, unlimited hearts and a weekly parent report. 7 days free.<br><br><button class="btn sm purple" data-act="paywall">Try 7 days free</button></div>`}
  <div class="card"><h3>Badges</h3>${BADGES.map(b=>`<span class="bd ${b[2](p)?'':'off'}" title="${b[1]}">${b[0]}</span>`).join('')}</div>
  <div class="card"><div class="row"><span>Switch / add child</span><button class="btn sm ghost" data-act="profiles">Open</button></div><div class="row"><span>Sound &amp; haptics</span><button class="btn sm ghost" data-act="snd">${S.snd?'On':'Off'}</button></div><div class="row"><span>👪 Parent Zone</span><button class="btn sm blue" data-act="parent">Open</button></div></div>
- <p class="fine"><a href="../index.html">Maple Hill Learning Press</a> · <a href="#" data-act="privacy">Privacy</a></p>`}
+ <p class="fine"><a href="#" data-act="shop">Maple Hill Learning Press</a> · <a href="#" data-act="privacy">Privacy</a> · <a href="#" data-act="terms">Terms</a></p>`}
 /* ============ EVENTS ============ */
 const ACT={
  tab(a){S.tab=a;save();render();scrollTo(0,0)},subj(a){S.subj=a;save();render()},close(){closeModal()},
@@ -226,13 +237,13 @@ const ACT={
  buy(a){const[k,c]=a.split('|'),p=P();if(p.gems<+c){toast('Not enough gems. Complete quests and lessons to earn more!');return}p.gems-=+c;if(k=='freeze')p.freezes++;if(k=='hearts'){p.hearts=5;p.hAt=0}if(k=='boost')p.boost=Date.now()+15*60000;save();sOK();toast('Purchased!');render()},
  snd(){S.snd=!S.snd;save();render()},heartinfo(){hearts()},
  mixed(){startMixed()},mist(){if(!isPlus())return ACT.paywall();startMist()},heartprac(){startMixed(true)},
- shop(){location.href='../index.html#grades'},
+ shop(){gate(()=>openUrl(SITE+'/#grades'))},
  paywall(){paywall()},profiles(){profiles()},
  sw(a){S.cur=+a;save();closeModal();render()},addkid(){closeModal();if(S.ps.length>=MAXKIDS()){toast('Family plan lets you add up to 6 children');setTimeout(paywall,400);return}S.adding=1;S.onb=1;save();render()},
- parent(){gate(parentZone)},privacy(){privacy()},
+ parent(){gate(parentZone)},privacy(){privacy()},pol(){gate(()=>openUrl(SITE+'/privacy.html'))},terms(){gate(()=>openUrl(SITE+'/terms.html'))},
  plan(a){pw.tier=a;paywall(1)},per(a){pw.per=a;paywall(1)},buyplan(){gate(buyPlan)},
- restore(){toast(S.plan?'Your subscription is active':'No purchases found on this device')},
- cancel(){if(confirm('Cancel Plus? Ads and the heart limit will return.')){S.plan=null;save();closeModal();render();toast('Subscription cancelled')}},
+ async restore(){if(NATIVE&&RCOK){try{await PL('Purchases').restorePurchases();await rcSync();toast(S.plan?'Purchases restored':'No purchases found')}catch(e){toast('Could not restore purchases')}return}toast(S.plan?'Your subscription is active':'No purchases found on this device')},
+ cancel(){if(NATIVE){openUrl('https://apps.apple.com/account/subscriptions');return}if(confirm('Cancel Plus? Ads and the heart limit will return.')){S.plan=null;save();closeModal();render();toast('Subscription cancelled')}},
  wipe(){if(confirm('Delete ALL profiles and progress from this device? This cannot be undone.')){localStorage.removeItem('ml2');location.reload()}},
  pexp(){const b=new Blob([JSON.stringify(S,null,1)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='maple-leap-data.json';a.click()},
  pgoal(a){P().goal=+a;save();parentZone()},plim(a){P().limit=+a;save();parentZone()},pkid(a){S.cur=+a;save();parentZone()},pdel(){const p=P();if(S.ps.length<2){toast('At least one profile is needed');return}if(confirm('Remove '+p.name+'?')){S.ps.splice(S.cur,1);S.cur=0;save();parentZone()}},
@@ -250,9 +261,11 @@ function paywall(re){const pr=BILLING.prices[pw.tier],yr=pw.per=='year';const sa
  <ul class="ben"><li>No ads, ever</li><li>Unlimited hearts, learn without limits</li><li>Mistakes practice to master tricky questions</li><li>Weekly progress report for parents</li>${pw.tier=='family'?'<li>Up to 6 child profiles, each with their own streak</li>':''}<li>Support a small Canadian publisher</li></ul>
  <div class="plans"><button class="plan ${!yr?'on':''}" data-act="per" data-a="month"><small>Monthly</small><b>${money(pr.month)}</b><small>per month</small></button><button class="plan ${yr?'on':''}" data-act="per" data-a="year"><span class="badge">SAVE ${sav}%</span><small>Yearly</small><b>${money(pr.year/12)}</b><small>per month · ${money(pr.year)}/yr</small></button></div>
  <button class="btn purple full" data-act="buyplan">Try ${BILLING.trialDays} days free</button>
- <p class="fine">Then ${yr?money(pr.year)+' per year':money(pr.month)+' per month'}. Cancel anytime in the Parent Zone, at least 24 hours before renewal. A grown-up must confirm.${BILLING.checkoutUrl?'':'<br><b>Test mode: no payment is taken.</b>'}</p>
- <p class="fine"><a href="#" data-act="restore">Restore purchases</a> · <a href="#" data-act="privacy">Privacy</a></p>`,true)}
-function buyPlan(){if(BILLING.checkoutUrl){location.href=BILLING.checkoutUrl+(BILLING.checkoutUrl.includes('?')?'&':'?')+'plan='+pw.tier+'_'+pw.per;return}
+ <p class="fine">Then ${yr?money(pr.year)+' per year':money(pr.month)+' per month'}. Cancel anytime in the Parent Zone, at least 24 hours before renewal. A grown-up must confirm.${BILLING.checkoutUrl?'':'<br><b>Test mode: no payment is taken.</b>'}${NATIVE?' Payment is charged to your Apple ID at confirmation and renews automatically unless cancelled at least 24 hours before the period ends. Manage in Settings > Apple ID > Subscriptions.':''}</p>
+ <p class="fine"><a href="#" data-act="restore">Restore purchases</a> · <a href="#" data-act="pol">Privacy Policy</a> · <a href="#" data-act="terms">Terms of Use</a></p>`,true)}
+async function buyPlan(){if(NATIVE&&RCOK){const rc=PL('Purchases'),pkg=PKG[pw.tier+'_'+pw.per];if(!pkg){toast('Subscriptions are not available right now. Please try again later.');return}try{await rc.purchasePackage({aPackage:pkg});await rcSync();closeModal();confetti();sWIN();toast('Welcome to Plus!')}catch(e){if(!(e&&e.userCancelled))toast('Purchase did not complete.')}return}
+ if(NATIVE){toast('Subscriptions are not available right now.');return}
+ if(BILLING.checkoutUrl){location.href=BILLING.checkoutUrl+(BILLING.checkoutUrl.includes('?')?'&':'?')+'plan='+pw.tier+'_'+pw.per;return}
  S.plan={tier:pw.tier,per:pw.per,trial:Date.now()+BILLING.trialDays*864e5,test:1};save();closeModal();confetti();sWIN();render();toast('Welcome to Plus! (test mode, no charge)')}
 /* parent gate */
 function gate(cb){const a=6+ri(4),b=6+ri(4);const m=$('modal');
@@ -270,8 +283,8 @@ function parentZone(){const p=P();const days=[];for(let i=6;i>=0;i--){const k=ad
  <h3 style="margin-top:12px">Daily time limit</h3><div class="seg">${[[0,'None'],[10,'10m'],[20,'20m'],[30,'30m']].map(g=>`<button class="${p.limit==g[0]?'on':''}" data-act="plim" data-a="${g[0]}">${g[1]}</button>`).join('')}</div></div>
  <div class="card"><h3>Subscription</h3>${S.plan?`Maple Leap ${S.plan.tier=='family'?'Family':'Plus'} · ${S.plan.per=='year'?'yearly':'monthly'}${S.plan.test?' (test mode)':''}<br><br><button class="btn sm ghost" data-act="cancel">Cancel subscription</button>`:`Free plan. Plus removes ads and heart limits.<br><br><button class="btn sm purple" data-act="paywall">See Plus</button>`}</div>
  <div class="card"><h3>Kids, safety &amp; privacy</h3><ul style="margin:6px 0;padding-left:18px;font-size:14px"><li>No accounts, no tracking, no data leaves this device.</li><li>Ads are house ads for our own books only. No third-party ad networks.</li><li>No chat, no friend requests. League rivals are friendly bots.</li></ul><button class="btn sm ghost" data-act="pexp">Download data</button> <button class="btn sm ghost" data-act="pdel">Remove ${p.name}</button> <button class="btn sm ghost" data-act="wipe">Delete everything</button></div>
- <a class="btn full" href="../index.html#grades">Shop printed workbooks</a>`,true)}
-function privacy(){modal(`${XB}<h2>Privacy</h2><p style="font-weight:700;line-height:1.5">Maple Leap is made by Maple Hill Learning Press for children and their parents. We do not ask for email addresses, real names or locations. Everything your child does is saved only on this device. We do not use analytics, advertising IDs or third-party ad networks. Any ads you see promote our own books and Maple Leap Plus. Parents can download or delete all data from the Parent Zone at any time.</p>`)}
+ <button class="btn full" data-act="shop">Shop printed workbooks</button>`,true)}
+function privacy(){modal(`${XB}<h2>Privacy</h2><p><button class="btn sm ghost" onclick="ACT.pol()">Full privacy policy</button></p><p style="font-weight:700;line-height:1.5">Maple Leap is made by Maple Hill Learning Press for children and their parents. We do not ask for email addresses, real names or locations. Everything your child does is saved only on this device. We do not use analytics, advertising IDs or third-party ad networks. Any ads you see promote our own books and Maple Leap Plus. Parents can download or delete all data from the Parent Zone at any time.</p>`)}
 function profiles(){modal(`${XB}<h2>Who's learning?</h2>${S.ps.map((c,i)=>`<button class="opt ${i==S.cur?'on':''}" data-act="sw" data-a="${i}"><img src="${av(c.av)}" width="40" alt="">${c.name}<small>Grade ${c.grade} · 🔥${c.streak}</small></button>`).join('')}<button class="opt" data-act="addkid">➕ Add a child ${MAXKIDS()>1?'':'<small>Family plan</small>'}</button>`)}
 function hearts(){const p=P();modal(`${XB}<div style="text-align:center"><div style="font-size:60px">❤️</div><h2>${p.hearts} of 5 hearts</h2><p style="font-weight:700">A wrong answer costs a heart. They come back every 25 minutes.</p></div>${p.hearts<5?`<button class="btn full" data-act="hprac">Practise to earn a heart</button><p></p><button class="btn blue full" data-act="hrefill">Refill for 💎100</button><p></p>`:''}<button class="btn purple full" data-act="paywall">Unlimited hearts with Plus</button>`)}
 /* ============ ADS (house ads only) ============ */
@@ -353,5 +366,5 @@ ACT.next=nextScreen;
 /* ============ BOOT ============ */
 if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&P()&&!L){rollover(P());save();render()}});
-render();
+rcInit();render();
 </script></body></html>
