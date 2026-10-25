@@ -104,6 +104,9 @@ button{font:inherit;cursor:pointer}a{color:var(--blue)}
 .toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:var(--navy);color:#fff;padding:10px 18px;border-radius:14px;font-weight:800;z-index:70;max-width:90%;text-align:center}
 @media (min-width:768px){.wrap,.lh,.lb,.lf>div,.fb>div,.sheet{max-width:720px}.q{font-size:32px}.ch button{font-size:22px;padding:18px 20px}.node{width:92px;height:92px;font-size:36px}.pm{width:80px;height:80px}.hero img{width:240px;height:240px}.nav button{max-width:150px;font-size:13px}.btn{font-size:18px}.sheet{border-radius:24px;margin-bottom:3vh}#modal{align-items:center;justify-content:center}.w{font-size:20px;padding:12px 18px}.grades,.avs{grid-template-columns:repeat(6,1fr)}.passage{font-size:19px}.inp{font-size:34px}}
 @media (min-width:768px) and (orientation:landscape){.wrap{max-width:760px}}
+.pairs{display:grid;grid-template-columns:1fr 1fr;gap:12px}.pairs>div{display:grid;gap:10px;align-content:start}.pb{background:#fff;border:2px solid var(--line);border-radius:16px;padding:16px 8px;font-weight:800;font-size:18px;box-shadow:0 4px 0 var(--line);color:var(--ink)}.pb.sel{border-color:var(--blue);background:#eef4ff;box-shadow:0 4px 0 var(--blue)}.pb.okp{border-color:var(--green);background:#e5f7ec;box-shadow:0 4px 0 var(--green);opacity:.65;pointer-events:none}.pb.nop{border-color:var(--red);background:#fde8e8;animation:sh .35s}
+html{touch-action:manipulation;overscroll-behavior:none}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style></head><body>
 <div class="wrap" id="app"></div><nav class="nav" id="nav"></nav>
 <div id="lesson"><div class="lh"><button class="x" data-act="quit" aria-label="Quit">✕</button><div class="bar"><i id="pb"></i></div><div class="hearts" id="hh"></div></div>
@@ -159,7 +162,7 @@ const secsToday=p=>p.secs[dk()]||0;
 function toast(m){const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2600)}
 let ac;function beep(f,d,ty,v){if(!S.snd)return;try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.type=ty||'sine';o.frequency.value=f;g.gain.value=v||.12;g.gain.exponentialRampToValueAtTime(.0001,ac.currentTime+d);o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+d)}catch(e){}}
 const sOK=()=>{beep(660,.12);setTimeout(()=>beep(880,.18),90)},sNO=()=>{beep(180,.3,'sawtooth',.09)},sWIN=()=>[523,659,784,1047].forEach((f,i)=>setTimeout(()=>beep(f,.25),i*130));
-const buzz=n=>{try{S.snd&&navigator.vibrate&&navigator.vibrate(n)}catch(e){}};
+const buzz=n=>{try{if(!S.snd)return;const hp=PL('Haptics');if(NATIVE&&hp){if(n==='e'||Array.isArray(n))hp.notification({type:'ERROR'});else hp.impact({style:'LIGHT'});return}navigator.vibrate&&navigator.vibrate(n==='e'?[40,30,40]:n)}catch(e){}};
 function confetti(){const c=$('cf'),x=c.getContext('2d');c.width=innerWidth;c.height=innerHeight;const cols=['#d62828','#ffc928','#1d5fd1','#1f9d5b','#f47b20','#7b45c9'];const ps=Array.from({length:120},()=>({x:Math.random()*c.width,y:-20-Math.random()*c.height*.5,v:2+Math.random()*4,s:5+Math.random()*7,c:cols[ri(6)],r:Math.random()*6,w:Math.random()*.2-.1}));let f=0;(function a(){x.clearRect(0,0,c.width,c.height);ps.forEach(p=>{p.y+=p.v;p.x+=Math.sin(f/10+p.r)*1.5;p.r+=p.w;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);x.restore()});if(++f<170)requestAnimationFrame(a);else x.clearRect(0,0,c.width,c.height)})()}
 function modal(h,full){const m=$('modal');m.innerHTML=`<div class="sheet ${full?'full':''}">${h}</div>`;m.style.display='flex';m.onclick=e=>{if(e.target===m&&!m.dataset.lock)closeModal()}}
 function closeModal(){const m=$('modal');m.style.display='none';m.innerHTML='';delete m.dataset.lock}
@@ -172,6 +175,8 @@ function openUrl(u){const b=PL('Browser');if(NATIVE&&b)b.open({url:u});else wind
 let RCOK=false,PKG={};
 async function rcInit(){const rc=PL('Purchases');if(!NATIVE||!rc||!BILLING.rcApiKey)return;try{await rc.configure({apiKey:BILLING.rcApiKey});RCOK=true;await rcSync();const o=await rc.getOfferings();const pk=(o.current&&o.current.availablePackages)||[];pk.forEach(x=>{PKG[x.identifier]=x;const m=x.identifier.match(/^(plus|family)_(month|year)/);if(m&&x.product&&x.product.price)BILLING.prices[m[1]][m[2]]=x.product.price})}catch(e){console.log('rc',e)}}
 async function rcSync(){const rc=PL('Purchases');if(!RCOK)return;try{const r=await rc.getCustomerInfo();const a=(r.customerInfo||r).entitlements.active||{};S.plan=a.family?{tier:'family',per:'year'}:(a.plus?{tier:'plus',per:'year'}:null);save();render()}catch(e){}}
+async function scheduleRem(){const ln=PL('LocalNotifications');if(!NATIVE||!ln)return;try{await ln.cancel({notifications:[{id:1}]});const p=P();if(!p||!p.rem)return;const perm=await ln.requestPermissions();if(perm.display!=='granted'){toast('Turn on notifications in iOS Settings to get reminders');return}
+ await ln.schedule({notifications:[{id:1,title:'Maple Leap',body:p.streak>0?`Keep your ${p.streak}-day streak going, ${p.name}! 🔥`:`Time for a quick lesson, ${p.name}!`,schedule:{on:{hour:p.rem,minute:0},allowWhileIdle:true}}]});toast('Reminder set')}catch(e){console.log(e)}}
 /* ============ RENDER ============ */
 function topbar(p){const goalPct=Math.min(100,Math.round(p.q.xp/p.goal*100));
  return `<div class="top"><div class="chip" data-act="tab" data-a="me"><img src="${av(p.av)}" width="26" height="26" alt="">${p.name}</div><div style="display:flex;gap:5px"><div class="chip" data-act="tab" data-a="me">🔥${p.streak}</div><div class="chip" data-act="tab" data-a="quests">💎${p.gems}</div><div class="chip" data-act="${isPlus()?'tab':'heartinfo'}" data-a="me">${isPlus()?'❤️∞':'❤️'+p.hearts}</div>${isPlus()?'':'<div class="chip plus" data-act="paywall">PLUS</div>'}</div></div>`}
@@ -195,7 +200,7 @@ function vLearn(p){const sb=SUBJ[S.subj],d=p.prog[p.grade+S.subj]||0;const m=MAS
   seq.forEach((k,j)=>{const off=[0,-46,-62,-26,30,56][j];let node;
    if(k=='c'){const id=p.grade+S.subj+u,open=(d>=u*UL+2),got=p.chests[id];node=`<button class="node chest ${open&&!got?'cur':(open?'done':'lock')}" data-act="chest" data-a="${id}">${got?'✔':'🎁'}</button>`}
    else{const n=u*UL+li;li++;const st=n<d?'done':(n==d?'cur':'lock');const isT=k=='t';
-    node=`${n==d?'<div class="tag">START</div>':''}${n==d?`<img class="pm" src="${av(p.av)}" alt="">`:''}<button class="node ${st}" data-act="node" data-a="${n}" style="background:${isT?'var(--orange)':sb.c}">${st=='lock'?'🔒':(isT?'🏆':(n%UL)+1)}</button>`}
+    node=`${n==d?'<div class="tag">START</div>':''}${n==d?`<img class="pm" src="${av(p.av)}" alt="">`:''}<button class="node ${st}" aria-label="${isT?'Unit test':'Lesson '+((n%UL)+1)}, ${st=='lock'?'locked':(st=='done'?'completed':'ready')}" data-act="node" data-a="${n}" style="background:${isT?'var(--orange)':sb.c}">${st=='lock'?'🔒':(isT?'🏆':(n%UL)+1)}</button>`}
    h+=`<div class="pn" style="transform:translateX(${off}px)">${node}</div>`});h+='</div>'}
  if(d>=TOTAL)h+=`<div class="card" style="text-align:center"><h3>🏆 Path complete!</h3>${m} is so proud. Replay any lesson for XP or try another subject.<br><br><button class="btn sm" data-act="node" data-a="r">Practise again</button></div>`;
  return h+adBanner(p)}
@@ -247,7 +252,7 @@ const ACT={
  cancel(){if(NATIVE){openUrl('https://apps.apple.com/account/subscriptions');return}if(confirm('Cancel Plus? The heart limit will return.')){S.plan=null;save();closeModal();render();toast('Subscription cancelled')}},
  wipe(){if(confirm('Delete ALL profiles and progress from this device? This cannot be undone.')){localStorage.removeItem('ml2');location.reload()}},
  pexp(){const b=new Blob([JSON.stringify(S,null,1)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='maple-leap-data.json';a.click()},
- pgoal(a){P().goal=+a;save();parentZone()},plim(a){P().limit=+a;save();parentZone()},pkid(a){S.cur=+a;save();parentZone()},pdel(){const p=P();if(S.ps.length<2){toast('At least one profile is needed');return}if(confirm('Remove '+p.name+'?')){S.ps.splice(S.cur,1);S.cur=0;save();parentZone()}},
+ prem(a){const p=P();p.rem=+a;save();scheduleRem();parentZone()},pgoal(a){P().goal=+a;save();parentZone()},plim(a){P().limit=+a;save();parentZone()},pkid(a){S.cur=+a;save();parentZone()},pdel(){const p=P();if(S.ps.length<2){toast('At least one profile is needed');return}if(confirm('Remove '+p.name+'?')){S.ps.splice(S.cur,1);S.cur=0;save();parentZone()}},
  quit(){if(confirm('Quit this lesson? You will lose your progress in it.')){endLesson()}},
  hbuy(){gate(buyHearts)},hrefill(){const p=P();if(p.gems<100){toast('You need 💎100');return}p.gems-=100;p.hearts=5;save();closeModal();toast('Hearts refilled!');render()},
   hprac(){closeModal();startMixed(true)},
@@ -283,7 +288,7 @@ function parentZone(){const p=P();const days=[];for(let i=6;i>=0;i--){const k=ad
  <div class="card"><h3>Skills</h3>${ss.map(x=>`<div class="row" style="margin:6px 0 0"><span>${SUBJ[x.k].e} ${SUBJ[x.k].n}</span><span>${x.t?Math.round(x.pc*100)+'% ('+x.t+' questions)':'Not started'}</span></div><div class="meter"><i style="width:${(x.pc||0)*100}%;background:${SUBJ[x.k].c}"></i></div>`).join('')}
  <p class="fine" style="text-align:left">${w&&s&&w.k!=s.k?`${SUBJ[s.k].n} is ${p.name}'s strongest area. ${SUBJ[w.k].n} could use a little more practice.`:'Keep going! More answers will unlock tailored tips.'}</p></div>
  <div class="card"><h3>Daily goal</h3><div class="seg">${GOALS.map(g=>`<button class="${p.goal==g[0]?'on':''}" data-act="pgoal" data-a="${g[0]}">${g[1]}</button>`).join('')}</div>
- <h3 style="margin-top:12px">Daily time limit</h3><div class="seg">${[[0,'None'],[10,'10m'],[20,'20m'],[30,'30m']].map(g=>`<button class="${p.limit==g[0]?'on':''}" data-act="plim" data-a="${g[0]}">${g[1]}</button>`).join('')}</div></div>
+ <h3 style="margin-top:12px">Daily reminder</h3><div class="seg">${[[0,'Off'],[16,'4 pm'],[17,'5 pm'],[18,'6 pm'],[19,'7 pm']].map(g=>`<button class="${(p.rem||0)==g[0]?'on':''}" data-act="prem" data-a="${g[0]}">${g[1]}</button>`).join('')}</div>${NATIVE?'':'<p class="fine" style="text-align:left">Reminders work in the iPhone and iPad app.</p>'}<h3 style="margin-top:12px">Daily time limit</h3><div class="seg">${[[0,'None'],[10,'10m'],[20,'20m'],[30,'30m']].map(g=>`<button class="${p.limit==g[0]?'on':''}" data-act="plim" data-a="${g[0]}">${g[1]}</button>`).join('')}</div></div>
  <div class="card"><h3>Subscription</h3>${S.plan?`Maple Leap ${S.plan.tier=='family'?'Family':'Plus'} · ${S.plan.per=='year'?'yearly':'monthly'}${S.plan.test?' (test mode)':''}<br><br><button class="btn sm ghost" data-act="cancel">Cancel subscription</button>`:`Free plan. Plus gives unlimited hearts.<br><br><button class="btn sm purple" data-act="paywall">See Plus</button>`}</div>
  <div class="card"><h3>Kids, safety &amp; privacy</h3><ul style="margin:6px 0;padding-left:18px;font-size:14px"><li>No accounts, no tracking, no data leaves this device.</li><li>No ads. Free to play, with optional heart refills and Plus.</li><li>No chat, no friend requests. League rivals are friendly bots.</li></ul><button class="btn sm ghost" data-act="pexp">Download data</button> <button class="btn sm ghost" data-act="pdel">Remove ${p.name}</button> <button class="btn sm ghost" data-act="wipe">Delete everything</button></div>
  <button class="btn full" data-act="shop">Shop printed workbooks</button>`,true)}
@@ -308,17 +313,23 @@ function show(){const q=L.qs[L.i];$('pb').style.width=(L.i/L.qs.length*100)+'%';
  let h='';if(q.passage)h+=`<div class="passage">${q.passage}</div>`;
  h+=`<div class="q">${q.q}${window.speechSynthesis?'<button class="spk" id="spk" aria-label="Read aloud">🔊</button>':''}</div>`;if(q.svg)h+=`<div class="svg">${q.svg}</div>`;
  if(q.t==='mc')h+=`<div class="ch ${q.big?'big':''}">${q.choices.map((c,i)=>`<button data-i="${i}">${c}</button>`).join('')}</div>`;
+ else if(q.t==='pair')h+=`<div class="pairs"><div>${q.left.map((c,i)=>`<button class="pb" data-pl="${i}">${c}</button>`).join('')}</div><div>${q.right.map((c,i)=>`<button class="pb" data-pr="${i}">${c}</button>`).join('')}</div></div>`;
  else if(q.t==='num')h+=`<input class="inp" id="ni" inputmode="decimal" autocomplete="off" placeholder="Type your answer">`;
  else h+=`<div class="slots" id="sl"></div><div class="bank">${q.words.map((w,i)=>`<button class="w" data-w="${i}">${w}</button>`).join('')}</div>`;
- $('lb').innerHTML=h;const sp=$('spk');if(sp)sp.onclick=()=>say(q);
+ L.pm={sel:null,done:0,wrong:0};$('lb').innerHTML=h;const sp=$('spk');if(sp)sp.onclick=()=>say(q);
  const ni=$('ni');if(ni){ni.focus();ni.oninput=()=>{L.sel=ni.value.trim();$('chk').disabled=!L.sel};ni.onkeydown=e=>{if(e.key==='Enter'&&!$('chk').disabled)check()}}}
 $('lb').addEventListener('click',e=>{if(!L||L.state!=='ask')return;const q=L.qs[L.i];
  const b=e.target.closest('.ch button');if(b){[...$('lb').querySelectorAll('.ch button')].forEach(x=>x.classList.remove('sel'));b.classList.add('sel');L.sel=q.choices[+b.dataset.i];$('chk').disabled=false;beep(500,.05);return}
+ const pl=e.target.closest('[data-pl]'),pr=e.target.closest('[data-pr]');
+ if(pl&&q.t==='pair'&&!pl.classList.contains('okp')){$('lb').querySelectorAll('[data-pl]').forEach(x=>x.classList.remove('sel'));pl.classList.add('sel');L.pm.sel=pl.textContent;beep(500,.05);return}
+ if(pr&&q.t==='pair'&&!pr.classList.contains('okp')){if(L.pm.sel==null){toast('Pick one on the left first');return}const pair=q.pairs.find(p=>p[0]===L.pm.sel);const lb=[...$('lb').querySelectorAll('[data-pl]')].find(x=>x.textContent===L.pm.sel);
+  if(pair&&pair[1]===pr.textContent){lb.classList.remove('sel');lb.classList.add('okp');pr.classList.add('okp');L.pm.done++;L.pm.sel=null;sOK();if(L.pm.done===q.pairs.length){L.sel='done';$('chk').disabled=false}}
+  else{L.pm.wrong++;pr.classList.add('nop');setTimeout(()=>pr.classList.remove('nop'),400);sNO();buzz('e')}return}
  const w=e.target.closest('.w:not(.sl)');if(w){L.pick.push(+w.dataset.w);w.classList.add('used');drawSlots();beep(500,.05);return}
  const s=e.target.closest('.sl');if(s){const wi=L.pick.splice(+s.dataset.p,1)[0];$('lb').querySelector(`.w[data-w="${wi}"]`).classList.remove('used');drawSlots()}});
 function drawSlots(){const q=L.qs[L.i];$('sl').innerHTML=L.pick.map((wi,p)=>`<button class="w sl" data-p="${p}">${q.words[wi]}</button>`).join('');L.sel=L.pick.length===q.words.length?L.pick.map(i=>q.words[i]).join(' '):null;$('chk').disabled=!L.sel}
 const norm=s=>String(s).trim().toLowerCase().replace(/[−–]/g,'-').replace(/^\$/,'');
-function check(){const q=L.qs[L.i],p=P();if(L.sel==null)return;let ok=norm(L.sel)===norm(q.a);if(q.t==='num'&&!ok&&!isNaN(+L.sel))ok=+L.sel===+q.a;
+function check(){const q=L.qs[L.i],p=P();if(L.sel==null)return;let ok=q.t==='pair'?L.pm.wrong<=1:norm(L.sel)===norm(q.a);if(q.t==='num'&&!ok&&!isNaN(+L.sel))ok=+L.sel===+q.a;
  L.state='fb';$('lf').style.display='none';const sj=q.subj||L.subj;
  if(L.kind!=='mist'&&p.stats[sj]){p.stats[sj].t++;if(ok)p.stats[sj].c++}
  if(q.t==='mc')[...$('lb').querySelectorAll('.ch button')].forEach(b=>{b.disabled=true;if(b.textContent===q.a)b.classList.add('ok');else if(b.classList.contains('sel'))b.classList.add('no')});

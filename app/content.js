@@ -166,7 +166,25 @@ function riddle(g){const pool=RID.filter(r=>g<=2?r[2]===1:(g<=4?true:r[2]===2||M
 const ANA=[["Hot is to cold as up is to ___","down",["over","high","warm"]],["Bird is to fly as fish is to ___","swim",["walk","climb","sing"]],["Day is to night as summer is to ___","winter",["sunny","hot","July"]],["Finger is to hand as toe is to ___","foot",["shoe","leg","sock"]],["Puppy is to dog as kitten is to ___","cat",["mouse","lion","bird"]],["Pen is to write as scissors are to ___","cut",["paper","draw","glue"]]];
 function analogy(){const a=pick(ANA);return mc(a[0],a[1],a[2]);}
 function genLogic(g,d,n){const fns=[()=>numPattern(g,d),()=>numPattern(g,d),()=>shapePattern(g,d),()=>oddOne(),()=>deduce(g,d),()=>numRiddle(g,d),()=>riddle(g),()=>analogy(),()=>numPattern(g,d)];const out=[];let guard=0;while(out.length<n&&guard++<200){const q=pick(fns)();if(!q)continue;if(out.some(o=>o.q===q.q))continue;if(q.t==='mc'&&(q.choices.length<4||!q.choices.includes(q.a)))continue;out.push(q);}return out;}
-function makeLesson(g,subject,d){return subject==='math'?genMath(g,d,8):(subject==='read'?genRead(g,8):genLogic(g,d,8));}
+/* ---------------- MATCH PAIRS ---------------- */
+const NW=[["2","two"],["3","three"],["4","four"],["5","five"],["6","six"],["7","seven"],["8","eight"],["9","nine"],["10","ten"],["12","twelve"]];
+const ANT=[["hot","cold"],["up","down"],["day","night"],["happy","sad"],["big","small"],["fast","slow"],["wet","dry"],["open","shut"],["old","new"],["loud","quiet"]];
+const SYN3=[["enormous","huge"],["rapid","quick"],["courageous","brave"],["tidy","neat"],["ancient","old"],["difficult","hard"],["glad","happy"],["tiny","small"]];
+const SYN5=[["meticulous","careful"],["abundant","plentiful"],["diligent","hardworking"],["candid","honest"],["benevolent","kind"],["ambiguous","unclear"],["frugal","thrifty"],["scrutinize","examine"]];
+const FD=[["1/2","0.5"],["1/4","0.25"],["3/4","0.75"],["1/5","0.2"],["1/10","0.1"],["2/5","0.4"],["4/5","0.8"]];
+const FP=[["1/2","50%"],["1/4","25%"],["3/4","75%"],["1/5","20%"],["1/10","10%"],["2/5","40%"],["4/5","80%"]];
+const SH=[["triangle","3 sides"],["square","4 sides"],["pentagon","5 sides"],["hexagon","6 sides"],["octagon","8 sides"],["circle","0 sides"]];
+const RM=[["IV","4"],["IX","9"],["XII","12"],["XV","15"],["XX","20"],["XL","40"],["VII","7"]];
+function pairQ(g,subj){let src;
+ if(subj==='math'){if(g===1)src=NW;else if(g===2){const ns=shuffle([3,4,5,6,7,8,9,10,12,15]).slice(0,4);src=ns.map(n=>[String(n),String(n*2)]);}
+  else if(g===3){const ms=shuffle([[3,4],[6,7],[5,8],[9,3],[7,8],[4,6],[2,9]]).slice(0,4);src=ms.map(m=>[m[0]+" × "+m[1],String(m[0]*m[1])]);}
+  else if(g===4)src=FD;else if(g===5)src=FP;else{const ps=shuffle([[10,70],[25,40],[50,30],[20,25],[75,8],[10,200]]).slice(0,4);src=ps.map(p=>[p[0]+"% of "+p[1],String(p[0]*p[1]/100)]);}}
+ else if(subj==='read')src=g<=2?ANT:(g<=4?SYN3:SYN5);
+ else src=g<=3?SH:RM;
+ const pairs=shuffle(src).slice(0,4);if(pairs.length<4)return null;
+ const type=subj==='read'&&g<=2?'Match the opposites.':(subj==='read'?'Match the words that mean the same.':'Match each pair.');
+ return {t:'pair',q:type,pairs,left:shuffle(pairs.map(p=>p[0])),right:shuffle(pairs.map(p=>p[1])),a:pairs.map(p=>p[0]+' = '+p[1]).join(', ')};}
+function makeLesson(g,subject,d){const L=subject==='math'?genMath(g,d,8):(subject==='read'?genRead(g,8):genLogic(g,d,8));const pq=pairQ(g,subject);if(pq&&L.length>=4)L.splice(3,1,pq);return L;}
 const api={makeLesson,MATH,READ,genMath,genRead,genLogic};
 if(typeof module!=='undefined')module.exports=api;else root.MapleContent=api;
 })(typeof window!=='undefined'?window:globalThis);
