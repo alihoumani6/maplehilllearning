@@ -232,7 +232,7 @@ const money=n=>(NATIVE?BILLING.currency:'CA$')+n.toFixed(2);
 /* ============ STATE ============ */
 let S;try{S=JSON.parse(localStorage.getItem('ml2'))}catch(e){}
 S=Object.assign({ps:[],cur:0,plan:null,tab:'learn',subj:'math',snd:true,onb:0,draft:{name:'',av:'owl',grade:1,goal:20},seen:{},done:0},(S&&typeof S==='object')?S:{});
-const save=()=>{try{localStorage.setItem('ml2',JSON.stringify(S))}catch(e){}};
+const save=()=>{try{localStorage.setItem('ml2',JSON.stringify(S))}catch(e){}try{syncSoon()}catch(e){}};
 const P=()=>S.ps[S.cur];
 const isPlus=()=>!!S.plan;
 const MAXKIDS=()=>S.plan&&S.plan.tier==='family'?6:1;
@@ -337,7 +337,41 @@ function vMe(p){const L=LEAGUES[p.league];const t=dk(),d0=pd(t);const first=new 
  <div class="card"><div class="row"><span>Switch / add child</span><button class="btn sm ghost" data-act="profiles">Open</button></div><div class="row"><span>Sound &amp; haptics</span><button class="btn sm ghost" data-act="snd">${S.snd?'On':'Off'}</button></div><div class="row"><span>👪 Parent Zone</span><button class="btn sm blue" data-act="parent">Open</button></div></div>
  <p class="fine"><a href="#" data-act="shop">Maple Hill Learning Press</a> · <a href="#" data-act="privacy">Privacy</a> · <a href="#" data-act="terms">Terms</a></p>`}
 /* ============ EVENTS ============ */
+
+/* ---- parent account (email code sign-in; subscription + optional progress sync) ---- */
+const SB={url:'https://hzwaoskfrszsniubbhix.supabase.co',key:'sb_publishable_sjVpAXRIKvI__wPT_I5Dbg_6TCn5ihl'};
+let AU=null;try{AU=JSON.parse(localStorage.getItem('mlAuth')||'null')}catch(e){}
+const setAU=a=>{AU=a;try{a?localStorage.setItem('mlAuth',JSON.stringify(a)):localStorage.removeItem('mlAuth')}catch(e){}};
+const syncOn=()=>{try{return localStorage.getItem('mlSync')==='1'}catch(e){return false}};
+async function sbReq(path,o={},auth=true,retry=true){const hd={apikey:SB.key,'Content-Type':'application/json'};if(auth&&AU)hd.Authorization='Bearer '+AU.access;else hd.Authorization='Bearer '+SB.key;
+ const r=await fetch(SB.url+path,Object.assign({},o,{headers:Object.assign(hd,o.headers||{})}));
+ if(r.status===401&&auth&&AU&&retry){if(await sbRefresh())return sbReq(path,o,auth,false)}
+ return r}
+async function sbRefresh(){if(!AU||!AU.refresh)return false;try{const r=await fetch(SB.url+'/auth/v1/token?grant_type=refresh_token',{method:'POST',headers:{apikey:SB.key,'Content-Type':'application/json'},body:JSON.stringify({refresh_token:AU.refresh})});if(!r.ok){setAU(null);return false}const j=await r.json();setAU({access:j.access_token,refresh:j.refresh_token,email:(j.user&&j.user.email)||AU.email});return true}catch(e){return false}}
+async function refreshEnt(){if(!AU)return;try{const r=await sbReq('/rest/v1/rpc/my_entitlement',{method:'POST',body:'{}'});if(!r.ok)return;const a=await r.json(),e=a&&a[0];
+ if(e&&e.active){S.plan={tier:e.tier,per:e.per,paid:1,acct:1,trialing:e.status==='trialing'}}else if(S.plan&&S.plan.acct){S.plan=null}
+ save()}catch(err){}}
+let syncT=null;function syncSoon(){if(!AU||!syncOn())return;clearTimeout(syncT);syncT=setTimeout(pushSync,2500)}
+function mergePs(loc,rem){const out=loc.slice();(rem||[]).forEach(r=>{if(!r||typeof r!=='object')return;const i=out.findIndex(l=>l.name===r.name&&l.grade===r.grade);if(i<0)out.push(r);else if((+r.xp||0)>(+out[i].xp||0))out[i]=r});return out}
+async function pushSync(){if(!AU||!syncOn())return;try{await sbReq('/rest/v1/sync?on_conflict=user_id',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify({user_id:AU.uid,data:{ps:S.ps},updated_at:new Date().toISOString()})})}catch(e){}}
+async function pullSync(){if(!AU)return;try{const r=await sbReq('/rest/v1/sync?select=data&limit=1');if(!r.ok)return;const a=await r.json();if(a[0]&&a[0].data&&Array.isArray(a[0].data.ps)){const m=mergePs(S.ps,a[0].data.ps).map(fixP);S.ps=m;if(S.cur>=m.length)S.cur=0}}catch(e){}await pushSync()}
+function acctModal(note){const on=!!AU;modal(`${XB}<h2>Parent account</h2>${note?`<p class="fine" style="font-weight:800;color:var(--blue)">${note}</p>`:''}
+ ${on?`<div class="card">Signed in as <b>${AU.email}</b><br><br><label style="display:flex;gap:10px;align-items:center;font-weight:800"><input type="checkbox" id="syncck" ${syncOn()?'checked':''} data-act="acctsync" style="width:22px;height:22px"> Sync my kids' progress across devices</label><p class="fine" style="text-align:left">Stores first names, grades, XP and lesson progress on our secure server so the website and iPhone/iPad app match. Off by default.</p><button class="btn sm ghost" data-act="acctrefresh">Refresh my subscription</button> <button class="btn sm ghost" data-act="acctout">Sign out</button> <button class="btn sm ghost" data-act="acctdel">Delete my account</button></div>`
+ :`<div class="card"><p style="margin:0 0 10px;font-weight:700">Sign in with your email to use your Maple Leap subscription on every device. No password: we email you a 6-digit code.</p><input class="in" id="aem" type="email" inputmode="email" autocomplete="email" placeholder="parent@email.com"><div id="aco" style="display:none;margin-top:10px"><input class="in" id="acd" inputmode="numeric" maxlength="8" autocomplete="one-time-code" placeholder="Code from your email"></div><p><button class="btn blue full" id="abt" data-act="acctsend">Email me a code</button></p></div>`}
+ <p class="fine">Only a grown-up should use this screen. Parent accounts keep an email address and, if you turn sync on, your kids' progress. Nothing is shared or used for ads.</p>`,true)}
+
 const ACT={
+
+ acct(){acctModal()},
+ async acctsend(){const em=($('aem')||{}).value||'',code=$('acd');const e=em.trim().toLowerCase();
+  if(code&&$('aco').style.display!=='none'&&code.value.trim()){const r=await sbReq('/auth/v1/verify',{method:'POST',body:JSON.stringify({type:'email',email:e||S.pendEm,token:code.value.trim()})},false);if(!r.ok){toast('That code did not work. Try again.');return}const j=await r.json();setAU({access:j.access_token,refresh:j.refresh_token,email:j.user.email,uid:j.user.id});await refreshEnt();if(syncOn())await pullSync();save();render();const pend=S.afterLogin;S.afterLogin=null;acctModal('You are signed in.');if(pend)setTimeout(()=>{closeModal();ACT.buyplan()},700);return}
+  if(!/^\S+@\S+\.\S+$/.test(e)){toast('Enter a valid email');return}S.pendEm=e;
+  const r=await sbReq('/auth/v1/otp',{method:'POST',body:JSON.stringify({email:e,create_user:true})},false);if(!r.ok){toast(r.status===429?'Too many tries. Wait a minute.':'Could not send the code.');return}
+  $('aco').style.display='block';$('abt').textContent='Sign in';toast('Check your email for the code')},
+ acctout(){setAU(null);if(S.plan&&S.plan.acct)S.plan=null;save();render();acctModal('Signed out.')},
+ acctsync(){const on=$('syncck').checked;try{localStorage.setItem('mlSync',on?'1':'0')}catch(e){}if(on)pullSync().then(()=>{render();toast('Progress synced')})},
+ async acctrefresh(){await refreshEnt();render();acctModal(S.plan?'Plan active: Maple Leap '+(S.plan.tier=='family'?'Family':'Plus'):'No active subscription found for this email.')},
+ acctdel(){if(!confirm('Delete your parent account and any synced progress? Your subscription is not cancelled by this.'))return;sbReq('/rest/v1/sync?user_id=eq.'+AU.uid,{method:'DELETE'}).finally(()=>{setAU(null);if(S.plan&&S.plan.acct)S.plan=null;save();render();closeModal();toast('Account signed out. Email support to erase it fully.')})},
  tab(a){S.tab=a;save();render();scrollTo(0,0)},subj(a){S.subj=a;save();render()},close(){closeModal()},
  onb(a){if(S.onb==1){const v=$('nm');if(v)S.draft.name=v.value.trim()}if(S.onb==1&&!S.draft.name){toast('Type a name first');return}S.onb=+a;save();render()},
  dav(a){const v=$('nm');if(v)S.draft.name=v.value;S.draft.av=a;if(MASC[a])S.draft.grade=MASC[a][1];save();render()},dgr(a){S.draft.grade=+a;S.draft.av=GA[+a];save();render()},dgo(a){S.draft.goal=+a;save();render()},
@@ -376,16 +410,17 @@ function paywall(re){const pr=BILLING.prices[pw.tier],yr=pw.per=='year';const sa
 async function buyHearts(fromLesson){const p=P();const done=()=>{p.hearts=5;p.hAt=0;save();if(fromLesson)endLesson();else{closeModal();render()}confetti();sOK();toast('Hearts refilled!')};
  if(NATIVE){const rc=PL('Purchases'),pkg=PKG['hearts_refill'];if(!RCOK||!pkg){toast('Purchases are not available right now.');return}try{await rc.purchasePackage({aPackage:pkg});done()}catch(e){if(!(e&&e.userCancelled))toast('Purchase did not complete.')}return}
  if(testOn()){done();toast('Hearts refilled (test account)');return}
- if(BILLING.links.hearts){try{sessionStorage.setItem('mlpend',P().name)}catch(e){}location.href=BILLING.links.hearts;return}
+ if(BILLING.links.hearts){try{sessionStorage.setItem('mlpend',P().name)}catch(e){}location.href=BILLING.links.hearts+(AU?'?prefilled_email='+encodeURIComponent(AU.email):'');return}
  toast('Purchases are not available right now.')}
 async function buyPlan(){if(NATIVE&&RCOK){const rc=PL('Purchases'),pkg=PKG[pw.tier+'_'+pw.per];if(!pkg){toast('Subscriptions are not available right now. Please try again later.');return}try{await rc.purchasePackage({aPackage:pkg});await rcSync();closeModal();confetti();sWIN();toast('Welcome to Plus!')}catch(e){if(!(e&&e.userCancelled))toast('Purchase did not complete.')}return}
  if(NATIVE){toast('Subscriptions are not available right now.');return}
  if(testOn()){S.plan={tier:pw.tier,per:pw.per,trial:Date.now()+BILLING.trialDays*864e5,test:1};save();closeModal();confetti();sWIN();render();toast('Welcome to Plus! (test account)');return}
- const lk=BILLING.links[pw.tier+'_'+pw.per];if(lk){location.href=lk;return}
+ if(!AU){S.afterLogin=1;closeModal();acctModal('Sign in first so your subscription follows you to every device.');return}
+ const lk=BILLING.links[pw.tier+'_'+pw.per];if(lk){location.href=lk+'?prefilled_email='+encodeURIComponent(AU.email);return}
  toast('Subscriptions are not available right now.')}
 function testOn(){try{return localStorage.getItem('mlTest')==='1'}catch(e){return false}}
 function handleReturn(){try{const u=new URL(location.href),q=u.searchParams;if(q.get('test')==='1'){localStorage.setItem('mlTest','1');S.msg='Test account on: purchases unlock for free on this device.'}if(q.get('test')==='0'){localStorage.removeItem('mlTest')}
- const pd=q.get('paid');if(pd){if(pd==='hearts'){const p=P();if(p){p.hearts=5;p.hAt=0;S.msg='Hearts refilled! Thank you.'}}else{const m=/^(plus|family)_(month|year)$/.exec(pd);if(m){S.plan={tier:m[1],per:m[2],trial:Date.now()+BILLING.trialDays*864e5,paid:1};S.msg='Welcome to Maple Leap '+(m[1]=='family'?'Family':'Plus')+'! Your free trial has started.'}}}
+ const pd=q.get('paid');if(pd){if(pd==='hearts'){const p=P();if(p){p.hearts=5;p.hAt=0;S.msg='Hearts refilled! Thank you.'}}else if(/^(plus|family)_(month|year)$/.test(pd)){S.msg=AU?'Thank you! Activating your plan...':'Thank you! Sign in with the email you paid with (Parent Zone, Parent account) to activate Plus.';S.verifyPay=1}}
  if(pd||q.has('test')){save();history.replaceState(null,'',u.pathname)}}catch(e){}}
 /* parent gate */
 function gate(cb){const a=6+ri(4),b=6+ri(4);const m=$('modal');
@@ -401,8 +436,9 @@ function parentZone(){const p=P();const days=[];for(let i=6;i>=0;i--){const k=ad
  <p class="fine" style="text-align:left">${w&&s&&w.k!=s.k?`${SUBJ[s.k].n} is ${p.name}'s strongest area. ${SUBJ[w.k].n} could use a little more practice.`:'Keep going! More answers will unlock tailored tips.'}</p></div>
  <div class="card"><h3>Daily goal</h3><div class="seg">${GOALS.map(g=>`<button class="${p.goal==g[0]?'on':''}" data-act="pgoal" data-a="${g[0]}">${g[1]}</button>`).join('')}</div>
  <h3 style="margin-top:12px">Daily reminder</h3><div class="seg">${[[0,'Off'],[16,'4 pm'],[17,'5 pm'],[18,'6 pm'],[19,'7 pm']].map(g=>`<button class="${(p.rem||0)==g[0]?'on':''}" data-act="prem" data-a="${g[0]}">${g[1]}</button>`).join('')}</div>${NATIVE?'':'<p class="fine" style="text-align:left">Reminders work in the iPhone and iPad app.</p>'}<h3 style="margin-top:12px">Daily time limit</h3><div class="seg">${[[0,'None'],[10,'10m'],[20,'20m'],[30,'30m']].map(g=>`<button class="${p.limit==g[0]?'on':''}" data-act="plim" data-a="${g[0]}">${g[1]}</button>`).join('')}</div></div>
+ <div class="card"><h3>Parent account</h3>${AU?`Signed in as ${AU.email}`:'Not signed in. Sign in to use your subscription on the website and the iPhone/iPad app.'}<br><br><button class="btn sm blue" data-act="acct">${AU?'Manage account':'Sign in'}</button></div>
  <div class="card"><h3>Subscription</h3>${S.plan?`Maple Leap ${S.plan.tier=='family'?'Family':'Plus'} · ${S.plan.per=='year'?'yearly':'monthly'}${S.plan.test?' (free preview)':''}<br><br><button class="btn sm ghost" data-act="cancel">Cancel subscription</button>`:`Free plan. Plus gives unlimited hearts.<br><br><button class="btn sm purple" data-act="paywall">See Plus</button>`}</div>
- <div class="card"><h3>Kids, safety &amp; privacy</h3><ul style="margin:6px 0;padding-left:18px;font-size:14px"><li>No accounts, no tracking, no data leaves this device.</li><li>No ads. Free to play, with optional heart refills and Plus.</li><li>No chat, no friend requests. League rivals are friendly bots.</li></ul><button class="btn sm ghost" data-act="pexp">Download data</button> <button class="btn sm ghost" data-act="pdel">Remove ${p.name}</button> <button class="btn sm ghost" data-act="wipe">Delete everything</button></div>
+ <div class="card"><h3>Kids, safety &amp; privacy</h3><ul style="margin:6px 0;padding-left:18px;font-size:14px"><li>No tracking. Progress stays on this device unless a parent turns on sync.</li><li>No ads. Free to play, with optional heart refills and Plus.</li><li>No chat, no friend requests. League rivals are friendly bots.</li></ul><button class="btn sm ghost" data-act="pexp">Download data</button> <button class="btn sm ghost" data-act="pdel">Remove ${p.name}</button> <button class="btn sm ghost" data-act="wipe">Delete everything</button></div>
  <button class="btn full" data-act="shop">Shop printed workbooks</button>`,true)}
 function privacy(){modal(`${XB}<h2>Privacy</h2><p><button class="btn sm ghost" onclick="ACT.pol()">Full privacy policy</button></p><p style="font-weight:700;line-height:1.5">Maple Leap is made by Maple Hill Learning Press for children and their parents. We do not ask for email addresses, real names or locations. Everything your child does is saved only on this device. We do not use analytics, advertising IDs or advertising of any kind. Parents can download or delete all data from the Parent Zone at any time.</p>`)}
 function profiles(){modal(`${XB}<h2>Who's learning?</h2>${S.ps.map((c,i)=>`<button class="opt ${i==S.cur?'on':''}" data-act="sw" data-a="${i}"><img src="${av(c.av)}" width="40" alt="">${c.name}<small>Grade ${c.grade} · 🔥${c.streak}</small></button>`).join('')}<button class="opt" data-act="addkid">➕ Add a child ${MAXKIDS()>1?'':'<small>Family plan</small>'}</button>`)}
@@ -511,5 +547,5 @@ if(window.visualViewport){const f=()=>{$('lesson').style.height=visualViewport.h
 /* ============ BOOT ============ */
 if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&P()&&!L){rollover(P());save();render();setTimeout(maybeGift,400)}});
-handleReturn();rcInit();render();setTimeout(maybeGift,700);
+handleReturn();rcInit();render();if(AU){refreshEnt().then(()=>{if(syncOn())return pullSync()}).then(()=>{render();if(S.verifyPay){S.verifyPay=0;let n=0;const t=setInterval(async()=>{await refreshEnt();render();if(S.plan||++n>8)clearInterval(t)},3000)}})}setTimeout(maybeGift,700);
 </script></body></html>
