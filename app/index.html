@@ -145,8 +145,61 @@ html{touch-action:manipulation;overscroll-behavior:none}
 .wr{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.wr .it{background:#fff;border:2px solid var(--line);border-radius:16px;padding:8px 4px;text-align:center;font-weight:800;font-size:12px}.wr .it .em{font-size:30px}.wr .it.on{border-color:var(--green);background:#e5f7ec}
 .lh .bar{height:18px}
 @media (prefers-reduced-motion:reduce){.cf{display:none}}
+
+/* ---- visual world ---- */
+body{background:#fffdf6;transition:background .5s}
+body[data-s=math]{background:linear-gradient(180deg,#d9f0ff 0,#eaf8ff 220px,#fffdf6 560px) fixed}
+body[data-s=read]{background:linear-gradient(180deg,#ffe6cf 0,#fff1e2 220px,#fffdf6 560px) fixed}
+body[data-s=logic]{background:linear-gradient(180deg,#e7defa 0,#f1ebfd 220px,#fffdf6 560px) fixed}
+body[data-s=hero]{background:radial-gradient(circle at 50% 18%,#fff3b8 0,#ffe08a 18%,#ffd1a0 40%,#ffe9d6 70%,#fffdf6 100%) fixed}
+.top{background:transparent;backdrop-filter:blur(8px)}
+.cld{position:fixed;font-size:60px;opacity:.55;pointer-events:none;z-index:0;animation:drift 38s linear infinite}
+.cld.b{top:34%;font-size:44px;animation-duration:55s;animation-delay:-20s;opacity:.4}
+@keyframes drift{from{transform:translateX(-120px)}to{transform:translateX(110vw)}}
+.wrap,#lesson .lh,#lb{position:relative;z-index:1}
+.unit{background-image:linear-gradient(135deg,rgba(255,255,255,.22),rgba(0,0,0,.1));box-shadow:0 6px 0 rgba(0,0,0,.18);position:relative;overflow:hidden}
+.unit::after{content:"";position:absolute;right:-30px;top:-30px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.14)}
+.unit>span{animation:bob 2.2s ease-in-out infinite;z-index:1;filter:drop-shadow(0 3px 0 rgba(0,0,0,.2));font-size:42px!important}
+.path{position:relative}
+.pn{z-index:1}
+.node{background-image:radial-gradient(circle at 32% 26%,rgba(255,255,255,.55),rgba(255,255,255,0) 46%);border:5px solid rgba(255,255,255,.55);text-shadow:0 2px 0 rgba(0,0,0,.2);font-family:'Baloo 2',Nunito,sans-serif}
+.node.lock{border-color:#fff;background-image:none}
+.node.cur{box-shadow:0 8px 0 rgba(0,0,0,.3),0 0 0 8px rgba(255,201,40,.4)}
+.sc{position:absolute;font-size:34px;top:50%;transform:translateY(-50%);pointer-events:none;animation:sway 3.4s ease-in-out infinite;filter:drop-shadow(0 3px 0 rgba(0,0,0,.08))}
+.sc.l{right:calc(100% + 88px)}.sc.r{left:calc(100% + 88px)}
+@keyframes sway{50%{transform:translateY(-50%) rotate(7deg) scale(1.06)}}
+.tabs .tab{background:rgba(255,255,255,.85)}
+.card{box-shadow:0 4px 0 var(--line)}
+/* hero */
+.hero{position:relative;padding-top:10px}
+.hero .fm{position:absolute;width:64px;height:64px;object-fit:contain;animation:bob 2.6s ease-in-out infinite;filter:drop-shadow(0 4px 0 rgba(0,0,0,.12))}
+.hero img.main{width:190px;height:190px;animation:bob 1.6s ease-in-out infinite,hi 4s ease-in-out infinite}
+@keyframes hi{0%,88%,100%{rotate:0deg}92%{rotate:-6deg}96%{rotate:6deg}}
+.hero h1{font-size:50px;text-shadow:0 4px 0 rgba(0,0,0,.08)}
+.hero .row6{display:flex;justify-content:center;gap:4px;margin:6px 0 16px}.hero .row6 img{width:48px;height:48px;object-fit:contain;animation:bob 2.2s ease-in-out infinite}
+.hero .row6 img:nth-child(2){animation-delay:.2s}.hero .row6 img:nth-child(3){animation-delay:.4s}.hero .row6 img:nth-child(4){animation-delay:.6s}.hero .row6 img:nth-child(5){animation-delay:.8s}.hero .row6 img:nth-child(6){animation-delay:1s}
+/* lesson */
+#lesson{background:linear-gradient(180deg,#d9f0ff,#fffdf6 340px)}
+#lesson[data-s=read]{background:linear-gradient(180deg,#ffe6cf,#fffdf6 340px)}
+#lesson[data-s=logic]{background:linear-gradient(180deg,#e7defa,#fffdf6 340px)}
+.coach .av{filter:drop-shadow(0 5px 0 rgba(0,0,0,.1))}
+.q{background:#fff;border:2px solid var(--line);border-radius:20px;padding:16px 18px;box-shadow:0 5px 0 var(--line);margin:6px 0 14px;animation:pop .35s both}
+.ch button{display:flex;align-items:center;gap:12px;border-radius:18px;padding:14px 14px;position:relative}
+.ch button::before{content:attr(data-l);flex:none;width:34px;height:34px;border-radius:11px;display:grid;place-items:center;color:#fff;font:800 17px 'Baloo 2';background:var(--lc,#1d5fd1);box-shadow:0 3px 0 rgba(0,0,0,.2)}
+.ch button:nth-child(1){--lc:#1d5fd1}.ch button:nth-child(2){--lc:#f47b20}.ch button:nth-child(3){--lc:#1f9d5b}.ch button:nth-child(4){--lc:#7b45c9}
+.ch.two{grid-template-columns:1fr 1fr}.ch.two button{flex-direction:column;justify-content:center;text-align:center;padding:16px 8px;gap:8px;min-height:92px}
+.ch.big button{justify-content:center}.ch.big button::before{position:absolute;left:10px;top:10px;width:26px;height:26px;font-size:14px}
+.ch button.ok{animation:okpop .5s}.ch button.ok::before{background:var(--green)}.ch button.no::before{background:var(--red)}
+@keyframes okpop{40%{transform:scale(1.07)}}
+.bar{height:20px;background:rgba(255,255,255,.7);border:2px solid #fff;box-shadow:inset 0 2px 0 rgba(0,0,0,.08)}
+.bar i::before{content:"⭐";position:absolute;right:-6px;top:-5px;font-size:20px;z-index:2;filter:drop-shadow(0 1px 0 rgba(0,0,0,.2))}
+.fb.ok,.fb.no{animation:fbup .28s both;border-radius:24px 24px 0 0}
+@keyframes fbup{from{transform:translateY(100%)}}
+.lf{background:transparent;border-top:0}
+@media (max-width:400px){.sc.l{right:calc(100% + 56px)}.sc.r{left:calc(100% + 56px)}.sc{font-size:28px}}
+body{overflow-x:hidden}
 </style></head><body>
-<div class="wrap" id="app"></div><nav class="nav" id="nav"></nav>
+<span class="cld" aria-hidden="true">☁️</span><span class="cld b" aria-hidden="true">☁️</span><div class="wrap" id="app"></div><nav class="nav" id="nav"></nav>
 <div id="lesson"><div class="lh"><button class="x" data-act="quit" aria-label="Quit">✕</button><div class="bar"><i id="pb"></i></div><div class="hearts" id="hh"></div></div>
 <div class="lb" id="lb"></div><div class="combo" id="combo"></div>
 <div class="fb" id="fb"><div role="status" aria-live="assertive"><div class="m"><span id="fbi"></span><div><b id="fbt"></b><p id="fbm"></p></div></div><button class="btn" id="fbn">Continue</button></div></div>
@@ -231,13 +284,13 @@ async function scheduleRem(){const ln=PL('LocalNotifications');if(!NATIVE||!ln)r
 function topbar(p){const goalPct=Math.min(100,Math.round(p.q.xp/p.goal*100));
  return `<div class="top"><div class="chip" data-act="tab" data-a="me">${avh(p,28)}<span>${p.name}</span></div><div style="display:flex;gap:5px"><div class="chip" data-act="tab" data-a="me">🔥${p.streak}</div><div class="chip" data-act="tab" data-a="quests">💎${p.gems}</div><div class="chip" data-act="${isPlus()?'tab':'heartinfo'}" data-a="me">${isPlus()?'❤️∞':'❤️'+p.hearts}</div>${isPlus()?'':'<div class="chip plus" data-act="paywall">PLUS</div>'}</div></div>`}
 function adBanner(){return''}
-function render(){const p=P();let h='';$('nav').style.display='none';
+function render(){const p=P();let h='';$('nav').style.display='none';document.body.dataset.s=(!p||S.adding)?'hero':(S.tab=='learn'?S.subj:'math');
  if(!p||S.adding){h=onb();}else{rollover(p);const t=S.tab;
   h=topbar(p)+(t=='learn'?vLearn(p):t=='practice'?vPractice(p):t=='league'?vLeague(p):t=='quests'?vQuests(p):vMe(p));
   $('nav').style.display='flex';$('nav').innerHTML=[['learn','🗺️','Learn'],['practice','🎯','Practice'],['league','🏆','League'],['quests','🎁','Quests'],['me','🙂','Me']].map(a=>`<button data-act="tab" data-a="${a[0]}" class="${t==a[0]?'on':''}"><b>${a[1]}</b>${a[2]}</button>`).join('')}
  $('app').innerHTML=h;if(S.msg){const m=S.msg;S.msg='';save();setTimeout(()=>toast(m),300)}}
 function onb(){const d=S.draft,o=S.onb;const dots=`<div class="dots">${[0,1,2,3,4].map(i=>`<i class="${i==o?'on':''}"></i>`).join('')}</div>`;
- if(o==0)return `<div class="hero"><img src="../img/owl.png" alt=""><h1>Maple<span style="color:var(--red)">Leap</span></h1><p>The free, fun way to practise math, reading and logic. Grades 1–6.</p></div><button class="btn red full" data-act="onb" data-a="1">Get started</button><p class="fine">By Maple Hill Learning Press · No sign-up · Progress is saved on this device only</p>`;
+ if(o==0)return `<div class="hero"><img class="fm" style="left:2%;top:30px" src="${av('penguin')}" alt=""><img class="fm" style="right:2%;top:50px;animation-delay:.5s" src="${av('fox')}" alt=""><img class="main" src="${av('owl')}" alt=""><h1>Maple<span style="color:var(--red)">Leap</span></h1><p>Math, reading and logic that feels like a game. Grades 1–6.</p><div class="row6">${['panda','raccoon','beaver','fox','penguin','owl'].map(k=>`<img src="${av(k)}" alt="">`).join('')}</div></div><button class="btn red full" data-act="onb" data-a="1">Get started</button><p class="fine">By Maple Hill Learning Press · No sign-up · Progress is saved on this device only</p>`;
  if(o==1)return dots+`<div class="step"><h2>Who's learning?</h2><input class="in" id="nm" maxlength="14" placeholder="First name or nickname" value="${d.name}" autocomplete="off"><p class="fine">Pick a name that isn't their full name. Nothing leaves this device.</p><div class="avs">${AN.map(k=>`<button class="gc ${d.av==k?'on':''}" data-act="dav" data-a="${k}"><img src="${av(k)}" alt="">${MASC[k][0]}</button>`).join('')}</div><p><button class="btn blue full" data-act="onb" data-a="2">Continue</button></p></div>`;
  if(o==2)return dots+`<div class="step"><h2>What grade are they in?</h2><div class="grades">${[1,2,3,4,5,6].map(g=>`<button class="gc ${d.grade==g?'on':''}" data-act="dgr" data-a="${g}"><img src="${av(GA[g])}" alt="">Grade ${g}</button>`).join('')}</div><p class="fine">Not sure? Pick one lower, it's easy to move up later.</p><p><button class="btn blue full" data-act="onb" data-a="3">Continue</button></p></div>`;
  if(o==3)return dots+`<div class="step"><h2>Pick a daily goal</h2>${GOALS.map(g=>`<button class="opt ${d.goal==g[0]?'on':''}" data-act="dgo" data-a="${g[0]}">${g[1]}<small>${g[2]}</small></button>`).join('')}<p><button class="btn blue full" data-act="onb" data-a="4">Continue</button></p></div>`;
@@ -252,7 +305,7 @@ function vLearn(p){const sb=SUBJ[S.subj],d=p.prog[p.grade+S.subj]||0;const m=MAS
    if(k=='c'){const id=p.grade+S.subj+u,open=(d>=u*UL+2),got=p.chests[id];node=`<button class="node chest ${open&&!got?'cur':(open?'done':'lock')}" data-act="chest" data-a="${id}">${got?'✔':'🎁'}</button>`}
    else{const n=u*UL+li;li++;const st=n<d?'done':(n==d?'cur':'lock');const isT=k=='t';
     node=`${n==d?'<div class="tag">START</div>':''}${n==d?`<span class="pm">${avh(p,62,'idle')}</span>`:''}<button class="node ${st}" aria-label="${isT?'Unit test':'Lesson '+((n%UL)+1)}, ${st=='lock'?'locked':(st=='done'?'completed':'ready')}" data-act="node" data-a="${n}" style="background:${isT?'var(--orange)':sb.c}">${st=='lock'?'🔒':(isT?'🏆':(n%UL)+1)}</button>${st=='done'?starsHtml(p.stars[p.grade+S.subj+n]||1):''}`}
-   h+=`<div class="pn" style="transform:translateX(${off}px)">${node}</div>`});h+='</div>'}
+   const SCN={math:['🌳','🌼','🍄','🦋','🌻','🐝'],read:['📚','🌷','🕯️','🦉','🍂','✏️'],logic:['🧩','🔮','⭐','🎲','💡','🪄']}[S.subj]||[];const sc=SCN.length?`<span class="sc ${off>0?'l':'r'}" style="animation-delay:-${(j*7+u*3)%9/3}s">${SCN[(j+u*2)%SCN.length]}</span>`:'';h+=`<div class="pn" style="transform:translateX(${off}px)">${node}${sc}</div>`});h+='</div>'}
  if(d>=TOTAL)h+=`<div class="card" style="text-align:center"><h3>🏆 Path complete!</h3>${m} is so proud. Replay any lesson for XP or try another subject.<br><br><button class="btn sm" data-act="node" data-a="r">Practise again</button></div>`;
  return h+adBanner(p)}
 function vPractice(p){const tot=p.lessons;return `<h2 style="color:var(--navy);margin:8px 0">Practice</h2>
@@ -365,7 +418,7 @@ function startPath(n,replay){const p=P();if(!canStart(p))return;const sb=S.subj,
  begin({qs,kind:'path',n,boss,subj:sb,replay,title:boss?'Boss round!':'Lesson '+((n%UL)+1),sub:SUBJ[sb].units[Math.floor(n/UL)][0]})}
 function startMixed(hp){const p=P();if(!canStart(p,hp))return;let qs=[];['math','read','logic'].forEach(s=>qs=qs.concat(genLesson(p,s,1,3).map(q=>(q.subj=s,q))));qs=qs.sort(()=>Math.random()-.5);begin({qs,kind:hp?'heart':'mixed',subj:'math',title:hp?'Heart practice':'Mixed review',sub:'A bit of everything'})}
 function startMist(){const p=P();const qs=p.mist.slice(0,8).map(q=>JSON.parse(JSON.stringify(q)));if(qs.length<1){toast('No mistakes to practise yet');return}begin({qs,kind:'mist',subj:'math',title:'Mistakes practice',sub:'Master the tricky ones'})}
-function begin(o){const p=P();L=Object.assign({i:0,ok:0,ok1:0,skips:0,miss:[],combo:0,best:0,t0:Date.now(),state:'ask',pick:[],sel:null,lost:0},o);L.total=L.qs.length;$('lesson').style.display='flex';L.state='intro';$('pb').style.width='0%';hh();$('fb').style.display='none';$('lf').style.display='none';
+function begin(o){const p=P();L=Object.assign({i:0,ok:0,ok1:0,skips:0,miss:[],combo:0,best:0,t0:Date.now(),state:'ask',pick:[],sel:null,lost:0},o);L.total=L.qs.length;$('lesson').dataset.s=S.subj;$('lesson').style.display='flex';L.state='intro';$('pb').style.width='0%';hh();$('fb').style.display='none';$('lf').style.display='none';
  $('lb').innerHTML=`<div class="end" data-intro="1" style="padding-top:8vh"><div style="animation:pop .5s both">${avh(p,170,'idle')}</div><h1 style="animation:fadeUp .4s .15s both">${L.title||'Lesson'}</h1><p style="font-weight:800;color:var(--mut);font-size:18px;animation:fadeUp .4s .25s both">${L.sub||''}</p><p style="font-weight:800;color:var(--blue);animation:fadeUp .4s .35s both">${L.qs.length} questions · tap to start</p></div>`;
  clearTimeout(L.it);L.it=setTimeout(startAsk,1500)}
 function startAsk(){if(!L||L.state!=='intro')return;clearTimeout(L.it);L.state='ask';show()}
@@ -377,7 +430,7 @@ function show(){const q=L.qs[L.i];$('pb').style.width=(L.i/L.qs.length*100)+'%';
 const pp=P(),sayings=L.i===0&&!L.retry?[`Let's go, ${pp.name}!`,'Ready? You got this!','Brain power on!']:(L.retry?['Second try! You can do it!','Let\'s fix those!']:L.combo>=2?['You are on fire!','Keep that streak!','Unstoppable!']:['Think it through!','Take your time!','Good luck!','Here comes a fun one!','You are doing great!']);
  let h=`<div class="coach">${avh(pp,64,'idle')}<div class="bub">${sayings[ri(sayings.length)]}</div></div>`;if(q.passage)h+=`<div class="passage">${q.passage}</div>`;
  h+=`<div class="q">${q.q}${window.speechSynthesis?'<button class="spk" id="spk" aria-label="Read aloud">🔊</button>':''}</div>`;if(q.svg)h+=`<div class="svg">${q.svg}</div>`;
- if(q.t==='mc')h+=`<div class="ch ${q.big?'big':''}">${q.choices.map((c,i)=>`<button data-i="${i}">${c}</button>`).join('')}</div>`;
+ if(q.t==='mc'){const sh=q.choices.length==4&&q.choices.every(c=>String(c).length<=9);h+=`<div class="ch ${q.big?'big':''} ${sh?'two':''}">${q.choices.map((c,i)=>`<button data-i="${i}" data-l="${'ABCD'[i]||i+1}">${c}</button>`).join('')}</div>`}
  else if(q.t==='pair')h+=`<div class="pairs"><div>${q.left.map((c,i)=>`<button class="pb" data-pl="${i}">${c}</button>`).join('')}</div><div>${q.right.map((c,i)=>`<button class="pb" data-pr="${i}">${c}</button>`).join('')}</div></div>`;
  else if(q.t==='num')h+=`<input class="inp" id="ni" inputmode="decimal" autocomplete="off" placeholder="Type your answer">`;
  else h+=`<div class="slots" id="sl"></div><div class="bank">${q.words.map((w,i)=>`<button class="w" data-w="${i}">${w}</button>`).join('')}</div>`;
