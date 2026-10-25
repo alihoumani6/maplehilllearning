@@ -208,7 +208,7 @@ body{overflow-x:hidden}
 <script src="content.js"></script>
 <script>
 /* ============ CONFIG ============ */
-const BILLING={checkoutUrl:'',/* set to a Stripe Payment Link / RevenueCat web checkout to take real payments. Empty = test mode (no charge). */
+const BILLING={checkoutUrl:'',links:{plus_month:'https://buy.stripe.com/14AcN5fPCbcM9CsfDqcs801',plus_year:'https://buy.stripe.com/fZu4gz6f294E8yoezmcs802',family_month:'https://buy.stripe.com/cNieVdfPCa8I6qgezmcs803',family_year:'https://buy.stripe.com/4gMcN5dHuft25mc3UIcs804',hearts:'https://buy.stripe.com/fZucN5avift26qgezmcs800'},supportEmail:'alihoumani6@gmail.com',/* set to a Stripe Payment Link / RevenueCat web checkout to take real payments. Empty = test mode (no charge). */
  rcApiKey:'',/* RevenueCat public iOS SDK key (appl_...). Set before App Store build. */
  heartsRefill:0.99,
  prices:{plus:{month:7.99,year:59.99},family:{month:12.99,year:89.99}},trialDays:7,currency:'$'};
@@ -228,7 +228,7 @@ const pd=k=>{const a=k.split('-').map(Number);return new Date(a[0],a[1]-1,a[2])}
 const addD=(k,n)=>{const d=pd(k);d.setDate(d.getDate()+n);return dk(d)};
 const diffD=(a,b)=>Math.round((pd(b)-pd(a))/864e5);
 const wkStart=k=>{const d=pd(k);d.setDate(d.getDate()-((d.getDay()+6)%7));return dk(d)};
-const money=n=>BILLING.currency+n.toFixed(2);
+const money=n=>(NATIVE?BILLING.currency:'CA$')+n.toFixed(2);
 /* ============ STATE ============ */
 let S;try{S=JSON.parse(localStorage.getItem('ml2'))}catch(e){}
 S=Object.assign({ps:[],cur:0,plan:null,tab:'learn',subj:'math',snd:true,onb:0,draft:{name:'',av:'owl',grade:1,goal:20},seen:{},done:0},(S&&typeof S==='object')?S:{});
@@ -354,7 +354,7 @@ const ACT={
  parent(){gate(parentZone)},privacy(){privacy()},pol(){gate(()=>openUrl(SITE+'/privacy.html'))},terms(){gate(()=>openUrl(SITE+'/terms.html'))},
  plan(a){pw.tier=a;paywall(1)},per(a){pw.per=a;paywall(1)},buyplan(){gate(buyPlan)},
  async restore(){if(NATIVE&&RCOK){try{await PL('Purchases').restorePurchases();await rcSync();toast(S.plan?'Purchases restored':'No purchases found')}catch(e){toast('Could not restore purchases')}return}toast(S.plan?'Your subscription is active':'No purchases found on this device')},
- cancel(){if(NATIVE){openUrl('https://apps.apple.com/account/subscriptions');return}if(confirm('Cancel Plus? The heart limit will return.')){S.plan=null;save();closeModal();render();toast('Subscription cancelled')}},
+ cancel(){if(NATIVE){openUrl('https://apps.apple.com/account/subscriptions');return}if(S.plan&&S.plan.paid){location.href='mailto:'+BILLING.supportEmail+'?subject=Cancel%20Maple%20Leap%20subscription&body=Please%20cancel%20my%20subscription.%20Email%20used%20at%20checkout%3A%20';return}if(confirm('Cancel Plus? The heart limit will return.')){S.plan=null;save();closeModal();render();toast('Subscription cancelled')}},
  wipe(){if(confirm('Delete ALL profiles and progress from this device? This cannot be undone.')){localStorage.removeItem('ml2');location.reload()}},
  pexp(){const b=new Blob([JSON.stringify(S,null,1)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='maple-leap-data.json';a.click()},
  prem(a){const p=P();p.rem=+a;save();scheduleRem();parentZone()},pgoal(a){P().goal=+a;save();parentZone()},plim(a){P().limit=+a;save();parentZone()},pkid(a){S.cur=+a;save();parentZone()},pdel(){const p=P();if(S.ps.length<2){toast('At least one profile is needed');return}if(confirm('Remove '+p.name+'?')){S.ps.splice(S.cur,1);S.cur=0;save();parentZone()}},
@@ -371,15 +371,22 @@ function paywall(re){const pr=BILLING.prices[pw.tier],yr=pw.per=='year';const sa
  <ul class="ben"><li>Unlimited hearts, learn without limits</li><li>Mistakes practice to master tricky questions</li><li>Weekly progress report for parents</li>${pw.tier=='family'?'<li>Up to 6 child profiles, each with their own streak</li>':''}<li>Support a small Canadian publisher</li></ul>
  <div class="plans"><button class="plan ${!yr?'on':''}" data-act="per" data-a="month"><small>Monthly</small><b>${money(pr.month)}</b><small>per month</small></button><button class="plan ${yr?'on':''}" data-act="per" data-a="year"><span class="badge">SAVE ${sav}%</span><small>Yearly</small><b>${money(pr.year/12)}</b><small>per month · ${money(pr.year)}/yr</small></button></div>
  <button class="btn purple full" data-act="buyplan">Try ${BILLING.trialDays} days free</button>
- <p class="fine">Then ${yr?money(pr.year)+' per year':money(pr.month)+' per month'}. Cancel anytime in the Parent Zone, at least 24 hours before renewal. A grown-up must confirm.${BILLING.checkoutUrl?'':'<br><b>Free web preview: no payment is taken and every Plus feature unlocks.</b>'}${NATIVE?' Payment is charged to your Apple ID at confirmation and renews automatically unless cancelled at least 24 hours before the period ends. Manage in Settings > Apple ID > Subscriptions.':''}</p>
+ <p class="fine">Then ${yr?money(pr.year)+' per year':money(pr.month)+' per month'}. Cancel anytime in the Parent Zone, at least 24 hours before renewal. A grown-up must confirm.${NATIVE?' Payment is charged to your Apple ID at confirmation and renews automatically unless cancelled at least 24 hours before the period ends. Manage in Settings > Apple ID > Subscriptions.':''}</p>
  <p class="fine"><a href="#" data-act="restore">Restore purchases</a> · <a href="#" data-act="pol">Privacy Policy</a> · <a href="#" data-act="terms">Terms of Use</a></p>`,true)}
 async function buyHearts(fromLesson){const p=P();const done=()=>{p.hearts=5;p.hAt=0;save();if(fromLesson)endLesson();else{closeModal();render()}confetti();sOK();toast('Hearts refilled!')};
  if(NATIVE){const rc=PL('Purchases'),pkg=PKG['hearts_refill'];if(!RCOK||!pkg){toast('Purchases are not available right now.');return}try{await rc.purchasePackage({aPackage:pkg});done()}catch(e){if(!(e&&e.userCancelled))toast('Purchase did not complete.')}return}
- done();toast('Hearts refilled (free preview)')}
+ if(testOn()){done();toast('Hearts refilled (test account)');return}
+ if(BILLING.links.hearts){try{sessionStorage.setItem('mlpend',P().name)}catch(e){}location.href=BILLING.links.hearts;return}
+ toast('Purchases are not available right now.')}
 async function buyPlan(){if(NATIVE&&RCOK){const rc=PL('Purchases'),pkg=PKG[pw.tier+'_'+pw.per];if(!pkg){toast('Subscriptions are not available right now. Please try again later.');return}try{await rc.purchasePackage({aPackage:pkg});await rcSync();closeModal();confetti();sWIN();toast('Welcome to Plus!')}catch(e){if(!(e&&e.userCancelled))toast('Purchase did not complete.')}return}
  if(NATIVE){toast('Subscriptions are not available right now.');return}
- if(BILLING.checkoutUrl){location.href=BILLING.checkoutUrl+(BILLING.checkoutUrl.includes('?')?'&':'?')+'plan='+pw.tier+'_'+pw.per;return}
- S.plan={tier:pw.tier,per:pw.per,trial:Date.now()+BILLING.trialDays*864e5,test:1};save();closeModal();confetti();sWIN();render();toast('Welcome to Plus! Free preview, no charge')}
+ if(testOn()){S.plan={tier:pw.tier,per:pw.per,trial:Date.now()+BILLING.trialDays*864e5,test:1};save();closeModal();confetti();sWIN();render();toast('Welcome to Plus! (test account)');return}
+ const lk=BILLING.links[pw.tier+'_'+pw.per];if(lk){location.href=lk;return}
+ toast('Subscriptions are not available right now.')}
+function testOn(){try{return localStorage.getItem('mlTest')==='1'}catch(e){return false}}
+function handleReturn(){try{const u=new URL(location.href),q=u.searchParams;if(q.get('test')==='1'){localStorage.setItem('mlTest','1');S.msg='Test account on: purchases unlock for free on this device.'}if(q.get('test')==='0'){localStorage.removeItem('mlTest')}
+ const pd=q.get('paid');if(pd){if(pd==='hearts'){const p=P();if(p){p.hearts=5;p.hAt=0;S.msg='Hearts refilled! Thank you.'}}else{const m=/^(plus|family)_(month|year)$/.exec(pd);if(m){S.plan={tier:m[1],per:m[2],trial:Date.now()+BILLING.trialDays*864e5,paid:1};S.msg='Welcome to Maple Leap '+(m[1]=='family'?'Family':'Plus')+'! Your free trial has started.'}}}
+ if(pd||q.has('test')){save();history.replaceState(null,'',u.pathname)}}catch(e){}}
 /* parent gate */
 function gate(cb){const a=6+ri(4),b=6+ri(4);const m=$('modal');
  modal(`${XB}<h2>Grown-ups only</h2><p style="font-weight:700">To continue, ask a grown-up to solve:</p><div class="q" style="text-align:center">${a} × ${b} = ?</div><input class="inp" id="gt" inputmode="numeric" autocomplete="off" placeholder="Answer"><p><button class="btn blue full" id="gok">Continue</button></p>`);
@@ -504,5 +511,5 @@ if(window.visualViewport){const f=()=>{$('lesson').style.height=visualViewport.h
 /* ============ BOOT ============ */
 if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&P()&&!L){rollover(P());save();render();setTimeout(maybeGift,400)}});
-rcInit();render();setTimeout(maybeGift,700);
+handleReturn();rcInit();render();setTimeout(maybeGift,700);
 </script></body></html>
