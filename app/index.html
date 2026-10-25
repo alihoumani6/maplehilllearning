@@ -333,7 +333,8 @@ function vMe(p){const L=LEAGUES[p.league];const t=dk(),d0=pd(t);const first=new 
  <div class="grid2"><div class="stat"><small>Day streak</small><span>🔥 ${p.streak}</span></div><div class="stat"><small>Total XP</small><span>⚡ ${p.xp}</span></div><div class="stat"><small>League</small><span>${L[1]} ${L[0]}</span></div><div class="stat"><small>Lessons</small><span>✅ ${p.lessons}</span></div></div>
  <div class="card"><h3>This month</h3>${cal}</div>
  ${isPlus()?`<div class="card" style="border-color:var(--purple)"><h3>✨ Maple Leap ${S.plan.tier=='family'?'Family':'Plus'}</h3>Unlimited hearts · Mistakes practice · Weekly parent report. Manage in the Parent Zone.</div>`:`<div class="card" style="border-color:var(--purple);background:#f8f3ff"><h3>Try Maple Leap Plus</h3>Unlimited hearts, mistakes practice and a weekly parent report. 7 days free.<br><br><button class="btn sm purple" data-act="paywall">Try 7 days free</button></div>`}
- <div class="card"><h3>Badges</h3>${BADGES.map(b=>`<span class="bd ${b[2](p)?'':'off'}" title="${b[1]}">${b[0]}</span>`).join('')}</div>
+ <div class="card"><div class="row" style="margin:0"><span>👪 ${AU?AU.email:'Not signed in'}</span><button class="btn sm ghost" data-act="${AU?'signout':'acct'}">${AU?'Sign out':'Sign in'}</button></div>${testOn()?'<p class="fine" style="text-align:left">Test account is on.</p>':''}</div>
+  <div class="card"><h3>Badges</h3>${BADGES.map(b=>`<span class="bd ${b[2](p)?'':'off'}" title="${b[1]}">${b[0]}</span>`).join('')}</div>
  <div class="card"><div class="row"><span>Switch / add child</span><button class="btn sm ghost" data-act="profiles">Open</button></div><div class="row"><span>Sound &amp; haptics</span><button class="btn sm ghost" data-act="snd">${S.snd?'On':'Off'}</button></div><div class="row"><span>👪 Parent Zone</span><button class="btn sm blue" data-act="parent">Open</button></div></div>
  <p class="fine"><a href="#" data-act="shop">Maple Hill Learning Press</a> · <a href="#" data-act="privacy">Privacy</a> · <a href="#" data-act="terms">Terms</a></p>`}
 /* ============ EVENTS ============ */
@@ -355,6 +356,7 @@ let syncT=null;function syncSoon(){if(!AU||!syncOn())return;clearTimeout(syncT);
 function mergePs(loc,rem){const out=loc.slice();(rem||[]).forEach(r=>{if(!r||typeof r!=='object')return;const i=out.findIndex(l=>l.name===r.name&&l.grade===r.grade);if(i<0)out.push(r);else if((+r.xp||0)>(+out[i].xp||0))out[i]=r});return out}
 async function pushSync(){if(!AU||!syncOn())return;try{await sbReq('/rest/v1/sync?on_conflict=user_id',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify({user_id:AU.uid,data:{ps:S.ps},updated_at:new Date().toISOString()})})}catch(e){}}
 async function pullSync(){if(!AU)return;try{const r=await sbReq('/rest/v1/sync?select=data&limit=1');if(!r.ok)return;const a=await r.json();if(a[0]&&a[0].data&&Array.isArray(a[0].data.ps)){const m=mergePs(S.ps,a[0].data.ps).map(fixP);S.ps=m;if(S.cur>=m.length)S.cur=0}}catch(e){}await pushSync()}
+function signoutNow(){setAU(null);try{localStorage.removeItem('mlSync');localStorage.removeItem('mlTest')}catch(e){}if(S.plan&&(S.plan.acct||S.plan.test||S.plan.paid))S.plan=null;S.afterLogin=null;save();render()}
 function acctModal(note){const on=!!AU;modal(`${XB}<h2>Parent account</h2>${note?`<p class="fine" style="font-weight:800;color:var(--blue)">${note}</p>`:''}
  ${on?`<div class="card">Signed in as <b>${AU.email}</b><br><br><label style="display:flex;gap:10px;align-items:center;font-weight:800"><input type="checkbox" id="syncck" ${syncOn()?'checked':''} data-act="acctsync" style="width:22px;height:22px"> Sync my kids' progress across devices</label><p class="fine" style="text-align:left">Stores first names, grades, XP and lesson progress on our secure server so the website and iPhone/iPad app match. Off by default.</p><button class="btn sm ghost" data-act="acctrefresh">Refresh my subscription</button> <button class="btn sm ghost" data-act="acctout">Sign out</button> <button class="btn sm ghost" data-act="acctdel">Delete my account</button></div>`
  :`<div class="card"><p style="margin:0 0 10px;font-weight:700">Sign in with your email to use your Maple Leap subscription on every device. No password: we email you a 6-digit code.</p><input class="in" id="aem" type="email" inputmode="email" autocomplete="email" placeholder="parent@email.com"><div id="aco" style="display:none;margin-top:10px"><input class="in" id="acd" inputmode="numeric" maxlength="8" autocomplete="one-time-code" placeholder="Code from your email"></div><p><button class="btn blue full" id="abt" data-act="acctsend">Email me a code</button></p></div>`}
@@ -368,7 +370,8 @@ const ACT={
   if(!/^\S+@\S+\.\S+$/.test(e)){toast('Enter a valid email');return}S.pendEm=e;
   const r=await sbReq('/auth/v1/otp',{method:'POST',body:JSON.stringify({email:e,create_user:true})},false);if(!r.ok){toast(r.status===429?'Too many tries. Wait a minute.':'Could not send the code.');return}
   $('aco').style.display='block';$('abt').textContent='Sign in';toast('Check your email for the code')},
- acctout(){setAU(null);if(S.plan&&S.plan.acct)S.plan=null;save();render();acctModal('Signed out.')},
+ acctout(){signoutNow();acctModal('Signed out.')},
+ signout(){signoutNow();toast('Signed out')},
  acctsync(){const on=$('syncck').checked;try{localStorage.setItem('mlSync',on?'1':'0')}catch(e){}if(on)pullSync().then(()=>{render();toast('Progress synced')})},
  async acctrefresh(){await refreshEnt();render();acctModal(S.plan?'Plan active: Maple Leap '+(S.plan.tier=='family'?'Family':'Plus'):'No active subscription found for this email.')},
  acctdel(){if(!confirm('Delete your parent account and any synced progress? Your subscription is not cancelled by this.'))return;sbReq('/rest/v1/sync?user_id=eq.'+AU.uid,{method:'DELETE'}).finally(()=>{setAU(null);if(S.plan&&S.plan.acct)S.plan=null;save();render();closeModal();toast('Account signed out. Email support to erase it fully.')})},
@@ -420,8 +423,9 @@ async function buyPlan(){if(NATIVE&&RCOK){const rc=PL('Purchases'),pkg=PKG[pw.ti
  toast('Subscriptions are not available right now.')}
 function testOn(){try{return localStorage.getItem('mlTest')==='1'}catch(e){return false}}
 function handleReturn(){try{const u=new URL(location.href),q=u.searchParams;if(q.get('test')==='1'){localStorage.setItem('mlTest','1');S.msg='Test account on: purchases unlock for free on this device.'}if(q.get('test')==='0'){localStorage.removeItem('mlTest')}
+ if(q.get('signout')==='1'){setAU(null);localStorage.removeItem('mlSync');localStorage.removeItem('mlTest');if(S.plan&&(S.plan.acct||S.plan.test||S.plan.paid))S.plan=null;S.msg='Signed out.'}
  const pd=q.get('paid');if(pd){if(pd==='hearts'){const p=P();if(p){p.hearts=5;p.hAt=0;S.msg='Hearts refilled! Thank you.'}}else if(/^(plus|family)_(month|year)$/.test(pd)){S.msg=AU?'Thank you! Activating your plan...':'Thank you! Sign in with the email you paid with (Parent Zone, Parent account) to activate Plus.';S.verifyPay=1}}
- if(pd||q.has('test')){save();history.replaceState(null,'',u.pathname)}}catch(e){}}
+ if(pd||q.has('test')||q.has('signout')){save();history.replaceState(null,'',u.pathname)}}catch(e){}}
 /* parent gate */
 function gate(cb){const a=6+ri(4),b=6+ri(4);const m=$('modal');
  modal(`${XB}<h2>Grown-ups only</h2><p style="font-weight:700">To continue, ask a grown-up to solve:</p><div class="q" style="text-align:center">${a} × ${b} = ?</div><input class="inp" id="gt" inputmode="numeric" autocomplete="off" placeholder="Answer"><p><button class="btn blue full" id="gok">Continue</button></p>`);
