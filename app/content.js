@@ -140,9 +140,9 @@ const READ={
 function genRead(g,n){return shuffle(READ[g]).slice(0,n).map(q=>JSON.parse(JSON.stringify(q)).t==='ord'?ord(q.q,q.full):Object.assign({},q,{choices:shuffle(q.choices)}));}
 /* ---------------- LOGIC ---------------- */
 const SHAPES=[["🔴","🔵","🟢","🟡"],["🐶","🐱","🐭","🐰"],["⭐","🌙","☀️","☁️"],["🍎","🍌","🍇","🍊"]];
-function numPattern(g,d){const hard=g>=5||d>=2;const types=['add','sub','mul','alt'];if(hard)types.push('sq','fib');if(g>=3)types.push('tri');const ty=pick(types);let seq=[],ans;
- if(ty==='add'){const s=ri(1,20),k=ri(2,hard?9:5);for(let i=0;i<6;i++)seq.push(s+i*k);}
- else if(ty==='sub'){const k=ri(2,hard?9:5);const s=ri(40,90);for(let i=0;i<6;i++)seq.push(s-i*k);}
+function numPattern(g,d){const hard=g>=5||(g>=3&&d>=2);const types=['add','sub'];if(g>=2)types.push('alt');if(g>=3)types.push('mul');if(g>=4)types.push('sq','tri');if(g>=5)types.push('fib');const ty=pick(types);let seq=[],ans;
+ if(ty==='add'){const s=ri(1,20),k=g<=1?pick([1,2,3,5,10]):ri(2,hard?9:5);for(let i=0;i<6;i++)seq.push(s+i*k);}
+ else if(ty==='sub'){const k=g<=1?pick([1,2,3,5,10]):ri(2,hard?9:5);const s=Math.max(g<=1?ri(30,50):ri(40,90),k*5+3);for(let i=0;i<6;i++)seq.push(s-i*k);}
  else if(ty==='mul'){const k=pick([2,3]),s=ri(1,4);for(let i=0;i<6;i++)seq.push(s*Math.pow(k,i));}
  else if(ty==='alt'){const a=ri(2,5),b=ri(1,3);let v=ri(1,10);for(let i=0;i<6;i++){seq.push(v);v+=i%2?b:a;}}
  else if(ty==='sq'){const o=ri(0,3);for(let i=1;i<=6;i++)seq.push((i+o)*(i+o));}
@@ -158,8 +158,8 @@ function deduce(g,d){const n=(g<=2)?3:(g<=4?4:5);const people=shuffle(NAMES).sli
 function numRiddle(g,d){const N=g<=2?20:(g<=4?60:100);const nums=[...Array(N).keys()].map(i=>i+1);const n=ri(Math.floor(N/4),N);const dsum=x=>String(x).split('').reduce((s,c)=>s+ +c,0);
  const pool=[[`I am even.`,x=>x%2===0,n%2===0],[`I am odd.`,x=>x%2===1,n%2===1],[`I am more than ${n-ri(3,8)}.`,null,null],[`I am less than ${n+ri(3,8)}.`,null,null],[`I am a multiple of ${[2,3,5,4].filter(k=>n%k===0)[0]||1}.`,null,null],[`My digits add up to ${dsum(n)}.`,x=>dsum(x)===dsum(n),true]];
  let cand=nums,clues=[];const preds=[];
- const mk=[()=>{const lo=n-ri(3,8);return [`I am more than ${lo}.`,x=>x>lo]},()=>{const hi=n+ri(3,8);return [`I am less than ${hi}.`,x=>x<hi]},()=>{const k=[2,3,4,5].filter(k=>n%k===0);if(!k.length)return null;const kk=pick(k);return [`I am a multiple of ${kk}.`,x=>x%kk===0]},()=>[n%2===0?'I am even.':'I am odd.',x=>x%2===n%2],()=>[`My digits add up to ${dsum(n)}.`,x=>dsum(x)===dsum(n)]];
- let tries=0;while(cand.length>1&&tries++<40){const c=pick(mk)();if(!c)continue;if(clues.includes(c[0]))continue;const nc=cand.filter(c[1]);if(nc.length<cand.length&&nc.includes(n)){cand=nc;clues.push(c[0]);}}
+ const mk=[()=>{const lo=n-ri(3,8);return [`I am more than ${lo}.`,x=>x>lo]},()=>{const hi=n+ri(3,8);return [`I am less than ${hi}.`,x=>x<hi]},()=>{const k=[2,3,4,5].filter(k=>n%k===0);if(!k.length)return null;const kk=pick(k);return [`I am a multiple of ${kk}.`,x=>x%kk===0]},()=>[n%2===0?'I am even.':'I am odd.',x=>x%2===n%2],()=>[`My digits add up to ${dsum(n)}.`,x=>dsum(x)===dsum(n)]].slice(0,g>=4?5:4);
+ let tries=0;while(cand.length>1&&tries++<40){const c=pick(g>=4?mk:mk.slice(0,4))();if(!c)continue;if(clues.includes(c[0]))continue;const nc=cand.filter(c[1]);if(nc.length<cand.length&&nc.includes(n)){cand=nc;clues.push(c[0]);}}
  if(cand.length>1||clues.length>6)return null;return num(`Who am I?\n${clues.join('\n')}`,n,{explain:'Cross out numbers that do not fit each clue.'});}
 const RID=[["I have hands but I cannot clap. What am I?","a clock",1],["What has four legs but cannot walk?","a table",1],["What gets wetter the more it dries?","a towel",1],["What goes up but never comes down?","your age",1],["I have keys but no locks. What am I?","a keyboard",1],["What has a ring but no finger?","a phone",1],["What has to be broken before you can use it?","an egg",2],["The more you take, the more you leave behind. What am I?","footsteps",2],["What can travel around the world while staying in a corner?","a stamp",2],["What has many teeth but cannot bite?","a comb",2],["What can you catch but not throw?","a cold",2],["What has an eye but cannot see?","a needle",2]];
 function riddle(g){const pool=RID.filter(r=>g<=2?r[2]===1:(g<=4?true:r[2]===2||Math.random()<.3));const r=pick(pool);const wr=shuffle(RID.filter(x=>x[1]!==r[1])).slice(0,3).map(x=>x[1]);return mc(r[0],r[1],wr);}

@@ -38,7 +38,7 @@ button{font:inherit;cursor:pointer}a{color:var(--blue)}
 .unit{border-radius:18px;color:#fff;padding:14px 16px;margin:18px 0 8px;display:flex;align-items:center;gap:10px}
 .unit small{opacity:.9;font-weight:800;letter-spacing:.04em}.unit h3{margin:0;font-size:21px;line-height:1.1}.unit p{margin:2px 0 0;font-size:13px;font-weight:700;opacity:.95}
 .path{display:flex;flex-direction:column;align-items:center;padding:30px 0 6px}
-.pn{position:relative;margin-bottom:28px;display:flex;align-items:center}
+.pn{position:relative;margin-bottom:46px;display:flex;align-items:center}
 .node{position:relative;width:76px;height:76px;border-radius:50%;border:0;color:#fff;font-size:30px;font-weight:800;display:grid;place-items:center;box-shadow:0 7px 0 rgba(0,0,0,.28)}
 .node:active{transform:translateY(5px);box-shadow:0 2px 0 rgba(0,0,0,.28)}
 .node.lock{background:#d7dbe4!important;color:#9aa2b4;box-shadow:0 7px 0 #b9bfcc}
@@ -107,11 +107,49 @@ button{font:inherit;cursor:pointer}a{color:var(--blue)}
 .pairs{display:grid;grid-template-columns:1fr 1fr;gap:12px}.pairs>div{display:grid;gap:10px;align-content:start}.pb{background:#fff;border:2px solid var(--line);border-radius:16px;padding:16px 8px;font-weight:800;font-size:18px;box-shadow:0 4px 0 var(--line);color:var(--ink)}.pb.sel{border-color:var(--blue);background:#eef4ff;box-shadow:0 4px 0 var(--blue)}.pb.okp{border-color:var(--green);background:#e5f7ec;box-shadow:0 4px 0 var(--green);opacity:.65;pointer-events:none}.pb.nop{border-color:var(--red);background:#fde8e8;animation:sh .35s}
 html{touch-action:manipulation;overscroll-behavior:none}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ---- motion & delight ---- */
+@keyframes pop{0%{transform:scale(.6);opacity:0}70%{transform:scale(1.06)}100%{transform:scale(1);opacity:1}}
+@keyframes slideIn{from{transform:translateX(26px);opacity:0}to{transform:none;opacity:1}}
+@keyframes fadeUp{from{transform:translateY(12px);opacity:0}to{transform:none;opacity:1}}
+@keyframes jump{0%,100%{transform:translateY(0)}30%{transform:translateY(-16px) scale(1.06)}55%{transform:translateY(0) scale(.96)}75%{transform:translateY(-6px)}}
+@keyframes sadsh{0%,100%{transform:rotate(0)}20%{transform:rotate(-8deg)}40%{transform:rotate(7deg)}60%{transform:rotate(-5deg)}80%{transform:rotate(3deg)}}
+@keyframes ring{0%{box-shadow:0 7px 0 rgba(0,0,0,.28),0 0 0 0 rgba(255,201,40,.7)}100%{box-shadow:0 7px 0 rgba(0,0,0,.28),0 0 0 16px rgba(255,201,40,0)}}
+@keyframes shimmer{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+@keyframes flt{0%{transform:translate(-50%,0);opacity:0}15%{opacity:1}100%{transform:translate(-50%,-60px);opacity:0}}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+@keyframes chestshake{0%,100%{transform:rotate(0)}15%{transform:rotate(-10deg)}30%{transform:rotate(9deg)}45%{transform:rotate(-7deg)}60%{transform:rotate(6deg)}}
+@keyframes starin{0%{transform:scale(0) rotate(-40deg);opacity:0}70%{transform:scale(1.35) rotate(8deg)}100%{transform:scale(1) rotate(0);opacity:1}}
+@keyframes breathe{50%{transform:scale(1.04)}}
+#app>*:not(.top){animation:fadeUp .32s both}
+#lb>*{animation:slideIn .26s both}
+#lb .ch button,#lb .pb,#lb .w{animation:pop .3s both}
+#lb .ch button:nth-child(2),#lb .pairs>div>:nth-child(2){animation-delay:.05s}#lb .ch button:nth-child(3),#lb .pairs>div>:nth-child(3){animation-delay:.1s}#lb .ch button:nth-child(4),#lb .pairs>div>:nth-child(4){animation-delay:.15s}
+.ch button:active,.pb:active,.w:active,.gc:active,.opt:active,.tab:active,.chip:active{transform:translateY(3px) scale(.985)}
+.bar i::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent);animation:shimmer 1.6s infinite}
+.bar i{background:linear-gradient(90deg,#34c77b,#1f9d5b)}
+.av{position:relative;display:inline-block;vertical-align:middle;flex:none}.av img{width:100%;height:100%;object-fit:contain;display:block}
+.acc{position:absolute;transform:translateX(-50%);line-height:1;pointer-events:none;filter:drop-shadow(0 2px 2px rgba(0,0,0,.25))}
+.av.idle{animation:bob 2.4s ease-in-out infinite}.av.jump{animation:jump .6s}.av.sadsh{animation:sadsh .55s}.av.spin{animation:spin .9s}
+.coach{display:flex;align-items:flex-end;gap:10px;margin:2px 0 8px}.bub{position:relative;background:#fff;border:2px solid var(--line);border-radius:16px;padding:8px 12px;font-weight:800;font-size:15px;color:var(--navy);margin-bottom:10px}
+.bub::before{content:"";position:absolute;left:-8px;bottom:12px;width:12px;height:12px;background:#fff;border-left:2px solid var(--line);border-bottom:2px solid var(--line);transform:rotate(45deg)}
+@media (max-height:660px){.coach .bub{display:none}}
+.node.cur::before{content:"";position:absolute;inset:0;border-radius:inherit;animation:ring 1.5s infinite}
+.node.pop{animation:pop .5s}
+.stv{position:absolute;left:50%;bottom:-20px;transform:translateX(-50%);font-size:15px;letter-spacing:1px;color:#ffc928;text-shadow:0 1px 0 #b78900;white-space:nowrap}.stv i{font-style:normal;color:#d7dbe4;text-shadow:none}
+.fl{position:fixed;font-weight:800;font-size:20px;color:var(--red);pointer-events:none;z-index:80;animation:flt 1s ease-out forwards}
+.hearts.lose{animation:sh .4s;color:#8f1717}
+.bigstars{display:flex;justify-content:center;gap:6px;margin:6px 0 2px}.bigstars span{font-size:58px;line-height:1;filter:drop-shadow(0 4px 0 rgba(0,0,0,.12));opacity:0}.bigstars span.on{animation:starin .55s both;color:#ffc928}.bigstars span.off{opacity:1;color:#d7dbe4}
+.chestbig{font-size:120px;animation:breathe 1.6s infinite;cursor:pointer;display:inline-block}.chestbig.open{animation:chestshake .7s}
+.lvl{display:inline-grid;place-items:center;width:130px;height:130px;border-radius:50%;background:radial-gradient(circle,#ffe58a,#ffc928);color:#7a5200;font:800 54px 'Baloo 2';box-shadow:0 8px 0 #c79a00,0 0 0 10px rgba(255,201,40,.25);animation:pop .6s both}
+.wr{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.wr .it{background:#fff;border:2px solid var(--line);border-radius:16px;padding:8px 4px;text-align:center;font-weight:800;font-size:12px}.wr .it .em{font-size:30px}.wr .it.on{border-color:var(--green);background:#e5f7ec}
+.lh .bar{height:18px}
+@media (prefers-reduced-motion:reduce){.cf{display:none}}
 </style></head><body>
 <div class="wrap" id="app"></div><nav class="nav" id="nav"></nav>
 <div id="lesson"><div class="lh"><button class="x" data-act="quit" aria-label="Quit">✕</button><div class="bar"><i id="pb"></i></div><div class="hearts" id="hh"></div></div>
 <div class="lb" id="lb"></div><div class="combo" id="combo"></div>
-<div class="fb" id="fb"><div><div class="m"><img id="fbi" alt=""><div><b id="fbt"></b><p id="fbm"></p></div></div><button class="btn" id="fbn">Continue</button></div></div>
+<div class="fb" id="fb"><div role="status" aria-live="assertive"><div class="m"><span id="fbi"></span><div><b id="fbt"></b><p id="fbm"></p></div></div><button class="btn" id="fbn">Continue</button></div></div>
 <div class="lf" id="lf"><div><button class="btn ghost" id="skip">Skip</button><button class="btn" id="chk" disabled>Check</button></div></div></div>
 <div id="modal"></div><div id="adv"></div><canvas class="cf" id="cf"></canvas>
 <script src="content.js"></script>
@@ -140,28 +178,40 @@ const wkStart=k=>{const d=pd(k);d.setDate(d.getDate()-((d.getDay()+6)%7));return
 const money=n=>BILLING.currency+n.toFixed(2);
 /* ============ STATE ============ */
 let S;try{S=JSON.parse(localStorage.getItem('ml2'))}catch(e){}
-S=Object.assign({ps:[],cur:0,plan:null,tab:'learn',subj:'math',snd:true,onb:0,draft:{name:'',av:'owl',grade:1,goal:20},seen:{},done:0},S||{});
+S=Object.assign({ps:[],cur:0,plan:null,tab:'learn',subj:'math',snd:true,onb:0,draft:{name:'',av:'owl',grade:1,goal:20},seen:{},done:0},(S&&typeof S==='object')?S:{});
 const save=()=>{try{localStorage.setItem('ml2',JSON.stringify(S))}catch(e){}};
 const P=()=>S.ps[S.cur];
 const isPlus=()=>!!S.plan;
 const MAXKIDS=()=>S.plan&&S.plan.tier==='family'?6:1;
-function newP(d){return {id:Date.now()+ri(999),name:d.name||'Kid',av:d.av,grade:d.grade,goal:d.goal,xp:0,gems:50,streak:0,best:0,last:'',freezes:0,hearts:5,hAt:0,prog:{},chests:{},days:[],frozen:[],lessons:0,perfect:0,bosses:0,stats:{math:{c:0,t:0},read:{c:0,t:0},logic:{c:0,t:0}},secs:{},mist:[],q:{d:'',xp:0,les:0,great:0,claim:{}},wk:'',wxp:0,league:0,boost:0,limit:0,adn:0}}
+function newP(d){return {id:Date.now()+ri(999),name:d.name||'Kid',av:d.av,grade:d.grade,goal:d.goal,xp:0,gems:50,streak:0,best:0,last:'',freezes:0,hearts:5,hAt:0,prog:{},stars:{},own:[],acc:'',lvl:1,gift:'',recent:[],rem:0,bd:[],chests:{},days:[],frozen:[],lessons:0,perfect:0,bosses:0,stats:{math:{c:0,t:0},read:{c:0,t:0},logic:{c:0,t:0}},secs:{},mist:[],q:{d:'',xp:0,les:0,great:0,claim:{}},wk:'',wxp:0,league:0,boost:0,limit:0,adn:0}}
 function hash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
 function rng(seed){let a=seed;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 function board(p,wk,xp,frac){const rows=BOTS.slice(0,29).map((n,i)=>{const r=rng(hash(wk+p.league+n));const tgt=(90+p.league*70)*(0.15+r()*1.5);return {n,x:Math.floor(tgt*Math.min(1,frac)),a:AN[i%6],bot:1}});rows.push({n:p.name,x:xp,a:p.av,me:1});rows.sort((a,b)=>b.x-a.x||(a.me?-1:1));return rows}
-function rollover(p){const t=dk();
+function rollover(p){const t=dk();if(p.last&&p.last>t)p.last=t;
  if(p.last&&p.last<t){const gap=diffD(p.last,t)-1;if(gap>0){if(p.freezes>=gap){p.freezes-=gap;for(let i=1;i<=gap;i++)p.frozen.push(addD(p.last,i));p.last=addD(t,-1);S.msg='❄️ Streak Freeze used! Your '+p.streak+'-day streak is safe.'}else p.streak=0}}
  if(p.q.d!==t)p.q={d:t,xp:0,les:0,great:0,claim:{}};
  const w=wkStart(t);if(p.wk&&p.wk!==w){const b=board(p,p.wk,p.wxp,1);const rk=b.findIndex(r=>r.me)+1;if(rk<=10&&p.league<5){p.league++;S.msg='🎉 You finished #'+rk+' and moved up to the '+LEAGUES[p.league][0]+' League!'}else if(rk>=26&&p.league>0){p.league--;S.msg='You moved down to the '+LEAGUES[p.league][0]+' League. Practice to climb back!'}else S.msg='League finished: you placed #'+rk+'. New week, new race!';p.wxp=0}p.wk=w;
  if(p.boost&&p.boost<Date.now())p.boost=0;
+if(!isPlus()&&p.hearts<5&&!p.hAt)p.hAt=Date.now();
  if(!isPlus()&&p.hearts<5){const k=Math.floor((Date.now()-p.hAt)/(25*60000));if(k>0){p.hearts=Math.min(5,p.hearts+k);p.hAt=p.hearts>=5?0:p.hAt+k*25*60000}}}
+function fixP(p){p=(p&&typeof p==='object')?p:{};const g=Math.min(6,Math.max(1,Math.round(+p.grade)||1));const d=newP({name:String(p.name||'Kid').slice(0,14),av:AN.includes(p.av)?p.av:GA[g],grade:g,goal:[10,20,30,50].includes(+p.goal)?+p.goal:20});const o=Object.assign({},d,p);o.av=d.av;o.grade=g;o.name=d.name;o.goal=d.goal;
+ ['prog','chests','secs','stars'].forEach(k=>{if(!o[k]||typeof o[k]!=='object'||Array.isArray(o[k]))o[k]={}});
+ ['days','frozen','mist','own','bd','recent'].forEach(k=>{if(!Array.isArray(o[k]))o[k]=[]});
+ if(!o.stats||typeof o.stats!=='object')o.stats={};['math','read','logic'].forEach(k=>{if(!o.stats[k]||typeof o.stats[k]!=='object')o.stats[k]={c:0,t:0};o.stats[k].c=Math.max(0,+o.stats[k].c||0);o.stats[k].t=Math.max(o.stats[k].c,+o.stats[k].t||0)});
+ if(!o.q||typeof o.q!=='object')o.q={d:'',xp:0,les:0,great:0,claim:{}};if(!o.q.claim||typeof o.q.claim!=='object')o.q.claim={};
+ ['xp','gems','streak','best','freezes','wxp','lessons','perfect','bosses','adn','limit','rem'].forEach(k=>{o[k]=Math.max(0,Math.floor(+o[k])||0)});o.freezes=Math.min(2,o.freezes);o.league=Math.min(5,Math.max(0,Math.floor(+o.league)||0));o.hearts=Math.min(5,Math.max(0,Math.floor(+o.hearts)||0));o.hAt=+o.hAt||0;o.boost=+o.boost||0;
+ Object.keys(o.prog).forEach(k=>{o.prog[k]=Math.min(15,Math.max(0,Math.floor(+o.prog[k])||0))});o.recent=o.recent.slice(-80);o.mist=o.mist.filter(q=>q&&typeof q.q==='string').slice(0,30);o.lvl=Math.max(1,Math.floor(o.xp/100)+1);if(typeof o.acc!=='string')o.acc='';return o}
+S.ps=(Array.isArray(S.ps)?S.ps:[]).filter(x=>x&&typeof x==='object').slice(0,6).map(fixP);S.cur=Math.min(Math.max(0,+S.cur||0),Math.max(0,S.ps.length-1));
+if(S.plan&&!(typeof S.plan==='object'&&['plus','family'].includes(S.plan.tier)))S.plan=null;if(!['learn','practice','league','quests','me'].includes(S.tab))S.tab='learn';if(!['math','read','logic'].includes(S.subj))S.subj='math';
 S.ps.forEach(rollover);save();
 /* ============ HELPERS ============ */
 const av=k=>`../img/${k}.png`;
+const ACC=[['🎀','Bow',100,2,68,.34],['⭐','Star',80,-10,80,.3],['🕶️','Shades',120,27,50,.46],['🧢','Cap',150,-12,50,.5],['🎧','Headphones',200,3,50,.62],['🎩','Top hat',250,-20,50,.5],['👑','Crown',400,-16,50,.46]];
+function avh(p,s,cls){const a=ACC.find(x=>x[0]===p.acc);return `<span class="av ${cls||''}" style="width:${s}px;height:${s}px"><img src="${av(p.av)}" alt="">${a?`<span class="acc" style="top:${a[3]}%;left:${a[4]}%;font-size:${Math.round(s*a[5])}px">${a[0]}</span>`:''}</span>`}
 const secsToday=p=>p.secs[dk()]||0;
 function toast(m){const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2600)}
 let ac;function beep(f,d,ty,v){if(!S.snd)return;try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.type=ty||'sine';o.frequency.value=f;g.gain.value=v||.12;g.gain.exponentialRampToValueAtTime(.0001,ac.currentTime+d);o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+d)}catch(e){}}
-const sOK=()=>{beep(660,.12);setTimeout(()=>beep(880,.18),90)},sNO=()=>{beep(180,.3,'sawtooth',.09)},sWIN=()=>[523,659,784,1047].forEach((f,i)=>setTimeout(()=>beep(f,.25),i*130));
+const sOK=(c)=>{const b=600+Math.min(c||0,8)*45;beep(b,.12,'triangle');setTimeout(()=>beep(b*1.34,.18,'triangle'),90)},sChest=()=>[392,523,659,784,1047].forEach((f,i)=>setTimeout(()=>beep(f,.2,'triangle'),i*90)),sStar=i=>beep(700+i*180,.28,'triangle',.14),sNO=()=>{beep(180,.3,'sawtooth',.09)},sWIN=()=>[523,659,784,1047].forEach((f,i)=>setTimeout(()=>beep(f,.25),i*130));
 const buzz=n=>{try{if(!S.snd)return;const hp=PL('Haptics');if(NATIVE&&hp){if(n==='e'||Array.isArray(n))hp.notification({type:'ERROR'});else hp.impact({style:'LIGHT'});return}navigator.vibrate&&navigator.vibrate(n==='e'?[40,30,40]:n)}catch(e){}};
 function confetti(){const c=$('cf'),x=c.getContext('2d');c.width=innerWidth;c.height=innerHeight;const cols=['#d62828','#ffc928','#1d5fd1','#1f9d5b','#f47b20','#7b45c9'];const ps=Array.from({length:120},()=>({x:Math.random()*c.width,y:-20-Math.random()*c.height*.5,v:2+Math.random()*4,s:5+Math.random()*7,c:cols[ri(6)],r:Math.random()*6,w:Math.random()*.2-.1}));let f=0;(function a(){x.clearRect(0,0,c.width,c.height);ps.forEach(p=>{p.y+=p.v;p.x+=Math.sin(f/10+p.r)*1.5;p.r+=p.w;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);x.restore()});if(++f<170)requestAnimationFrame(a);else x.clearRect(0,0,c.width,c.height)})()}
 function modal(h,full){const m=$('modal');m.innerHTML=`<div class="sheet ${full?'full':''}">${h}</div>`;m.style.display='flex';m.onclick=e=>{if(e.target===m&&!m.dataset.lock)closeModal()}}
@@ -179,7 +229,7 @@ async function scheduleRem(){const ln=PL('LocalNotifications');if(!NATIVE||!ln)r
  await ln.schedule({notifications:[{id:1,title:'Maple Leap',body:p.streak>0?`Keep your ${p.streak}-day streak going, ${p.name}! 🔥`:`Time for a quick lesson, ${p.name}!`,schedule:{on:{hour:p.rem,minute:0},allowWhileIdle:true}}]});toast('Reminder set')}catch(e){console.log(e)}}
 /* ============ RENDER ============ */
 function topbar(p){const goalPct=Math.min(100,Math.round(p.q.xp/p.goal*100));
- return `<div class="top"><div class="chip" data-act="tab" data-a="me"><img src="${av(p.av)}" width="26" height="26" alt="">${p.name}</div><div style="display:flex;gap:5px"><div class="chip" data-act="tab" data-a="me">🔥${p.streak}</div><div class="chip" data-act="tab" data-a="quests">💎${p.gems}</div><div class="chip" data-act="${isPlus()?'tab':'heartinfo'}" data-a="me">${isPlus()?'❤️∞':'❤️'+p.hearts}</div>${isPlus()?'':'<div class="chip plus" data-act="paywall">PLUS</div>'}</div></div>`}
+ return `<div class="top"><div class="chip" data-act="tab" data-a="me">${avh(p,28)}<span>${p.name}</span></div><div style="display:flex;gap:5px"><div class="chip" data-act="tab" data-a="me">🔥${p.streak}</div><div class="chip" data-act="tab" data-a="quests">💎${p.gems}</div><div class="chip" data-act="${isPlus()?'tab':'heartinfo'}" data-a="me">${isPlus()?'❤️∞':'❤️'+p.hearts}</div>${isPlus()?'':'<div class="chip plus" data-act="paywall">PLUS</div>'}</div></div>`}
 function adBanner(){return''}
 function render(){const p=P();let h='';$('nav').style.display='none';
  if(!p||S.adding){h=onb();}else{rollover(p);const t=S.tab;
@@ -192,6 +242,7 @@ function onb(){const d=S.draft,o=S.onb;const dots=`<div class="dots">${[0,1,2,3,
  if(o==2)return dots+`<div class="step"><h2>What grade are they in?</h2><div class="grades">${[1,2,3,4,5,6].map(g=>`<button class="gc ${d.grade==g?'on':''}" data-act="dgr" data-a="${g}"><img src="${av(GA[g])}" alt="">Grade ${g}</button>`).join('')}</div><p class="fine">Not sure? Pick one lower, it's easy to move up later.</p><p><button class="btn blue full" data-act="onb" data-a="3">Continue</button></p></div>`;
  if(o==3)return dots+`<div class="step"><h2>Pick a daily goal</h2>${GOALS.map(g=>`<button class="opt ${d.goal==g[0]?'on':''}" data-act="dgo" data-a="${g[0]}">${g[1]}<small>${g[2]}</small></button>`).join('')}<p><button class="btn blue full" data-act="onb" data-a="4">Continue</button></p></div>`;
  return dots+`<div class="step"><h2>Ready, ${d.name||'friend'}!</h2><div class="card"><h3>Free forever</h3>All lessons, streaks, leagues and quests. 5 hearts that refill over time, or top up any time.</div><div class="card" style="border-color:var(--purple)"><h3>Maple Leap Plus ✨</h3>Unlimited hearts · Mistakes practice · Weekly parent report. <b>7 days free.</b></div><button class="btn red full" data-act="finishonb" data-a="0">Start learning (free)</button><p></p><button class="btn purple full" data-act="finishonb" data-a="1">Try Plus free for 7 days</button></div>`}
+function starsHtml(n){return `<span class="stv" aria-label="${n} of 3 stars">${'★'.repeat(n)}<i>${'★'.repeat(3-n)}</i></span>`}
 function vLearn(p){const sb=SUBJ[S.subj],d=p.prog[p.grade+S.subj]||0;const m=MASC[p.av][0];
  let h=`<div class="tabs">${Object.keys(SUBJ).map(k=>`<button class="tab" data-act="subj" data-a="${k}" style="${k==S.subj?`background:${SUBJ[k].c};color:#fff;border-color:transparent;box-shadow:0 3px 0 rgba(0,0,0,.25)`:''}">${SUBJ[k].e} ${SUBJ[k].n}</button>`).join('')}</div>`;
  if(p.q.d===dk()&&p.q.xp<p.goal)h+=`<div class="card" style="padding:10px 14px"><div class="row" style="margin:0"><span>🎯 Daily goal</span><span>${p.q.xp}/${p.goal} XP</span></div><div class="meter"><i style="width:${p.q.xp/p.goal*100}%"></i></div></div>`;
@@ -200,7 +251,7 @@ function vLearn(p){const sb=SUBJ[S.subj],d=p.prog[p.grade+S.subj]||0;const m=MAS
   seq.forEach((k,j)=>{const off=[0,-46,-62,-26,30,56][j];let node;
    if(k=='c'){const id=p.grade+S.subj+u,open=(d>=u*UL+2),got=p.chests[id];node=`<button class="node chest ${open&&!got?'cur':(open?'done':'lock')}" data-act="chest" data-a="${id}">${got?'✔':'🎁'}</button>`}
    else{const n=u*UL+li;li++;const st=n<d?'done':(n==d?'cur':'lock');const isT=k=='t';
-    node=`${n==d?'<div class="tag">START</div>':''}${n==d?`<img class="pm" src="${av(p.av)}" alt="">`:''}<button class="node ${st}" aria-label="${isT?'Unit test':'Lesson '+((n%UL)+1)}, ${st=='lock'?'locked':(st=='done'?'completed':'ready')}" data-act="node" data-a="${n}" style="background:${isT?'var(--orange)':sb.c}">${st=='lock'?'🔒':(isT?'🏆':(n%UL)+1)}</button>`}
+    node=`${n==d?'<div class="tag">START</div>':''}${n==d?`<span class="pm">${avh(p,62,'idle')}</span>`:''}<button class="node ${st}" aria-label="${isT?'Unit test':'Lesson '+((n%UL)+1)}, ${st=='lock'?'locked':(st=='done'?'completed':'ready')}" data-act="node" data-a="${n}" style="background:${isT?'var(--orange)':sb.c}">${st=='lock'?'🔒':(isT?'🏆':(n%UL)+1)}</button>${st=='done'?starsHtml(p.stars[p.grade+S.subj+n]||1):''}`}
    h+=`<div class="pn" style="transform:translateX(${off}px)">${node}</div>`});h+='</div>'}
  if(d>=TOTAL)h+=`<div class="card" style="text-align:center"><h3>🏆 Path complete!</h3>${m} is so proud. Replay any lesson for XP or try another subject.<br><br><button class="btn sm" data-act="node" data-a="r">Practise again</button></div>`;
  return h+adBanner(p)}
@@ -219,12 +270,13 @@ function vQuests(p){const qs=[["Earn 30 XP",p.q.xp,30,10,'xp'],["Finish 2 lesson
  h+=`<h2 style="color:var(--navy);margin:18px 0 6px">Gem shop</h2><div class="card"><div class="row" style="margin:0"><span>💎 You have ${p.gems} gems</span></div></div>
  ${shop('❄️','Streak Freeze','Protects your streak if you miss a day. Own up to 2.',200,'freeze',p.freezes>=2?'Max 2':'')}
  ${shop('❤️','Refill hearts','Back to 5 hearts instantly.',100,'hearts',isPlus()?'Unlimited with Plus':(p.hearts>=5?'Already full':''))}
- ${shop('⚡','Double XP boost','2× XP for 15 minutes'+(bo?' (active)':''),100,'boost',bo?'Active':'')}`;
+ ${shop('⚡','Double XP boost','2× XP for 15 minutes'+(bo?' (active)':''),100,'boost',bo?'Active':'')}
+ <h2 style="color:var(--navy);margin:18px 0 6px">Wardrobe</h2><div class="card"><div class="row" style="margin:0 0 8px"><span>${avh(p,64,'idle')}</span><button class="btn sm ghost" data-act="wear" data-a="">Take off</button></div><div class="wr">${ACC.map(a=>{const own=p.own.includes(a[0]),on=p.acc===a[0];return `<button class="it ${on?'on':''}" data-act="${own?'wear':'buyacc'}" data-a="${own?a[0]:a[0]+'|'+a[2]}"><div class="em">${a[0]}</div>${a[1]}<br>${own?(on?'Wearing ✔':'Wear'):'💎'+a[2]}</button>`}).join('')}</div></div>`;
  return h+adBanner(p)}
 function shop(e,t,d,c,a,dis){return `<div class="card"><div class="row" style="margin:0"><span style="font-size:30px">${e}</span><div style="flex:1;margin-left:6px">${t}<br><small style="color:var(--mut);font-weight:700">${d}</small></div><button class="btn sm" data-act="buy" data-a="${a}|${c}" ${dis?'disabled':''}>${dis||'💎 '+c}</button></div></div>`}
 function vMe(p){const L=LEAGUES[p.league];const t=dk(),d0=pd(t);const first=new Date(d0.getFullYear(),d0.getMonth(),1);const dim=new Date(d0.getFullYear(),d0.getMonth()+1,0).getDate();const off=(first.getDay()+6)%7;
  let cal='<div class="cal">'+'MTWTFSS'.split('').map(x=>`<div>${x}</div>`).join('')+'<span></span>'.repeat(off);for(let i=1;i<=dim;i++){const k=dk(new Date(d0.getFullYear(),d0.getMonth(),i));cal+=`<i class="${p.days.includes(k)?'on':(p.frozen.includes(k)?'fz':'')} ${k==t?'t':''}">${i}</i>`}cal+='</div>';
- return `<div style="text-align:center;padding:6px 0"><img src="${av(p.av)}" width="110" height="110" alt=""><h2 style="margin:0;color:var(--navy)">${p.name}</h2><div class="fine" style="margin:2px">Grade ${p.grade} · ${MASC[p.av][0]} is cheering for you</div></div>
+ return `<div style="text-align:center;padding:6px 0">${avh(p,120,'idle')}<h2 style="margin:0;color:var(--navy)">${p.name}</h2><div class="fine" style="margin:2px">Grade ${p.grade} · ${MASC[p.av][0]} is cheering for you</div></div>
  <div class="grid2"><div class="stat"><small>Day streak</small><span>🔥 ${p.streak}</span></div><div class="stat"><small>Total XP</small><span>⚡ ${p.xp}</span></div><div class="stat"><small>League</small><span>${L[1]} ${L[0]}</span></div><div class="stat"><small>Lessons</small><span>✅ ${p.lessons}</span></div></div>
  <div class="card"><h3>This month</h3>${cal}</div>
  ${isPlus()?`<div class="card" style="border-color:var(--purple)"><h3>✨ Maple Leap ${S.plan.tier=='family'?'Family':'Plus'}</h3>Unlimited hearts · Mistakes practice · Weekly parent report. Manage in the Parent Zone.</div>`:`<div class="card" style="border-color:var(--purple);background:#f8f3ff"><h3>Try Maple Leap Plus</h3>Unlimited hearts, mistakes practice and a weekly parent report. 7 days free.<br><br><button class="btn sm purple" data-act="paywall">Try 7 days free</button></div>`}
@@ -236,10 +288,10 @@ const ACT={
  tab(a){S.tab=a;save();render();scrollTo(0,0)},subj(a){S.subj=a;save();render()},close(){closeModal()},
  onb(a){if(S.onb==1){const v=$('nm');if(v)S.draft.name=v.value.trim()}if(S.onb==1&&!S.draft.name){toast('Type a name first');return}S.onb=+a;save();render()},
  dav(a){const v=$('nm');if(v)S.draft.name=v.value;S.draft.av=a;if(MASC[a])S.draft.grade=MASC[a][1];save();render()},dgr(a){S.draft.grade=+a;S.draft.av=GA[+a];save();render()},dgo(a){S.draft.goal=+a;save();render()},
- finishonb(a){const p=newP(S.draft);S.adding=0;S.ps.push(p);S.cur=S.ps.length-1;S.onb=0;S.draft={name:'',av:'owl',grade:1,goal:20};S.tab='learn';save();render();if(a==='1')setTimeout(()=>ACT.paywall(),300)},
+ finishonb(a){const p=newP(S.draft);S.adding=0;S.ps.push(p);S.cur=S.ps.length-1;S.onb=0;S.draft={name:'',av:'owl',grade:1,goal:20};S.tab='learn';save();render();if(a==='1')setTimeout(()=>paywall(),300);else setTimeout(maybeGift,800)},
  node(a){const p=P();if(a==='r')return startPath(TOTAL-1,true);const n=+a;const d=p.prog[p.grade+S.subj]||0;if(n>d){toast('Finish the earlier lessons to unlock this one');return}startPath(n,false)},
  chest(a){const p=P();const open=(p.prog[p.grade+S.subj]||0)>=(+a.slice(-1))*UL+2;if(!open){toast('Finish 2 lessons in this unit to open it');return}if(p.chests[a]){toast('Already opened');return}p.chests[a]=1;const g=15+ri(11);p.gems+=g;save();confetti();sWIN();toast('🎁 Chest: +'+g+' gems!');render()},
- claim(a){const[k,g]=a.split('|'),p=P();p.q.claim[k]=1;p.gems+=+g;save();sOK();toast('+'+g+' gems');render()},
+ wear(a){const p=P();p.acc=a||'';save();sOK();render()},buyacc(a){const[k,c]=a.split('|'),p=P();if(p.gems<+c){toast('Not enough gems yet. Keep learning to earn more!');return}p.gems-=+c;p.own.push(k);p.acc=k;save();sWIN();confetti();toast('New look unlocked!');render()},claim(a){const[k,g]=a.split('|'),p=P();p.q.claim[k]=1;p.gems+=+g;save();sOK();toast('+'+g+' gems');render()},
  buy(a){const[k,c]=a.split('|'),p=P();if(p.gems<+c){toast('Not enough gems. Complete quests and lessons to earn more!');return}p.gems-=+c;if(k=='freeze')p.freezes++;if(k=='hearts'){p.hearts=5;p.hAt=0}if(k=='boost')p.boost=Date.now()+15*60000;save();sOK();toast('Purchased!');render()},
  snd(){S.snd=!S.snd;save();render()},heartinfo(){hearts()},
  mixed(){startMixed()},mist(){if(!isPlus())return ACT.paywall();startMist()},heartprac(){startMixed(true)},
@@ -257,7 +309,7 @@ const ACT={
  hbuy(){gate(buyHearts)},hrefill(){const p=P();if(p.gems<100){toast('You need 💎100');return}p.gems-=100;p.hearts=5;save();closeModal();toast('Hearts refilled!');render()},
   hprac(){closeModal();startMixed(true)},
  };
-document.addEventListener('click',e=>{const t=e.target.closest('[data-act]');if(!t)return;if(t.dataset.act=='privacy')e.preventDefault();const f=ACT[t.dataset.act];f&&f(t.dataset.a)});
+document.addEventListener('click',e=>{const t=e.target.closest('[data-act]');if(!t)return;if(t.dataset.act=='privacy'||t.tagName==='A')e.preventDefault();const f=ACT[t.dataset.act];if(f){try{const r=f(t.dataset.a);if(r&&r.catch)r.catch(err=>console.error(err))}catch(err){console.error(err);recover()}}});
 /* ============ PAYWALL ============ */
 let pw={tier:'plus',per:'year'};
 function paywall(re){const pr=BILLING.prices[pw.tier],yr=pw.per=='year';const sav=Math.round((1-pr.year/(pr.month*12))*100);
@@ -266,15 +318,15 @@ function paywall(re){const pr=BILLING.prices[pw.tier],yr=pw.per=='year';const sa
  <ul class="ben"><li>Unlimited hearts, learn without limits</li><li>Mistakes practice to master tricky questions</li><li>Weekly progress report for parents</li>${pw.tier=='family'?'<li>Up to 6 child profiles, each with their own streak</li>':''}<li>Support a small Canadian publisher</li></ul>
  <div class="plans"><button class="plan ${!yr?'on':''}" data-act="per" data-a="month"><small>Monthly</small><b>${money(pr.month)}</b><small>per month</small></button><button class="plan ${yr?'on':''}" data-act="per" data-a="year"><span class="badge">SAVE ${sav}%</span><small>Yearly</small><b>${money(pr.year/12)}</b><small>per month · ${money(pr.year)}/yr</small></button></div>
  <button class="btn purple full" data-act="buyplan">Try ${BILLING.trialDays} days free</button>
- <p class="fine">Then ${yr?money(pr.year)+' per year':money(pr.month)+' per month'}. Cancel anytime in the Parent Zone, at least 24 hours before renewal. A grown-up must confirm.${BILLING.checkoutUrl?'':'<br><b>Test mode: no payment is taken.</b>'}${NATIVE?' Payment is charged to your Apple ID at confirmation and renews automatically unless cancelled at least 24 hours before the period ends. Manage in Settings > Apple ID > Subscriptions.':''}</p>
+ <p class="fine">Then ${yr?money(pr.year)+' per year':money(pr.month)+' per month'}. Cancel anytime in the Parent Zone, at least 24 hours before renewal. A grown-up must confirm.${BILLING.checkoutUrl?'':'<br><b>Free web preview: no payment is taken and every Plus feature unlocks.</b>'}${NATIVE?' Payment is charged to your Apple ID at confirmation and renews automatically unless cancelled at least 24 hours before the period ends. Manage in Settings > Apple ID > Subscriptions.':''}</p>
  <p class="fine"><a href="#" data-act="restore">Restore purchases</a> · <a href="#" data-act="pol">Privacy Policy</a> · <a href="#" data-act="terms">Terms of Use</a></p>`,true)}
 async function buyHearts(fromLesson){const p=P();const done=()=>{p.hearts=5;p.hAt=0;save();if(fromLesson)endLesson();else{closeModal();render()}confetti();sOK();toast('Hearts refilled!')};
  if(NATIVE){const rc=PL('Purchases'),pkg=PKG['hearts_refill'];if(!RCOK||!pkg){toast('Purchases are not available right now.');return}try{await rc.purchasePackage({aPackage:pkg});done()}catch(e){if(!(e&&e.userCancelled))toast('Purchase did not complete.')}return}
- done();toast('Hearts refilled (test mode, no charge)')}
+ done();toast('Hearts refilled (free preview)')}
 async function buyPlan(){if(NATIVE&&RCOK){const rc=PL('Purchases'),pkg=PKG[pw.tier+'_'+pw.per];if(!pkg){toast('Subscriptions are not available right now. Please try again later.');return}try{await rc.purchasePackage({aPackage:pkg});await rcSync();closeModal();confetti();sWIN();toast('Welcome to Plus!')}catch(e){if(!(e&&e.userCancelled))toast('Purchase did not complete.')}return}
  if(NATIVE){toast('Subscriptions are not available right now.');return}
  if(BILLING.checkoutUrl){location.href=BILLING.checkoutUrl+(BILLING.checkoutUrl.includes('?')?'&':'?')+'plan='+pw.tier+'_'+pw.per;return}
- S.plan={tier:pw.tier,per:pw.per,trial:Date.now()+BILLING.trialDays*864e5,test:1};save();closeModal();confetti();sWIN();render();toast('Welcome to Plus! (test mode, no charge)')}
+ S.plan={tier:pw.tier,per:pw.per,trial:Date.now()+BILLING.trialDays*864e5,test:1};save();closeModal();confetti();sWIN();render();toast('Welcome to Plus! Free preview, no charge')}
 /* parent gate */
 function gate(cb){const a=6+ri(4),b=6+ri(4);const m=$('modal');
  modal(`${XB}<h2>Grown-ups only</h2><p style="font-weight:700">To continue, ask a grown-up to solve:</p><div class="q" style="text-align:center">${a} × ${b} = ?</div><input class="inp" id="gt" inputmode="numeric" autocomplete="off" placeholder="Answer"><p><button class="btn blue full" id="gok">Continue</button></p>`);
@@ -289,7 +341,7 @@ function parentZone(){const p=P();const days=[];for(let i=6;i>=0;i--){const k=ad
  <p class="fine" style="text-align:left">${w&&s&&w.k!=s.k?`${SUBJ[s.k].n} is ${p.name}'s strongest area. ${SUBJ[w.k].n} could use a little more practice.`:'Keep going! More answers will unlock tailored tips.'}</p></div>
  <div class="card"><h3>Daily goal</h3><div class="seg">${GOALS.map(g=>`<button class="${p.goal==g[0]?'on':''}" data-act="pgoal" data-a="${g[0]}">${g[1]}</button>`).join('')}</div>
  <h3 style="margin-top:12px">Daily reminder</h3><div class="seg">${[[0,'Off'],[16,'4 pm'],[17,'5 pm'],[18,'6 pm'],[19,'7 pm']].map(g=>`<button class="${(p.rem||0)==g[0]?'on':''}" data-act="prem" data-a="${g[0]}">${g[1]}</button>`).join('')}</div>${NATIVE?'':'<p class="fine" style="text-align:left">Reminders work in the iPhone and iPad app.</p>'}<h3 style="margin-top:12px">Daily time limit</h3><div class="seg">${[[0,'None'],[10,'10m'],[20,'20m'],[30,'30m']].map(g=>`<button class="${p.limit==g[0]?'on':''}" data-act="plim" data-a="${g[0]}">${g[1]}</button>`).join('')}</div></div>
- <div class="card"><h3>Subscription</h3>${S.plan?`Maple Leap ${S.plan.tier=='family'?'Family':'Plus'} · ${S.plan.per=='year'?'yearly':'monthly'}${S.plan.test?' (test mode)':''}<br><br><button class="btn sm ghost" data-act="cancel">Cancel subscription</button>`:`Free plan. Plus gives unlimited hearts.<br><br><button class="btn sm purple" data-act="paywall">See Plus</button>`}</div>
+ <div class="card"><h3>Subscription</h3>${S.plan?`Maple Leap ${S.plan.tier=='family'?'Family':'Plus'} · ${S.plan.per=='year'?'yearly':'monthly'}${S.plan.test?' (free preview)':''}<br><br><button class="btn sm ghost" data-act="cancel">Cancel subscription</button>`:`Free plan. Plus gives unlimited hearts.<br><br><button class="btn sm purple" data-act="paywall">See Plus</button>`}</div>
  <div class="card"><h3>Kids, safety &amp; privacy</h3><ul style="margin:6px 0;padding-left:18px;font-size:14px"><li>No accounts, no tracking, no data leaves this device.</li><li>No ads. Free to play, with optional heart refills and Plus.</li><li>No chat, no friend requests. League rivals are friendly bots.</li></ul><button class="btn sm ghost" data-act="pexp">Download data</button> <button class="btn sm ghost" data-act="pdel">Remove ${p.name}</button> <button class="btn sm ghost" data-act="wipe">Delete everything</button></div>
  <button class="btn full" data-act="shop">Shop printed workbooks</button>`,true)}
 function privacy(){modal(`${XB}<h2>Privacy</h2><p><button class="btn sm ghost" onclick="ACT.pol()">Full privacy policy</button></p><p style="font-weight:700;line-height:1.5">Maple Leap is made by Maple Hill Learning Press for children and their parents. We do not ask for email addresses, real names or locations. Everything your child does is saved only on this device. We do not use analytics, advertising IDs or advertising of any kind. Parents can download or delete all data from the Parent Zone at any time.</p>`)}
@@ -298,19 +350,32 @@ function hearts(){const p=P();modal(`${XB}<div style="text-align:center"><div st
 /* ============ LESSON ENGINE ============ */
 let L;
 function limitHit(p){return p.limit&&secsToday(p)>=p.limit*60}
-function canStart(p,heartPrac){if(limitHit(p)){modal(`${XB}<div style="text-align:center"><img src="${av(p.av)}" width="120" alt=""><h2>Great work today, ${p.name}!</h2><p style="font-weight:700">You've reached today's learning time. See you tomorrow!</p><p class="fine">Grown-ups can change the limit in the Parent Zone.</p></div>`);return false}
+function canStart(p,heartPrac){if(limitHit(p)){modal(`${XB}<div style="text-align:center">${avh(p,130,'idle')}<h2>Great work today, ${p.name}!</h2><p style="font-weight:700">You've reached today's learning time. See you tomorrow!</p><p class="fine">Grown-ups can change the limit in the Parent Zone.</p></div>`);return false}
  if(!isPlus()&&p.hearts<=0&&!heartPrac){hearts();return false}return true}
+const qkey=q=>q.t==='pair'?q.q+(q.pairs||[]).map(x=>x[0]).join(','):q.q;
+function validQ(q){try{if(!q||typeof q.q!=='string'||!q.q||q.a==null||String(q.a)==='')return false;const bad=/NaN|undefined|Infinity|null/;if(bad.test(q.q)||bad.test(String(q.a)))return false;
+ if(q.t==='mc')return Array.isArray(q.choices)&&q.choices.length>=3&&new Set(q.choices).size===q.choices.length&&q.choices.includes(q.a)&&!bad.test(q.choices.join('|'));
+ if(q.t==='num')return true;if(q.t==='ord')return Array.isArray(q.words)&&q.words.length>=3&&String(q.a).split(' ').length===q.words.length;
+ if(q.t==='pair')return Array.isArray(q.pairs)&&q.pairs.length===4&&new Set(q.left).size===4&&new Set(q.right).size===4;return false}catch(e){return false}}
+function genLesson(p,subj,diff,n){let best=null;for(let t=0;t<8;t++){let qs=[];try{qs=MapleContent.makeLesson(p.grade,subj,diff).filter(validQ)}catch(e){qs=[]}if(qs.length<6)continue;const fresh=qs.filter(q=>!p.recent.includes(qkey(q))).length;if(!best||fresh>best.f)best={qs,f:fresh};if(fresh>=qs.length-1)break}
+ let qs=best?best.qs:[];if(qs.length<4){qs=[];for(let i=0;i<8;i++){const a=ri(8)+1,b=ri(8)+1,w=[a+b+1,a+b-1,a+b+2];qs.push({t:'mc',q:`${a} + ${b} = ?`,a:String(a+b),choices:[String(a+b)].concat(w.map(String).filter(x=>x!==String(a+b))).sort(()=>Math.random()-.5)})}}
+ qs=qs.slice(0,n||8);p.recent=p.recent.concat(qs.map(qkey)).slice(-80);return qs}
 function startPath(n,replay){const p=P();if(!canStart(p))return;const sb=S.subj,boss=(n%UL===UL-1),diff=Math.min(3,Math.floor(n/4));
- let qs=MapleContent.makeLesson(p.grade,sb,diff);if(boss)qs=qs.concat(MapleContent.makeLesson(p.grade,sb,3).slice(0,4));
- begin({qs,kind:'path',n,boss,subj:sb,replay})}
-function startMixed(hp){const p=P();if(!canStart(p,hp))return;let qs=[];['math','read','logic'].forEach(s=>qs=qs.concat(MapleContent.makeLesson(p.grade,s,1).slice(0,3).map(q=>(q.subj=s,q))));qs=qs.sort(()=>Math.random()-.5);begin({qs,kind:hp?'heart':'mixed',subj:'math'})}
-function startMist(){const p=P();const qs=p.mist.slice(0,8).map(q=>JSON.parse(JSON.stringify(q)));begin({qs,kind:'mist',subj:'math'})}
-function begin(o){const p=P();L=Object.assign({i:0,ok:0,ok1:0,skips:0,miss:[],combo:0,best:0,t0:Date.now(),state:'ask',pick:[],sel:null,lost:0},o);L.total=L.qs.length;$('lesson').style.display='flex';show()}
+ let qs=genLesson(p,sb,diff,8);if(boss){const ex=genLesson(p,sb,3,8).filter(q=>!qs.some(o=>qkey(o)===qkey(q))).slice(0,4);qs=qs.concat(ex)}
+ begin({qs,kind:'path',n,boss,subj:sb,replay,title:boss?'Boss round!':'Lesson '+((n%UL)+1),sub:SUBJ[sb].units[Math.floor(n/UL)][0]})}
+function startMixed(hp){const p=P();if(!canStart(p,hp))return;let qs=[];['math','read','logic'].forEach(s=>qs=qs.concat(genLesson(p,s,1,3).map(q=>(q.subj=s,q))));qs=qs.sort(()=>Math.random()-.5);begin({qs,kind:hp?'heart':'mixed',subj:'math',title:hp?'Heart practice':'Mixed review',sub:'A bit of everything'})}
+function startMist(){const p=P();const qs=p.mist.slice(0,8).map(q=>JSON.parse(JSON.stringify(q)));if(qs.length<1){toast('No mistakes to practise yet');return}begin({qs,kind:'mist',subj:'math',title:'Mistakes practice',sub:'Master the tricky ones'})}
+function begin(o){const p=P();L=Object.assign({i:0,ok:0,ok1:0,skips:0,miss:[],combo:0,best:0,t0:Date.now(),state:'ask',pick:[],sel:null,lost:0},o);L.total=L.qs.length;$('lesson').style.display='flex';L.state='intro';$('pb').style.width='0%';hh();$('fb').style.display='none';$('lf').style.display='none';
+ $('lb').innerHTML=`<div class="end" data-intro="1" style="padding-top:8vh"><div style="animation:pop .5s both">${avh(p,170,'idle')}</div><h1 style="animation:fadeUp .4s .15s both">${L.title||'Lesson'}</h1><p style="font-weight:800;color:var(--mut);font-size:18px;animation:fadeUp .4s .25s both">${L.sub||''}</p><p style="font-weight:800;color:var(--blue);animation:fadeUp .4s .35s both">${L.qs.length} questions · tap to start</p></div>`;
+ clearTimeout(L.it);L.it=setTimeout(startAsk,1500)}
+function startAsk(){if(!L||L.state!=='intro')return;clearTimeout(L.it);L.state='ask';show()}
+function popText(el,t){try{const b=el.getBoundingClientRect(),d=document.createElement('div');d.className='fl';d.textContent=t;d.style.left=(b.left+b.width/2)+'px';d.style.top=(b.top+b.height)+'px';document.body.appendChild(d);setTimeout(()=>d.remove(),1000)}catch(e){}}
 function hh(){$('hh').textContent=isPlus()?'❤️∞':'❤️ '+P().hearts}
 function say(q){if(!window.speechSynthesis)return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(((q.passage||'')+' '+q.q).replace(/___/g,'blank').replace(/\n/g,' ').replace(/×/g,'times').replace(/÷/g,'divided by').replace(/−/g,'minus'));u.rate=.9;speechSynthesis.speak(u)}
 function show(){const q=L.qs[L.i];$('pb').style.width=(L.i/L.qs.length*100)+'%';hh();L.sel=null;L.state='ask';L.pick=[];
  $('fb').style.display='none';$('lf').style.display='block';$('chk').disabled=true;$('chk').textContent='Check';
- let h='';if(q.passage)h+=`<div class="passage">${q.passage}</div>`;
+const pp=P(),sayings=L.i===0&&!L.retry?[`Let's go, ${pp.name}!`,'Ready? You got this!','Brain power on!']:(L.retry?['Second try! You can do it!','Let\'s fix those!']:L.combo>=2?['You are on fire!','Keep that streak!','Unstoppable!']:['Think it through!','Take your time!','Good luck!','Here comes a fun one!','You are doing great!']);
+ let h=`<div class="coach">${avh(pp,64,'idle')}<div class="bub">${sayings[ri(sayings.length)]}</div></div>`;if(q.passage)h+=`<div class="passage">${q.passage}</div>`;
  h+=`<div class="q">${q.q}${window.speechSynthesis?'<button class="spk" id="spk" aria-label="Read aloud">🔊</button>':''}</div>`;if(q.svg)h+=`<div class="svg">${q.svg}</div>`;
  if(q.t==='mc')h+=`<div class="ch ${q.big?'big':''}">${q.choices.map((c,i)=>`<button data-i="${i}">${c}</button>`).join('')}</div>`;
  else if(q.t==='pair')h+=`<div class="pairs"><div>${q.left.map((c,i)=>`<button class="pb" data-pl="${i}">${c}</button>`).join('')}</div><div>${q.right.map((c,i)=>`<button class="pb" data-pr="${i}">${c}</button>`).join('')}</div></div>`;
@@ -318,7 +383,7 @@ function show(){const q=L.qs[L.i];$('pb').style.width=(L.i/L.qs.length*100)+'%';
  else h+=`<div class="slots" id="sl"></div><div class="bank">${q.words.map((w,i)=>`<button class="w" data-w="${i}">${w}</button>`).join('')}</div>`;
  L.pm={sel:null,done:0,wrong:0};$('lb').innerHTML=h;const sp=$('spk');if(sp)sp.onclick=()=>say(q);
  const ni=$('ni');if(ni){ni.focus();ni.oninput=()=>{L.sel=ni.value.trim();$('chk').disabled=!L.sel};ni.onkeydown=e=>{if(e.key==='Enter'&&!$('chk').disabled)check()}}}
-$('lb').addEventListener('click',e=>{if(!L||L.state!=='ask')return;const q=L.qs[L.i];
+$('lb').addEventListener('click',e=>{if(L&&L.state==='intro'){startAsk();return}if(!L||L.state!=='ask')return;const q=L.qs[L.i];
  const b=e.target.closest('.ch button');if(b){[...$('lb').querySelectorAll('.ch button')].forEach(x=>x.classList.remove('sel'));b.classList.add('sel');L.sel=q.choices[+b.dataset.i];$('chk').disabled=false;beep(500,.05);return}
  const pl=e.target.closest('[data-pl]'),pr=e.target.closest('[data-pr]');
  if(pl&&q.t==='pair'&&!pl.classList.contains('okp')){$('lb').querySelectorAll('[data-pl]').forEach(x=>x.classList.remove('sel'));pl.classList.add('sel');L.pm.sel=pl.textContent;beep(500,.05);return}
@@ -328,33 +393,34 @@ $('lb').addEventListener('click',e=>{if(!L||L.state!=='ask')return;const q=L.qs[
  const w=e.target.closest('.w:not(.sl)');if(w){L.pick.push(+w.dataset.w);w.classList.add('used');drawSlots();beep(500,.05);return}
  const s=e.target.closest('.sl');if(s){const wi=L.pick.splice(+s.dataset.p,1)[0];$('lb').querySelector(`.w[data-w="${wi}"]`).classList.remove('used');drawSlots()}});
 function drawSlots(){const q=L.qs[L.i];$('sl').innerHTML=L.pick.map((wi,p)=>`<button class="w sl" data-p="${p}">${q.words[wi]}</button>`).join('');L.sel=L.pick.length===q.words.length?L.pick.map(i=>q.words[i]).join(' '):null;$('chk').disabled=!L.sel}
+const numEq=(a,b)=>{const f=s=>{s=String(s).replace(/[,\s$%]/g,'').replace(/[−–]/g,'-');if(/^-?\d+\/\d+$/.test(s)){const t=s.split('/');return +t[0]/+t[1]}return +s};const x=f(a),y=f(b);return isFinite(x)&&isFinite(y)&&Math.abs(x-y)<1e-9};
 const norm=s=>String(s).trim().toLowerCase().replace(/[−–]/g,'-').replace(/^\$/,'');
-function check(){const q=L.qs[L.i],p=P();if(L.sel==null)return;let ok=q.t==='pair'?L.pm.wrong<=1:norm(L.sel)===norm(q.a);if(q.t==='num'&&!ok&&!isNaN(+L.sel))ok=+L.sel===+q.a;
+function check(){if(!L||L.state!=='ask')return;const q=L.qs[L.i],p=P();if(L.sel==null)return;let ok=q.t==='pair'?L.pm.wrong<=1:norm(L.sel)===norm(q.a);if(q.t==='num'&&!ok)ok=numEq(L.sel,q.a);
  L.state='fb';$('lf').style.display='none';const sj=q.subj||L.subj;
  if(L.kind!=='mist'&&p.stats[sj]){p.stats[sj].t++;if(ok)p.stats[sj].c++}
  if(q.t==='mc')[...$('lb').querySelectorAll('.ch button')].forEach(b=>{b.disabled=true;if(b.textContent===q.a)b.classList.add('ok');else if(b.classList.contains('sel'))b.classList.add('no')});
- const fb=$('fb');fb.style.display='block';fb.className='fb '+(ok?'ok':'no');$('fbi').src=av(p.av);L.last=ok;
- if(ok){L.ok++;if(!L.retry)L.ok1++;L.combo++;L.best=Math.max(L.best,L.combo);sOK();buzz(15);$('fbt').textContent=['Nice!','Great job!','You got it!','Awesome!','Perfect!','Brilliant!'][L.i%6];$('fbm').textContent=q.explain||'';
+ const fb=$('fb');fb.style.display='block';fb.className='fb '+(ok?'ok':'no');$('fbi').innerHTML=avh(p,56,ok?'jump':'sadsh');L.last=ok;
+ if(ok){L.ok++;if(!L.retry)L.ok1++;L.combo++;L.best=Math.max(L.best,L.combo);sOK();buzz(15);{const av0=document.querySelector('#lb .coach .av');if(av0){av0.classList.remove('idle');av0.classList.add('jump')}const bb=document.querySelector('#lb .bub');if(bb)bb.textContent=['Yes!','Nailed it!','Super!','You rock!','Woohoo!','Clever!'][ri(6)]}$('fbt').textContent=['Nice!','Great job!','You got it!','Awesome!','Perfect!','Brilliant!'][L.i%6];$('fbm').textContent=q.explain||'';
   if(L.kind==='mist'){const ix=p.mist.findIndex(m=>m.q===q.q);if(ix>-1)p.mist.splice(ix,1)}
-  if(L.combo>=3){const c=$('combo');c.textContent='🔥 '+L.combo+' in a row!';c.style.display='block';setTimeout(()=>c.style.display='none',1200)}}
- else{L.combo=0;sNO();buzz([40,30,40]);if(L.kind!=='heart'&&!isPlus()){p.hearts=Math.max(0,p.hearts-1);if(p.hearts===4)p.hAt=Date.now();L.lost++}hh();L.miss.push(q);
+  if(L.combo>=3){sOK(L.combo);const c=$('combo');c.textContent='🔥 '+L.combo+' in a row!';c.style.display='block';setTimeout(()=>c.style.display='none',1200)}}
+ else{L.combo=0;sNO();buzz('e');{const av0=document.querySelector('#lb .coach .av');if(av0){av0.classList.remove('idle');av0.classList.add('sadsh')}const bb=document.querySelector('#lb .bub');if(bb)bb.textContent=['Almost!','Next one is yours!','Keep going!','You can do it!'][ri(4)]}if(L.kind!=='heart'&&!isPlus()){p.hearts=Math.max(0,p.hearts-1);if(p.hearts===4)p.hAt=Date.now();L.lost++}hh();if(!isPlus()&&L.kind!=='heart'){const hd=$('hh');hd.classList.add('lose');setTimeout(()=>hd.classList.remove('lose'),500);popText(hd,'−1 💔')}L.miss.push(q);
   if(L.kind!=='mist'){const cp=JSON.parse(JSON.stringify(q));if(!p.mist.some(m=>m.q===cp.q)){p.mist.unshift(cp);p.mist=p.mist.slice(0,30)}}
   $('fbt').textContent='Not quite';$('fbm').textContent='Answer: '+(q.t==='ord'?q.full:q.a)+(q.explain?' — '+q.explain:'');$('lb').classList.add('shk');setTimeout(()=>$('lb').classList.remove('shk'),400)}
  save()}
 $('chk').onclick=check;
-$('skip').onclick=()=>{if(L.state!=='ask')return;if(L.skips>=2){toast('Give this one a try! You can skip 2 per lesson.');return}L.skips++;const q=L.qs[L.i];L.state='fb';L.last=false;L.combo=0;L.miss.push(q);$('lf').style.display='none';const fb=$('fb');fb.style.display='block';fb.className='fb no';$('fbi').src=av(P().av);$('fbt').textContent='Skipped';$('fbm').textContent='Answer: '+(q.t==='ord'?q.full:q.a)};
-$('fbn').onclick=()=>{const p=P();if(!isPlus()&&p.hearts<=0&&L.kind!=='heart')return outOfHearts();
+$('skip').onclick=()=>{if(L.state!=='ask')return;if(L.skips>=2){toast('Give this one a try! You can skip 2 per lesson.');return}L.skips++;const q=L.qs[L.i];L.state='fb';L.last=false;L.combo=0;L.miss.push(q);$('lf').style.display='none';const fb=$('fb');fb.style.display='block';fb.className='fb no';$('fbi').innerHTML=avh(P(),56,'sadsh');$('fbt').textContent='Skipped';$('fbm').textContent='Answer: '+(q.t==='ord'?q.full:q.a)};
+$('fbn').onclick=()=>{if(!L||L.state!=='fb')return;const p=P();if(!isPlus()&&p.hearts<=0&&L.kind!=='heart')return outOfHearts();
  L.i++;if(L.i>=L.qs.length){if(L.miss.length&&!L.retry&&L.miss.length<=3&&L.kind!=='mist'){L.qs=L.qs.concat(L.miss.map(q=>q.t==='ord'?MapleContent.genRead?q:q:q));L.miss=[];L.retry=true;return show()}return finish()}show()};
 document.addEventListener('keydown',e=>{if($('lesson').style.display!=='flex'||!L)return;if(e.key==='Enter'){if(L.state==='ask'&&!$('chk').disabled)check();else if(L.state==='fb')$('fbn').click()}});
-function endLesson(){tickStop();$('lesson').style.display='none';$('lb').innerHTML='';speechSynthesis&&speechSynthesis.cancel();L=null;render()}
-function outOfHearts(){L.state='end';tickStop();const p=P();$('fb').style.display='none';$('lf').style.display='none';$('lb').innerHTML=`<div class="end"><img class="mi" src="${av(p.av)}" style="filter:grayscale(.6);animation:none" alt=""><h1>Out of hearts</h1><p style="font-weight:700">${MASC[p.av][0]} needs a nap. Choose how to keep going:</p><button class="btn full" data-act="hprac2">Practise to earn a heart</button><p></p><button class="btn blue full" data-act="hrefill2">Refill for 💎100</button><p></p><button class="btn red full" data-act="hbuy2">Refill all hearts · ${money(BILLING.heartsRefill)}</button><p></p><button class="btn purple full" data-act="pw2">Go Plus: unlimited hearts</button><p></p><button class="btn ghost full" data-act="home2">Back to map</button></div>`}
+function endLesson(){tickStop();try{clearTimeout(L&&L.it)}catch(e){}$('lesson').style.display='none';$('lb').innerHTML='';speechSynthesis&&speechSynthesis.cancel();L=null;render()}
+function outOfHearts(){L.state='end';tickStop();const p=P();$('fb').style.display='none';$('lf').style.display='none';$('lb').innerHTML=`<div class="end"><span style="filter:grayscale(.6)">${avh(p,160)}</span><h1>Out of hearts</h1><p style="font-weight:700">${MASC[p.av][0]} needs a nap. Choose how to keep going:</p><button class="btn full" data-act="hprac2">Practise to earn a heart</button><p></p><button class="btn blue full" data-act="hrefill2">Refill for 💎100</button><p></p><button class="btn red full" data-act="hbuy2">Refill all hearts · ${money(BILLING.heartsRefill)}</button><p></p><button class="btn purple full" data-act="pw2">Go Plus: unlimited hearts</button><p></p><button class="btn ghost full" data-act="home2">Back to map</button></div>`}
 Object.assign(ACT,{hbuy2(){gate(()=>buyHearts(true))},hprac2(){endLesson();startMixed(true)},hrefill2(){const p=P();if(p.gems<100){toast('You need 💎100');return}p.gems-=100;p.hearts=5;save();endLesson();toast('Hearts refilled!')},pw2(){endLesson();paywall()},home2(){endLesson()}});
 /* time tracking */
 let tk;function tickStart(){clearInterval(tk);tk=setInterval(()=>{if(!L||document.hidden)return;const p=P(),k=dk();p.secs[k]=(p.secs[k]||0)+1;if(p.limit&&p.secs[k]===p.limit*60){toast('Time is up for today!')}},1000)}function tickStop(){clearInterval(tk)}
 const _b=begin;begin=function(o){_b(o);tickStart()};
 function finish(){tickStop();L.state='end';$('fb').style.display='none';$('lf').style.display='none';$('pb').style.width='100%';const p=P();
  const tot=L.total,acc=Math.round(L.ok1/tot*100),pass=acc>=70||L.kind==='heart',secs=Math.round((Date.now()-L.t0)/1000);const mult=p.boost>Date.now()?2:1;
- if(!pass){const xp0=L.ok*2;p.xp+=xp0;p.wxp+=xp0;p.q.xp+=xp0;save();L.screens=[];$('lb').innerHTML=`<div class="end"><img class="mi" src="${av(p.av)}" style="animation:none" alt=""><h1>Almost there!</h1><p style="font-weight:700">You got ${acc}%. Score 70% or more to pass and unlock the next lesson. ${MASC[p.av][0]} believes in you!</p><div class="res"><div style="border-color:#1d5fd1;color:#1d5fd1"><small>Score</small><span>${acc}%</span></div><div style="border-color:#ffc928;color:#a67600"><small>XP</small><span>+${xp0}</span></div></div><button class="btn full" data-act="retryl">Try again</button><p></p><button class="btn ghost full" data-act="home2">Back to map</button></div>`;return}
+ if(!pass){const xp0=L.ok*2;p.xp+=xp0;p.wxp+=xp0;p.q.xp+=xp0;save();L.screens=[];$('lb').innerHTML=`<div class="end">${avh(p,160,'sadsh')}<h1>Almost there!</h1><p style="font-weight:700">You got ${acc}%. Score 70% or more to pass and unlock the next lesson. ${MASC[p.av][0]} believes in you!</p><div class="res"><div style="border-color:#1d5fd1;color:#1d5fd1"><small>Score</small><span>${acc}%</span></div><div style="border-color:#ffc928;color:#a67600"><small>XP</small><span>+${xp0}</span></div></div><button class="btn full" data-act="retryl">Try again</button><p></p><button class="btn ghost full" data-act="home2">Back to map</button></div>`;return}
  let xp=(10+L.ok*2+(acc>=100?10:0)+(L.boss?15:0))*mult,gems=10+(acc>=100?5:0)+(L.boss?10:0);if(L.kind==='mist'||L.kind==='heart')xp=Math.round(xp/2),gems=0;
  const screens=[];const t=dk();let newDay=false;
  p.xp+=xp;p.wxp+=xp;p.gems+=gems;p.q.xp+=xp;p.q.les++;if(acc>=90)p.q.great++;p.lessons++;if(acc>=100)p.perfect++;if(L.boss&&L.kind==='path')p.bosses++;
@@ -363,17 +429,27 @@ function finish(){tickStop();L.state='end';$('fb').style.display='none';$('lf').
  if(acc>=100&&L.kind==='path'&&!isPlus()){p.hearts=Math.min(5,p.hearts+1)}
  if(p.last!==t){newDay=true;const y=addD(t,-1);p.streak=(p.last===y)?p.streak+1:1;p.last=t;p.best=Math.max(p.best,p.streak);p.days.push(t)}
  S.done++;save();
- let h=`<div class="end"><img class="mi" src="${av(p.av)}" alt=""><h1>${L.kind==='heart'?'Heart earned! ❤️':L.boss?'Boss defeated!':'Lesson complete!'}</h1><div class="res"><div style="border-color:#ffc928;color:#a67600"><small>XP${mult>1?' ×2':''}</small><span>+${xp}</span></div><div style="border-color:#1f9d5b;color:#14703f"><small>Score</small><span>${acc}%</span></div><div style="border-color:#1d5fd1;color:#1d5fd1"><small>Time</small><span>${Math.floor(secs/60)}:${String(secs%60).padStart(2,'0')}</span></div></div>${gems?`<p style="font-weight:800">💎 +${gems} gems</p>`:''}${L.best>=5?`<p style="font-weight:800;color:var(--orange)">🔥 Best combo: ${L.best} in a row</p>`:''}<button class="btn full" data-act="next">Continue</button></div>`;
+ const stars=acc>=100?3:(acc>=85?2:1);if(L.kind==='path'){const sk=p.grade+L.subj+L.n;p.stars[sk]=Math.max(p.stars[sk]||0,stars)}
+ let h=`<div class="end">${avh(p,160,'idle')}<h1>${L.kind==='heart'?'Heart earned! ❤️':L.boss?'Boss defeated!':(acc>=100?'Perfect!':'Lesson complete!')}</h1><div class="bigstars">${[1,2,3].map(i=>`<span class="${i<=stars?'on':'off'}" style="animation-delay:${.25+i*.3}s">★</span>`).join('')}</div><div class="res"><div style="border-color:#ffc928;color:#a67600"><small>XP${mult>1?' ×2':''}</small><span><span class="cnt" data-to="${xp}" data-pre="+">0</span></span></div><div style="border-color:#1f9d5b;color:#14703f"><small>Score</small><span><span class="cnt" data-to="${acc}" data-suf="%">0</span></span></div><div style="border-color:#1d5fd1;color:#1d5fd1"><small>Time</small><span>${Math.floor(secs/60)}:${String(secs%60).padStart(2,'0')}</span></div></div>${gems?`<p style="font-weight:800">💎 +${gems} gems</p>`:''}${L.best>=5?`<p style="font-weight:800;color:var(--orange)">🔥 Best combo: ${L.best} in a row</p>`:''}<button class="btn full" data-act="next">Continue</button></div>`;
  screens.push(h);
+ {const lv1=Math.floor(p.xp/100)+1;if(lv1>(p.lvl||1)){p.lvl=lv1;p.gems+=20;screens.push(`<div class="end"><div class="lvl">${lv1}</div><h1>Level up!</h1><p style="font-weight:700">You reached Level ${lv1}. Bonus 💎20!</p><button class="btn full" data-act="next">Continue</button></div>`)}}
  if(newDay){const wk=wkStart(t);const wd=[0,1,2,3,4,5,6].map(i=>addD(wk,i));screens.push(`<div class="end"><div style="font-size:90px;animation:bob 1s infinite">🔥</div><h1>${p.streak} day streak!</h1><p style="font-weight:700">${p.streak>1?'You are on fire. Come back tomorrow to keep it going.':'Your streak has started. Practise every day to grow it!'}</p><div class="week">${wd.map((k,i)=>`<div>${'MTWTFSS'[i]}<b class="${p.days.includes(k)?'on':''}">${p.days.includes(k)?'🔥':''}</b></div>`).join('')}</div><button class="btn full" data-act="next">Continue</button></div>`)}
  if(p.q.xp>=p.goal&&p.q.xp-xp<p.goal)screens.push(`<div class="end"><div style="font-size:90px">🎯</div><h1>Daily goal reached!</h1><p style="font-weight:700">${p.q.xp} XP today. Amazing, ${p.name}!</p><button class="btn full" data-act="next">Continue</button></div>`);
  const nb=BADGES.filter(b=>b[2](p)&&!(p.bd||[]).includes(b[1]));if(nb.length){p.bd=(p.bd||[]).concat(nb.map(b=>b[1]));screens.push(`<div class="end"><div style="font-size:90px">${nb[0][0]}</div><h1>New badge!</h1><p style="font-weight:800;font-size:20px">${nb[0][1]}</p><button class="btn full" data-act="next">Continue</button></div>`)}
  if(!isPlus()&&L.kind!=='heart'){if(S.done===3||(S.done>3&&S.lastPw!==t&&S.done%5===0)){screens.push('PW');S.lastPw=t}}
  save();L.screens=screens;sWIN();confetti();nextScreen()}
-function nextScreen(){const s=L&&L.screens.shift();if(s===undefined)return endLesson();if(s==='PW'){endLesson();setTimeout(paywall,200);return}$('lb').innerHTML=s;$('lb').scrollTop=0}
+function nextScreen(){const s=L&&L.screens.shift();if(s===undefined)return endLesson();if(s==='PW'){endLesson();setTimeout(paywall,200);return}$('lb').innerHTML=s;$('lb').scrollTop=0;postScreen()}
+function postScreen(){document.querySelectorAll('#lb .cnt').forEach(el=>{const to=+el.dataset.to,t0=performance.now(),pre=el.dataset.pre||'',suf=el.dataset.suf||'';(function f(t){const k=Math.min(1,(t-t0)/800);el.textContent=pre+Math.round(to*(1-Math.pow(1-k,3)))+suf;if(k<1)requestAnimationFrame(f)})(t0)});const n=document.querySelectorAll('#lb .bigstars .on').length;for(let i=0;i<n;i++)setTimeout(()=>sStar(i),550+i*300)}
 ACT.next=nextScreen;ACT.retryl=()=>{const o={kind:L.kind,n:L.n,boss:L.boss,subj:L.subj,replay:L.replay};endLesson();if(o.kind==='path')startPath(o.n,o.replay);else if(o.kind==='mixed')startMixed();else render()};
+/* ---- daily gift ---- */
+function maybeGift(){const p=P();if(!p||S.adding||L||p.gift===dk()||$('modal').style.display==='flex')return;modal(`<div style="text-align:center"><h2>Daily gift!</h2><p style="font-weight:700">Hi ${p.name}! Tap the chest to open it.</p><div class="chestbig" id="chest" data-act="gift" role="button" aria-label="Open daily gift">🎁</div><div id="gres"></div></div>`);$('modal').dataset.lock=1}
+ACT.gift=()=>{const p=P();if(!p||p.gift===dk())return;p.gift=dk();const g=5+Math.min(p.streak,10)+ri(6);p.gems+=g;save();const c=$('chest');c.classList.add('open');sChest();buzz(20);setTimeout(()=>{c.textContent='💎';c.classList.remove('open');c.style.animation='pop .5s both';$('gres').innerHTML=`<h1 style="font-size:40px;margin:6px 0;color:var(--navy)">+${g} gems!</h1><button class="btn full" data-act="close">Awesome!</button>`;confetti();sWIN();render()},700)};
+/* ---- safety net ---- */
+function recover(){try{clearTimeout(L&&L.it)}catch(e){}L=null;try{tickStop()}catch(e){}$('lesson').style.display='none';$('adv').style.display='none';closeModal();try{render()}catch(e){}toast('Oops! Something went wrong. Let\'s try again.')}
+window.addEventListener('error',e=>{if(/ResizeObserver|Script error/.test(e.message||''))return;console.error(e.error||e.message);recover()});
+if(window.visualViewport){const f=()=>{$('lesson').style.height=visualViewport.height+'px';$('lesson').style.top=visualViewport.offsetTop+'px'};visualViewport.addEventListener('resize',f);visualViewport.addEventListener('scroll',f);f()}
 /* ============ BOOT ============ */
 if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});
-document.addEventListener('visibilitychange',()=>{if(!document.hidden&&P()&&!L){rollover(P());save();render()}});
-rcInit();render();
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&P()&&!L){rollover(P());save();render();setTimeout(maybeGift,400)}});
+rcInit();render();setTimeout(maybeGift,700);
 </script></body></html>
