@@ -157,12 +157,33 @@ footer b{font:800 1.3rem var(--display);color:#fff}
 .fbot{max-width:1180px;margin:24px auto 0;padding-top:16px;border-top:1px solid #34508f;font-size:.85rem;font-weight:700}
 @media(max-width:900px){.nav{display:none}.promo,.promo.rev{grid-template-columns:1fr}.promo.rev .pi{order:2}.fcols{grid-template-columns:1fr 1fr}}
 @media(prefers-reduced-motion:reduce){.strip{animation:none}}
+
+/* ---- Maple Leap app showcase ---- */
+.appband{background:linear-gradient(160deg,#12306b 0,#1d5fd1 100%);color:#fff;position:relative;overflow:hidden;margin-top:0}
+.appband::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 85% 10%,rgba(255,201,40,.35),transparent 40%),radial-gradient(circle at 5% 90%,rgba(232,69,124,.25),transparent 38%);pointer-events:none}
+.appband .wrap{position:relative;display:grid;grid-template-columns:1fr 1.05fr;gap:40px;align-items:center;padding-block:64px}
+.appband .kicker{display:inline-block;background:var(--sun);color:var(--navy);font:800 .95rem var(--display);padding:4px 16px;border-radius:999px;margin-bottom:14px;letter-spacing:.04em;text-transform:uppercase}
+.appband h2{color:#fff}.appband h2 em{font-style:normal;color:var(--sun)}
+.appband p.lead{font-size:1.2rem;font-weight:600;margin-top:14px;max-width:38ch;color:#e6efff}
+.appband ul{list-style:none;padding:0;margin:20px 0 26px;display:grid;gap:10px;font-weight:700}
+.appband li{display:flex;gap:12px;align-items:flex-start}.appband li b{flex:none;width:30px;height:30px;border-radius:50%;background:var(--sun);color:var(--navy);display:grid;place-items:center;font-size:1rem}
+.appband .btn.gold{background:var(--sun);color:var(--navy);box-shadow:0 5px 0 #c79a00}
+.appband .btn.ghost{background:transparent;color:#fff;border:3px solid rgba(255,255,255,.7);box-shadow:none;padding:10px 26px}
+.appband .soon{margin-top:16px;font-weight:700;color:#cfe0ff;font-size:.98rem}
+.phones{position:relative;height:540px;display:flex;justify-content:center;align-items:center}
+.ph{position:absolute;width:250px;border-radius:34px;background:#0c1630;padding:9px;box-shadow:0 24px 50px rgba(0,0,0,.4)}
+.ph img{display:block;width:100%;border-radius:26px;aspect-ratio:390/844;object-fit:cover;object-position:top}
+.ph.l{left:2%;transform:rotate(-7deg) translateY(26px)}.ph.m{z-index:2;width:270px}.ph.r{right:2%;transform:rotate(7deg) translateY(26px)}
+.appmini{background:#fff;border:3px solid var(--line);border-radius:14px;padding:12px 18px;display:flex;align-items:center;gap:12px;font-weight:800;color:var(--navy);margin:0 0 18px;text-decoration:none}
+@media(max-width:860px){.appband .wrap{grid-template-columns:1fr;padding-block:44px}.phones{height:440px}.ph{width:190px}.ph.m{width:210px}}
+@media(max-width:480px){.ph.l,.ph.r{display:none}.phones{height:420px}.ph.m{position:relative;width:210px}}
 </style>
 
 <div class="utility"><span>FREE</span> answer key in every workbook &nbsp;&bull;&nbsp; Math, Reading &amp; Writing, Logic &nbsp;&bull;&nbsp; Grades 1 to 6</div>
 <header class="main"><div class="in">
   <a class="brand" href="#top"><img src="img/owl.png" alt=""><span><b>Maple Hill</b><small>Learning Press</small></span></a>
   <nav class="nav" aria-label="Main">
+    <div><a href="#app">Free App</a><div class="mega"><h5>Maple Leap</h5><p>Free practice app for Grades 1&ndash;6.</p><a href="app/">Play on the web</a><a href="#app">See how it works</a></div></div>
     <div><a href="#grades">Shop by Grade</a><div class="mega"><h5>Shop by Grade</h5><p>Pick a grade to see all three workbooks.</p><a href="#grade1">Grade 1 &bull; Owl</a><a href="#grade2">Grade 2 &bull; Penguin</a><a href="#grade3">Grade 3 &bull; Fox</a><a href="#grade4">Grade 4 &bull; Panda</a><a href="#grade5">Grade 5 &bull; Raccoon</a><a href="#grade6">Grade 6 &bull; Beaver</a></div></div>
     <div><a href="#subjects">Shop by Subject</a><div class="mega"><h5>Shop by Subject</h5><p>Three kinds of practice.</p><a href="#subjects">Math Practice</a><a href="#subjects">Reading &amp; Writing</a><a href="#subjects">Logic &amp; Brain Puzzles</a></div></div>
     <div><a href="#inside">What's Inside</a><div class="mega"><h5>What's Inside</h5><p>Answer keys, parent notes and sample pages.</p><a href="#inside">Every workbook includes</a><a href="#inside">Sample pages</a></div></div>
@@ -176,12 +197,33 @@ footer b{font:800 1.3rem var(--display);color:#fff}
     <span class="kicker">Gifted workbooks &bull; Grades 1&ndash;6</span>
     <h1>Learning that keeps bright kids <em>busy</em> and <em>smiling.</em></h1>
     <p class="lead">Math, reading and writing, and brain-teasing logic puzzles. One workbook for every grade, with an answer key and a new animal friend on every cover.</p>
-    <div class="cta"><a class="btn" href="https://www.amazon.com/s?k=Maple+Hill+Learning+Press" target="_blank" rel="noopener">Shop on Amazon</a><a class="btn navy" href="#grades">Shop by grade</a></div>
+    <div class="cta"><a class="btn" href="https://www.amazon.com/s?k=Maple+Hill+Learning+Press" target="_blank" rel="noopener">Shop on Amazon</a><a class="btn navy" href="#grades">Shop by grade</a><a class="btn" style="background:var(--green);box-shadow:0 5px 0 #14703f" href="app/">Play free app</a></div>
   </div>
   <div class="fan" aria-hidden="true">
     <img class="cv a" src="img/g2_math.jpg" alt=""><img class="cv c" src="img/g6_logic.jpg" alt=""><img class="cv b" src="img/g4_reading.jpg" alt="">
   </div>
 </div></div>
+<div class="zig"></div>
+<section class="appband" id="app" aria-labelledby="apph"><div class="wrap">
+  <div>
+    <span class="kicker">New &bull; Free to play</span>
+    <h2 id="apph">Meet <em>Maple Leap</em>, the app kids actually ask to play</h2>
+    <p class="lead">Bite-size math, reading and logic games for Grades 1&ndash;6. Streaks, stars, friendly rivals and a chest to open every day. No ads, ever.</p>
+    <ul>
+      <li><b>&#9733;</b><span>Short lessons with animated animal coaches who cheer every answer</span></li>
+      <li><b>&#10084;</b><span>Free to play with hearts. Go Plus for unlimited hearts and a weekly progress report</span></li>
+      <li><b>&#128106;</b><span>Parent Zone with progress tips, daily goals and screen-time limits</span></li>
+      <li><b>&#128274;</b><span>No ads, no tracking. Built for kids and made by the Maple Hill team</span></li>
+    </ul>
+    <div class="cta"><a class="btn gold" href="app/">Play free in your browser</a><a class="btn ghost" href="#grades">Pair it with a workbook</a></div>
+    <p class="soon">iPhone and iPad app coming soon. Your parent account will carry your plan and progress across devices.</p>
+  </div>
+  <div class="phones" aria-hidden="true">
+    <div class="ph l"><img src="img/app_q.jpg" alt="" loading="lazy"></div>
+    <div class="ph m"><img src="img/app_path.jpg" alt="Maple Leap lesson path" loading="lazy"></div>
+    <div class="ph r"><img src="img/app_league.jpg" alt="" loading="lazy"></div>
+  </div>
+</div></section>
 <div class="zig"></div>
 <div class="search"><h2>Book Search</h2><p class="s">Browse every workbook, then pick your grade below.</p><div class="strip" aria-hidden="true"><img src="img/g1_math.jpg" alt="" loading="lazy"><img src="img/g1_reading.jpg" alt="" loading="lazy"><img src="img/g1_logic.jpg" alt="" loading="lazy"><img src="img/g2_math.jpg" alt="" loading="lazy"><img src="img/g2_reading.jpg" alt="" loading="lazy"><img src="img/g2_logic.jpg" alt="" loading="lazy"><img src="img/g3_math.jpg" alt="" loading="lazy"><img src="img/g3_reading.jpg" alt="" loading="lazy"><img src="img/g3_logic.jpg" alt="" loading="lazy"><img src="img/g4_math.jpg" alt="" loading="lazy"><img src="img/g4_reading.jpg" alt="" loading="lazy"><img src="img/g4_logic.jpg" alt="" loading="lazy"><img src="img/g5_math.jpg" alt="" loading="lazy"><img src="img/g5_reading.jpg" alt="" loading="lazy"><img src="img/g5_logic.jpg" alt="" loading="lazy"><img src="img/g6_math.jpg" alt="" loading="lazy"><img src="img/g6_reading.jpg" alt="" loading="lazy"><img src="img/g6_logic.jpg" alt="" loading="lazy"><img src="img/g1_math.jpg" alt="" loading="lazy"><img src="img/g1_reading.jpg" alt="" loading="lazy"><img src="img/g1_logic.jpg" alt="" loading="lazy"><img src="img/g2_math.jpg" alt="" loading="lazy"><img src="img/g2_reading.jpg" alt="" loading="lazy"><img src="img/g2_logic.jpg" alt="" loading="lazy"><img src="img/g3_math.jpg" alt="" loading="lazy"><img src="img/g3_reading.jpg" alt="" loading="lazy"><img src="img/g3_logic.jpg" alt="" loading="lazy"><img src="img/g4_math.jpg" alt="" loading="lazy"><img src="img/g4_reading.jpg" alt="" loading="lazy"><img src="img/g4_logic.jpg" alt="" loading="lazy"><img src="img/g5_math.jpg" alt="" loading="lazy"><img src="img/g5_reading.jpg" alt="" loading="lazy"><img src="img/g5_logic.jpg" alt="" loading="lazy"><img src="img/g6_math.jpg" alt="" loading="lazy"><img src="img/g6_reading.jpg" alt="" loading="lazy"><img src="img/g6_logic.jpg" alt="" loading="lazy"></div></div>
 
@@ -306,7 +348,7 @@ footer b{font:800 1.3rem var(--display);color:#fff}
 </section>
 
 <section>
-  <div class="final"><h2>Ready to start the school year strong?</h2><p>Pick a grade, pick a subject, and let the animals do the cheering.</p><a class="btn" href="https://www.amazon.com/s?k=Maple+Hill+Learning+Press" target="_blank" rel="noopener">Shop on Amazon</a></div>
+  <div class="final"><h2>Ready to start the school year strong?</h2><p>Pick a grade, pick a subject, and let the animals do the cheering.</p><a class="btn" href="https://www.amazon.com/s?k=Maple+Hill+Learning+Press" target="_blank" rel="noopener">Shop on Amazon</a> <a class="btn navy" href="app/">Play Maple Leap free</a></div>
 </section>
 </div>
 
