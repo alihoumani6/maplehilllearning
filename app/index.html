@@ -305,7 +305,7 @@ function startPath(n,replay){const p=P();if(!canStart(p))return;const sb=S.subj,
  begin({qs,kind:'path',n,boss,subj:sb,replay})}
 function startMixed(hp){const p=P();if(!canStart(p,hp))return;let qs=[];['math','read','logic'].forEach(s=>qs=qs.concat(MapleContent.makeLesson(p.grade,s,1).slice(0,3).map(q=>(q.subj=s,q))));qs=qs.sort(()=>Math.random()-.5);begin({qs,kind:hp?'heart':'mixed',subj:'math'})}
 function startMist(){const p=P();const qs=p.mist.slice(0,8).map(q=>JSON.parse(JSON.stringify(q)));begin({qs,kind:'mist',subj:'math'})}
-function begin(o){const p=P();L=Object.assign({i:0,ok:0,miss:[],combo:0,best:0,t0:Date.now(),state:'ask',pick:[],sel:null,lost:0},o);L.total=L.qs.length;$('lesson').style.display='flex';show()}
+function begin(o){const p=P();L=Object.assign({i:0,ok:0,ok1:0,skips:0,miss:[],combo:0,best:0,t0:Date.now(),state:'ask',pick:[],sel:null,lost:0},o);L.total=L.qs.length;$('lesson').style.display='flex';show()}
 function hh(){$('hh').textContent=isPlus()?'❤️∞':'❤️ '+P().hearts}
 function say(q){if(!window.speechSynthesis)return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(((q.passage||'')+' '+q.q).replace(/___/g,'blank').replace(/\n/g,' ').replace(/×/g,'times').replace(/÷/g,'divided by').replace(/−/g,'minus'));u.rate=.9;speechSynthesis.speak(u)}
 function show(){const q=L.qs[L.i];$('pb').style.width=(L.i/L.qs.length*100)+'%';hh();L.sel=null;L.state='ask';L.pick=[];
@@ -334,7 +334,7 @@ function check(){const q=L.qs[L.i],p=P();if(L.sel==null)return;let ok=q.t==='pai
  if(L.kind!=='mist'&&p.stats[sj]){p.stats[sj].t++;if(ok)p.stats[sj].c++}
  if(q.t==='mc')[...$('lb').querySelectorAll('.ch button')].forEach(b=>{b.disabled=true;if(b.textContent===q.a)b.classList.add('ok');else if(b.classList.contains('sel'))b.classList.add('no')});
  const fb=$('fb');fb.style.display='block';fb.className='fb '+(ok?'ok':'no');$('fbi').src=av(p.av);L.last=ok;
- if(ok){L.ok++;L.combo++;L.best=Math.max(L.best,L.combo);sOK();buzz(15);$('fbt').textContent=['Nice!','Great job!','You got it!','Awesome!','Perfect!','Brilliant!'][L.i%6];$('fbm').textContent=q.explain||'';
+ if(ok){L.ok++;if(!L.retry)L.ok1++;L.combo++;L.best=Math.max(L.best,L.combo);sOK();buzz(15);$('fbt').textContent=['Nice!','Great job!','You got it!','Awesome!','Perfect!','Brilliant!'][L.i%6];$('fbm').textContent=q.explain||'';
   if(L.kind==='mist'){const ix=p.mist.findIndex(m=>m.q===q.q);if(ix>-1)p.mist.splice(ix,1)}
   if(L.combo>=3){const c=$('combo');c.textContent='🔥 '+L.combo+' in a row!';c.style.display='block';setTimeout(()=>c.style.display='none',1200)}}
  else{L.combo=0;sNO();buzz([40,30,40]);if(L.kind!=='heart'&&!isPlus()){p.hearts=Math.max(0,p.hearts-1);if(p.hearts===4)p.hAt=Date.now();L.lost++}hh();L.miss.push(q);
@@ -342,7 +342,7 @@ function check(){const q=L.qs[L.i],p=P();if(L.sel==null)return;let ok=q.t==='pai
   $('fbt').textContent='Not quite';$('fbm').textContent='Answer: '+(q.t==='ord'?q.full:q.a)+(q.explain?' — '+q.explain:'');$('lb').classList.add('shk');setTimeout(()=>$('lb').classList.remove('shk'),400)}
  save()}
 $('chk').onclick=check;
-$('skip').onclick=()=>{if(L.state!=='ask')return;const q=L.qs[L.i];L.state='fb';L.last=false;L.combo=0;L.miss.push(q);$('lf').style.display='none';const fb=$('fb');fb.style.display='block';fb.className='fb no';$('fbi').src=av(P().av);$('fbt').textContent='Skipped';$('fbm').textContent='Answer: '+(q.t==='ord'?q.full:q.a)};
+$('skip').onclick=()=>{if(L.state!=='ask')return;if(L.skips>=2){toast('Give this one a try! You can skip 2 per lesson.');return}L.skips++;const q=L.qs[L.i];L.state='fb';L.last=false;L.combo=0;L.miss.push(q);$('lf').style.display='none';const fb=$('fb');fb.style.display='block';fb.className='fb no';$('fbi').src=av(P().av);$('fbt').textContent='Skipped';$('fbm').textContent='Answer: '+(q.t==='ord'?q.full:q.a)};
 $('fbn').onclick=()=>{const p=P();if(!isPlus()&&p.hearts<=0&&L.kind!=='heart')return outOfHearts();
  L.i++;if(L.i>=L.qs.length){if(L.miss.length&&!L.retry&&L.miss.length<=3&&L.kind!=='mist'){L.qs=L.qs.concat(L.miss.map(q=>q.t==='ord'?MapleContent.genRead?q:q:q));L.miss=[];L.retry=true;return show()}return finish()}show()};
 document.addEventListener('keydown',e=>{if($('lesson').style.display!=='flex'||!L)return;if(e.key==='Enter'){if(L.state==='ask'&&!$('chk').disabled)check();else if(L.state==='fb')$('fbn').click()}});
@@ -353,7 +353,8 @@ Object.assign(ACT,{hbuy2(){gate(()=>buyHearts(true))},hprac2(){endLesson();start
 let tk;function tickStart(){clearInterval(tk);tk=setInterval(()=>{if(!L||document.hidden)return;const p=P(),k=dk();p.secs[k]=(p.secs[k]||0)+1;if(p.limit&&p.secs[k]===p.limit*60){toast('Time is up for today!')}},1000)}function tickStop(){clearInterval(tk)}
 const _b=begin;begin=function(o){_b(o);tickStart()};
 function finish(){tickStop();L.state='end';$('fb').style.display='none';$('lf').style.display='none';$('pb').style.width='100%';const p=P();
- const tot=L.total,acc=Math.round(L.ok/tot*100),secs=Math.round((Date.now()-L.t0)/1000);const mult=p.boost>Date.now()?2:1;
+ const tot=L.total,acc=Math.round(L.ok1/tot*100),pass=acc>=70||L.kind==='heart',secs=Math.round((Date.now()-L.t0)/1000);const mult=p.boost>Date.now()?2:1;
+ if(!pass){const xp0=L.ok*2;p.xp+=xp0;p.wxp+=xp0;p.q.xp+=xp0;save();L.screens=[];$('lb').innerHTML=`<div class="end"><img class="mi" src="${av(p.av)}" style="animation:none" alt=""><h1>Almost there!</h1><p style="font-weight:700">You got ${acc}%. Score 70% or more to pass and unlock the next lesson. ${MASC[p.av][0]} believes in you!</p><div class="res"><div style="border-color:#1d5fd1;color:#1d5fd1"><small>Score</small><span>${acc}%</span></div><div style="border-color:#ffc928;color:#a67600"><small>XP</small><span>+${xp0}</span></div></div><button class="btn full" data-act="retryl">Try again</button><p></p><button class="btn ghost full" data-act="home2">Back to map</button></div>`;return}
  let xp=(10+L.ok*2+(acc>=100?10:0)+(L.boss?15:0))*mult,gems=10+(acc>=100?5:0)+(L.boss?10:0);if(L.kind==='mist'||L.kind==='heart')xp=Math.round(xp/2),gems=0;
  const screens=[];const t=dk();let newDay=false;
  p.xp+=xp;p.wxp+=xp;p.gems+=gems;p.q.xp+=xp;p.q.les++;if(acc>=90)p.q.great++;p.lessons++;if(acc>=100)p.perfect++;if(L.boss&&L.kind==='path')p.bosses++;
@@ -370,7 +371,7 @@ function finish(){tickStop();L.state='end';$('fb').style.display='none';$('lf').
  if(!isPlus()&&L.kind!=='heart'){if(S.done===3||(S.done>3&&S.lastPw!==t&&S.done%5===0)){screens.push('PW');S.lastPw=t}}
  save();L.screens=screens;sWIN();confetti();nextScreen()}
 function nextScreen(){const s=L&&L.screens.shift();if(s===undefined)return endLesson();if(s==='PW'){endLesson();setTimeout(paywall,200);return}$('lb').innerHTML=s;$('lb').scrollTop=0}
-ACT.next=nextScreen;
+ACT.next=nextScreen;ACT.retryl=()=>{const o={kind:L.kind,n:L.n,boss:L.boss,subj:L.subj,replay:L.replay};endLesson();if(o.kind==='path')startPath(o.n,o.replay);else if(o.kind==='mixed')startMixed();else render()};
 /* ============ BOOT ============ */
 if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&P()&&!L){rollover(P());save();render()}});
