@@ -1,0 +1,317 @@
+<title>Maple Hill Learning Press</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap">
+<style>
+/* Concept: a school book-fair catalogue. Red banner header, primary-colour grade tabs, cover shelves on coloured bands, notebook-paper details. Deliberately single bright look. */
+:root{
+  --red:#d62828; --red-dark:#a81c1c; --navy:#12306b; --blue:#1d5fd1; --sun:#ffc928; --green:#1f9d5b; --orange:#f47b20; --purple:#7b45c9; --pink:#e8457c;
+  --paper:#fffdf6; --ink:#1b2440; --muted:#53607f; --line:#e6dfc8;
+  --display:'Baloo 2',system-ui,sans-serif; --body:'Nunito',system-ui,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:76px}
+body{background:var(--paper);color:var(--ink);font:400 18px/1.6 var(--body);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));margin:0}
+.wrap{max-width:1180px;margin:0 auto}
+.bleed{margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);padding-left:max(16px,calc(50vw - 50% + 16px));padding-right:max(16px,calc(50vw - 50% + 16px))}
+h1,h2,h3,h4{font-family:var(--display);line-height:1.08;margin:0;text-wrap:balance}
+h1{font-size:clamp(2.4rem,6.4vw,4.4rem);font-weight:800}
+h2{font-size:clamp(1.9rem,4.4vw,2.9rem);font-weight:800;color:var(--navy)}
+h3{font-size:1.5rem;font-weight:800}
+p{margin:0}
+a{color:inherit}
+:focus-visible{outline:4px solid var(--sun);outline-offset:3px}
+
+.utility{background:var(--navy);color:#fff;font:700 .9rem var(--body);text-align:center;padding:8px 16px;margin:0 calc(50% - 50vw);width:100vw}
+.utility span{color:var(--sun)}
+header.main{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--red);margin:0 calc(50% - 50vw);width:100vw;padding:0 max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px));box-shadow:0 4px 0 var(--red-dark)}
+header.main .in{max-width:1180px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:8px 0;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:#fff}
+.brand img{width:50px;height:50px;object-fit:contain;background:#fff;border-radius:50%;padding:4px;border:3px solid var(--sun)}
+.brand b{font:800 1.5rem/1 var(--display);display:block}
+.brand small{font:700 .72rem var(--body);letter-spacing:.18em;text-transform:uppercase;color:#ffe7a0;display:block;margin-top:2px}
+.shop{background:var(--sun);color:var(--navy);font:800 1rem var(--display);padding:9px 22px;border-radius:6px;text-decoration:none;box-shadow:0 3px 0 #c99a00;white-space:nowrap}
+.gradebar{display:flex;gap:6px;flex-wrap:wrap}
+.gradebar a{font:800 1rem var(--display);color:#fff;text-decoration:none;padding:6px 14px;border-radius:6px 6px 0 0;background:rgba(0,0,0,.18)}
+.gradebar a:hover{background:rgba(0,0,0,.34)}
+
+.hero{background:var(--sun);position:relative;overflow:hidden;padding-block:44px 0}
+.hero::before{content:"";position:absolute;inset:0;background:
+  radial-gradient(circle at 8% 20%,#fff 0 6px,transparent 7px),radial-gradient(circle at 22% 78%,var(--red) 0 7px,transparent 8px),
+  radial-gradient(circle at 48% 12%,var(--blue) 0 6px,transparent 7px),radial-gradient(circle at 70% 85%,#fff 0 6px,transparent 7px),
+  radial-gradient(circle at 92% 30%,var(--green) 0 7px,transparent 8px);opacity:.9}
+.hero .wrap{position:relative;display:grid;grid-template-columns:1.1fr .9fr;gap:30px;align-items:end}
+.hero .kicker{display:inline-block;background:var(--red);color:#fff;font:800 .95rem var(--display);padding:4px 16px;border-radius:999px;margin-bottom:14px;letter-spacing:.04em;text-transform:uppercase}
+.hero h1{color:var(--navy)}
+.hero h1 em{font-style:normal;color:var(--red)}
+.hero p.lead{font-size:1.25rem;font-weight:600;margin-top:16px;max-width:36ch;color:#2b2a14}
+.cta{display:flex;gap:14px;flex-wrap:wrap;margin-top:24px}
+.btn{display:inline-block;font:800 1.15rem var(--display);padding:13px 30px;border-radius:8px;text-decoration:none;background:var(--red);color:#fff;box-shadow:0 5px 0 var(--red-dark)}
+.btn:hover{transform:translateY(2px);box-shadow:0 3px 0 var(--red-dark)}
+.btn.navy{background:var(--navy);box-shadow:0 5px 0 #0a1c40}
+.hero .fan{position:relative;height:430px;min-width:0}
+.hero .fan img.cv{position:absolute;bottom:0;width:46%;border-radius:6px;box-shadow:0 12px 24px rgba(0,0,0,.28);border:4px solid #fff}
+.fan .a{left:0;transform:rotate(-9deg);bottom:22px!important}
+.fan .b{left:27%;z-index:2;width:50%!important}
+.fan .c{right:0;transform:rotate(9deg);bottom:22px!important}
+.fan .owl{position:absolute;left:-6%;bottom:-6px;width:36%;z-index:3}
+.zig{height:22px;background:linear-gradient(135deg,var(--paper) 25%,transparent 25%) -11px 0,linear-gradient(225deg,var(--paper) 25%,transparent 25%) -11px 0;background-size:22px 22px;background-color:var(--sun);margin:0 calc(50% - 50vw);width:100vw}
+
+section{padding-block:56px}
+.title{text-align:center;margin-bottom:30px}
+.title p{color:var(--muted);margin-top:8px;font-weight:600}
+.ribbon{display:inline-block;background:var(--red);color:#fff;font:800 1.05rem var(--display);padding:4px 22px;margin-bottom:10px;position:relative;letter-spacing:.05em;text-transform:uppercase}
+.ribbon::before,.ribbon::after{content:"";position:absolute;top:0;border:15px solid var(--red-dark);z-index:-1}
+.ribbon::before{left:-22px;border-left-color:transparent}
+.ribbon::after{right:-22px;border-right-color:transparent}
+
+.gtiles{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
+.gt{display:flex;flex-direction:column;align-items:center;gap:2px;text-decoration:none;color:#fff;border-radius:16px;padding:14px 6px 12px;box-shadow:0 5px 0 rgba(0,0,0,.22);min-width:0;transition:transform .15s}
+.gt:hover{transform:translateY(-4px)}
+.gt img{height:110px;width:auto;max-width:90%;object-fit:contain;background:rgba(255,255,255,.92);border-radius:50%;padding:8px;aspect-ratio:1;object-position:center}
+.gt b{font:800 1.5rem var(--display);margin-top:6px}
+.gt span{font:700 .85rem var(--body);opacity:.95}
+.g1{background:var(--blue)}.g2{background:var(--orange)}.g3{background:var(--green)}.g4{background:var(--red)}.g5{background:var(--purple)}.g6{background:var(--pink)}
+
+.subjects{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:20px}
+.sub{border-radius:18px;padding:26px;color:#fff;position:relative;overflow:hidden;min-width:0;box-shadow:0 6px 0 rgba(0,0,0,.2)}
+.sub h3{font-size:1.7rem}
+.sub p{margin-top:8px;font-weight:600;opacity:.97}
+.sub .big{position:absolute;right:-6px;bottom:-26px;font:800 7rem/1 var(--display);opacity:.18}
+.s-math{background:var(--blue)}.s-read{background:var(--green)}.s-logic{background:var(--purple)}
+
+.band{margin:0 calc(50% - 50vw);width:100vw;padding:46px max(16px,env(safe-area-inset-right,0px)) 50px max(16px,env(safe-area-inset-left,0px))}
+.band .in{max-width:1180px;margin:0 auto}
+.band .top{display:flex;align-items:center;gap:18px;margin-bottom:24px;flex-wrap:wrap}
+.band .top img{height:110px;width:110px;object-fit:contain;background:#fff;border-radius:50%;padding:8px;border:4px solid var(--navy)}
+.band .top h3{font-size:clamp(1.9rem,4vw,2.6rem);color:var(--navy)}
+.band .top p{font-weight:700;color:var(--muted)}
+.tri{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
+.bk{background:#fff;border-radius:12px;padding:14px 14px 18px;box-shadow:0 5px 0 rgba(18,48,107,.18);text-align:center;min-width:0;border:3px solid #fff}
+.bk img{width:100%;border-radius:4px;box-shadow:0 8px 16px rgba(0,0,0,.22);transition:transform .2s}
+.bk:hover img{transform:rotate(-1.5deg) translateY(-4px)}
+.bk h4{font-size:1.15rem;color:var(--navy);margin-top:14px;font-weight:800}
+.bk span{display:block;font-size:.9rem;font-weight:700;color:var(--muted);margin-bottom:12px}
+.bk a{display:inline-block;background:var(--red);color:#fff;font:800 .95rem var(--display);padding:7px 20px;border-radius:6px;text-decoration:none;box-shadow:0 3px 0 var(--red-dark)}
+.t1{background:#dbe9ff}.t2{background:#ffe6cf}.t3{background:#d8f3e3}.t4{background:#ffdcdc}.t5{background:#ebdcfb}.t6{background:#ffdcea}
+
+.notebook{background:#fff;border:3px solid var(--navy);border-radius:10px;padding:30px 30px 30px 78px;position:relative;background-image:repeating-linear-gradient(#fff 0 31px,#cfe0f7 31px 33px);box-shadow:8px 8px 0 var(--sun)}
+.notebook::before{content:"";position:absolute;left:52px;top:0;bottom:0;width:3px;background:#f08a8a}
+.notebook h3{color:var(--navy);margin-bottom:6px}
+.notebook ul{margin:12px 0 0;padding:0;list-style:none}
+.notebook li{line-height:33px;font-weight:700;padding-left:30px;position:relative}
+.notebook li::before{content:"\2713";position:absolute;left:0;color:var(--green);font-weight:800}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:34px;align-items:center}
+.two .photo{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.two .photo img{width:100%;border-radius:6px;border:4px solid #fff;box-shadow:0 8px 16px rgba(0,0,0,.2);background:#fff}
+.two .photo img:nth-child(1){transform:rotate(-4deg)}.two .photo img:nth-child(3){transform:rotate(4deg)}
+.cap{font:700 .85rem var(--body);text-align:center;color:var(--muted);margin-top:10px}
+
+.faq details{background:#fff;border:3px solid var(--navy);border-radius:10px;margin-bottom:12px;overflow:hidden}
+.faq summary{font:800 1.15rem var(--display);padding:14px 20px;cursor:pointer;color:var(--navy);background:#fff6d6;list-style-position:inside}
+.faq details p{padding:14px 20px 18px;color:var(--muted);font-weight:600}
+
+.final{background:var(--navy);color:#fff;text-align:center;border-radius:20px;padding:46px 22px;border:4px solid var(--sun)}
+.final h2{color:#fff}
+.final p{margin:10px auto 22px;max-width:44ch;font-weight:600}
+footer{background:var(--navy);color:#cdd8f5;margin:60px calc(50% - 50vw) 0;width:100vw;padding:34px max(16px,env(safe-area-inset-right,0px)) 40px max(16px,env(safe-area-inset-left,0px));border-top:8px solid var(--red)}
+footer .in{max-width:1180px;margin:0 auto;display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;font-weight:700;font-size:.95rem}
+footer b{font:800 1.3rem var(--display);color:#fff}
+
+@media(max-width:900px){.hero .wrap{grid-template-columns:1fr}.hero .fan{height:300px;max-width:520px}.gtiles{grid-template-columns:repeat(3,1fr)}.two{grid-template-columns:1fr}}
+@media(max-width:620px){.hero .fan{height:250px}.tri{grid-template-columns:1fr 1fr}.gradebar{display:none}.notebook{padding-left:60px}.notebook::before{left:38px}.band .top img{height:84px;width:84px}}
+@media(max-width:420px){.tri{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+
+.nav{display:flex;gap:2px;align-items:center}
+.nav>div{position:relative}
+.nav>div>a{display:block;font:800 1rem var(--display);color:#fff;text-decoration:none;padding:14px 14px}
+.nav>div:hover>a,.nav>div:focus-within>a{background:var(--red-dark)}
+.mega{display:none;position:absolute;left:0;top:100%;background:#fff;color:var(--ink);min-width:300px;padding:18px 22px;border-top:4px solid var(--sun);box-shadow:0 14px 28px rgba(0,0,0,.25);z-index:30}
+.nav>div:hover .mega,.nav>div:focus-within .mega{display:block}
+.mega h5{font:800 1.15rem var(--display);color:var(--navy);margin:0 0 2px}
+.mega p{font-size:.9rem;color:var(--muted);margin-bottom:10px;font-weight:600}
+.mega a{display:block;text-decoration:none;font-weight:800;padding:5px 0;color:var(--blue)}
+.mega a:hover{color:var(--red)}
+.search{background:#fff;padding:26px 0 8px;margin:0 calc(50% - 50vw);width:100vw;overflow:hidden}
+.search h2{text-align:center;font-size:1.7rem}
+.search p.s{text-align:center;color:var(--muted);font-weight:700;margin:4px 0 16px}
+.strip{display:flex;gap:14px;width:max-content;animation:slide 60s linear infinite;padding-bottom:20px}
+.strip img{height:190px;width:auto;border-radius:4px;box-shadow:0 6px 12px rgba(0,0,0,.25)}
+.strip:hover{animation-play-state:paused}
+@keyframes slide{to{transform:translateX(-50%)}}
+.promos{display:grid;gap:20px}
+.promo{display:grid;grid-template-columns:1fr 1.2fr;align-items:center;border-radius:18px;overflow:hidden;box-shadow:0 6px 0 rgba(0,0,0,.18)}
+.promo.rev{grid-template-columns:1.2fr 1fr}
+.promo .pt{padding:34px}
+.promo h3{font-size:clamp(1.7rem,3.6vw,2.4rem);margin-bottom:8px}
+.promo p{font-weight:700;margin-bottom:16px}
+.promo a.tl{font:800 1.1rem var(--display);text-decoration:underline;text-underline-offset:4px}
+.promo .pi{display:flex;justify-content:center;gap:14px;padding:22px;align-items:flex-end}
+.promo .pi img{height:230px;width:auto;border-radius:4px;box-shadow:0 8px 16px rgba(0,0,0,.25)}
+.p1{background:#ffe08a;color:var(--navy)}.p2{background:var(--blue);color:#fff}.p3{background:var(--green);color:#fff}
+.fcols{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr;gap:26px;max-width:1180px;margin:0 auto}
+.fcols h6{font:800 1.05rem var(--display);color:#fff;margin:0 0 8px}
+.fcols a{display:block;color:#cdd8f5;text-decoration:none;font-weight:700;padding:3px 0}
+.fcols a:hover{color:var(--sun)}
+.fbot{max-width:1180px;margin:24px auto 0;padding-top:16px;border-top:1px solid #34508f;font-size:.85rem;font-weight:700}
+@media(max-width:900px){.nav{display:none}.promo,.promo.rev{grid-template-columns:1fr}.promo.rev .pi{order:2}.fcols{grid-template-columns:1fr 1fr}}
+@media(prefers-reduced-motion:reduce){.strip{animation:none}}
+</style>
+
+<div class="utility"><span>FREE</span> answer key in every workbook &nbsp;&bull;&nbsp; Math, Reading &amp; Writing, Logic &nbsp;&bull;&nbsp; Grades 1 to 6</div>
+<header class="main"><div class="in">
+  <a class="brand" href="#top"><img src="img/owl.png" alt=""><span><b>Maple Hill</b><small>Learning Press</small></span></a>
+  <nav class="nav" aria-label="Main">
+    <div><a href="#grades">Shop by Grade</a><div class="mega"><h5>Shop by Grade</h5><p>Pick a grade to see all three workbooks.</p><a href="#grade1">Grade 1 &bull; Owl</a><a href="#grade2">Grade 2 &bull; Penguin</a><a href="#grade3">Grade 3 &bull; Fox</a><a href="#grade4">Grade 4 &bull; Panda</a><a href="#grade5">Grade 5 &bull; Raccoon</a><a href="#grade6">Grade 6 &bull; Beaver</a></div></div>
+    <div><a href="#subjects">Shop by Subject</a><div class="mega"><h5>Shop by Subject</h5><p>Three kinds of practice.</p><a href="#subjects">Math Practice</a><a href="#subjects">Reading &amp; Writing</a><a href="#subjects">Logic &amp; Brain Puzzles</a></div></div>
+    <div><a href="#inside">What's Inside</a><div class="mega"><h5>What's Inside</h5><p>Answer keys, parent notes and sample pages.</p><a href="#inside">Every workbook includes</a><a href="#inside">Sample pages</a></div></div>
+    <div><a href="#faq">Parent Corner</a><div class="mega"><h5>Parent Corner</h5><p>Answers for families.</p><a href="#faq">Which grade should we buy?</a><a href="#faq">Is there an answer key?</a><a href="#faq">Where do we buy?</a></div></div>
+  </nav>
+  <a class="shop" href="https://www.amazon.com/s?k=Maple+Hill+Learning+Press" target="_blank" rel="noopener">Shop on Amazon</a>
+</div></header>
+
+<div class="hero bleed" id="top"><div class="wrap">
+  <div style="padding-bottom:44px">
+    <span class="kicker">Gifted workbooks &bull; Grades 1&ndash;6</span>
+    <h1>Learning that keeps bright kids <em>busy</em> and <em>smiling.</em></h1>
+    <p class="lead">Math, reading and writing, and brain-teasing logic puzzles. One workbook for every grade, with an answer key and a new animal friend on every cover.</p>
+    <div class="cta"><a class="btn" href="https://www.amazon.com/s?k=Maple+Hill+Learning+Press" target="_blank" rel="noopener">Shop on Amazon</a><a class="btn navy" href="#grades">Shop by grade</a></div>
+  </div>
+  <div class="fan" aria-hidden="true">
+    <img class="cv a" src="img/g2_math.jpg" alt=""><img class="cv c" src="img/g6_logic.jpg" alt=""><img class="cv b" src="img/g4_reading.jpg" alt="">
+  </div>
+</div></div>
+<div class="zig"></div>
+<div class="search"><h2>Book Search</h2><p class="s">Browse every workbook, then pick your grade below.</p><div class="strip" aria-hidden="true"><img src="img/g1_math.jpg" alt="" loading="lazy"><img src="img/g1_reading.jpg" alt="" loading="lazy"><img src="img/g1_logic.jpg" alt="" loading="lazy"><img src="img/g2_math.jpg" alt="" loading="lazy"><img src="img/g2_reading.jpg" alt="" loading="lazy"><img src="img/g2_logic.jpg" alt="" loading="lazy"><img src="img/g3_math.jpg" alt="" loading="lazy"><img src="img/g3_reading.jpg" alt="" loading="lazy"><img src="img/g3_logic.jpg" alt="" loading="lazy"><img src="img/g4_math.jpg" alt="" loading="lazy"><img src="img/g4_reading.jpg" alt="" loading="lazy"><img src="img/g4_logic.jpg" alt="" loading="lazy"><img src="img/g5_math.jpg" alt="" loading="lazy"><img src="img/g5_reading.jpg" alt="" loading="lazy"><img src="img/g5_logic.jpg" alt="" loading="lazy"><img src="img/g6_math.jpg" alt="" loading="lazy"><img src="img/g6_reading.jpg" alt="" loading="lazy"><img src="img/g6_logic.jpg" alt="" loading="lazy"><img src="img/g1_math.jpg" alt="" loading="lazy"><img src="img/g1_reading.jpg" alt="" loading="lazy"><img src="img/g1_logic.jpg" alt="" loading="lazy"><img src="img/g2_math.jpg" alt="" loading="lazy"><img src="img/g2_reading.jpg" alt="" loading="lazy"><img src="img/g2_logic.jpg" alt="" loading="lazy"><img src="img/g3_math.jpg" alt="" loading="lazy"><img src="img/g3_reading.jpg" alt="" loading="lazy"><img src="img/g3_logic.jpg" alt="" loading="lazy"><img src="img/g4_math.jpg" alt="" loading="lazy"><img src="img/g4_reading.jpg" alt="" loading="lazy"><img src="img/g4_logic.jpg" alt="" loading="lazy"><img src="img/g5_math.jpg" alt="" loading="lazy"><img src="img/g5_reading.jpg" alt="" loading="lazy"><img src="img/g5_logic.jpg" alt="" loading="lazy"><img src="img/g6_math.jpg" alt="" loading="lazy"><img src="img/g6_reading.jpg" alt="" loading="lazy"><img src="img/g6_logic.jpg" alt="" loading="lazy"></div></div>
+
+<div class="wrap">
+<main>
+<section id="grades">
+  <div class="title"><span class="ribbon">Shop by grade</span><h2>Find your child's grade</h2><p>Tap a grade to see its math, reading and logic workbooks.</p></div>
+  <div class="gtiles">
+    <a class="gt g1" href="#grade1"><img src="img/owl.png" alt=""><b>Grade 1</b><span>Owl</span></a>
+    <a class="gt g2" href="#grade2"><img src="img/penguin.png" alt=""><b>Grade 2</b><span>Penguin</span></a>
+    <a class="gt g3" href="#grade3"><img src="img/fox.png" alt=""><b>Grade 3</b><span>Fox</span></a>
+    <a class="gt g4" href="#grade4"><img src="img/panda.png" alt=""><b>Grade 4</b><span>Panda</span></a>
+    <a class="gt g5" href="#grade5"><img src="img/raccoon.png" alt=""><b>Grade 5</b><span>Raccoon</span></a>
+    <a class="gt g6" href="#grade6"><img src="img/beaver.png" alt=""><b>Grade 6</b><span>Beaver</span></a>
+  </div>
+</section>
+
+<section id="subjects" style="padding-top:0">
+  <div class="title"><span class="ribbon">Shop by subject</span><h2>Three ways to grow</h2></div>
+  <div class="subjects">
+    <div class="sub s-math"><span class="big">+</span><h3>Math Practice</h3><p>Counting, coins and clocks, then multiplication, fractions and decimals.</p></div>
+    <div class="sub s-read"><span class="big">Aa</span><h3>Reading &amp; Writing</h3><p>Phonics, short stories, grammar, vocabulary and writing prompts.</p></div>
+    <div class="sub s-logic"><span class="big">?</span><h3>Logic &amp; Brain Puzzles</h3><p>Sudoku, patterns, riddles, mazes, secret codes and logic grids.</p></div>
+  </div>
+</section>
+</main>
+
+<div id="grade1" class="band t1"><div class="in">
+  <div class="top"><img src="img/owl.png" alt="Owl"><div><h3>Grade 1 with Owl</h3><p>Ages 6&ndash;7 &bull; Counting, phonics, patterns</p></div></div>
+  <div class="tri">
+    <div class="bk"><img src="img/g1_math.jpg" alt="Grade 1 Math Practice Workbook" loading="lazy"><h4>Math Practice</h4><span>66 pages</span><a href="https://www.amazon.com/s?k=Maple+Hill+Learning+Press+Grade+1+Math" target="_blank" rel="noopener">Find on Amazon</a></div>
+    <div class="bk"><img src="img/g1_reading.jpg" alt="Grade 1 Reading and Writing Workbook" loading="lazy"><h4>Reading &amp; Writing</h4><span>52 pages</span><a href="https://www.amazon.com/s?k=Maple+Hill+Learning+Press+Grade+1+Reading" target="_blank" rel="noopener">Find on Amazon</a></div>
+    <div class="bk"><img src="img/g1_logic.jpg" alt="Grade 1 Logic and Brain Puzzles" loading="lazy"><h4>Logic &amp; Brain Puzzles</h4><span>48 pages</span><a href="https://www.amazon.com/s?k=Maple+Hill+Learning+Press+Grade+1+Logic" target="_blank" rel="noopener">Find on Amazon</a></div>
+  </div>
+</div></div>
+
+<div id="grade2" class="band t2"><div class="in">
+  <div class="top"><img src="img/penguin.png" alt="Penguin"><div><h3>Grade 2 with Penguin</h3><p>Ages 7&ndash;8 &bull; Place value, spelling, sudoku</p></div></div>
+  <div class="tri">
+    <div class="bk"><img src="img/g2_math.jpg" alt="Grade 2 Math Practice Workbook" loading="lazy"><h4>Math Practice</h4><span>68 pages</span><a href="https://www.amazon.com/s?k=Maple+Hill+Learning+Press+Grade+2+Math" target="_blank" rel="noopener">Find on Amazon</a></div>
+    <div class="bk"><img src="img/g2_reading.jpg" alt="Grade 2 Reading and Writing Workbook" loading="lazy"><h4>Reading &amp; Writing</h4><span>50 pages</span><a href="https://www.amazon.com/s?k=Maple+Hill+Learning+Press+Grade+2+Reading" target="_blank" rel="noopener">Find on Amazon</a></div>
+    <div class="bk"><img src="img/g2_logic.jpg" alt="Grade 2 Logic and Brain Puzzles" loading="lazy"><h4>Logic &amp; Brain Puzzles</h4><span>52 pages</span><a href="https://www.amazon.com/s?k=Maple+Hill+Learning+Press+Grade+2+Logic" target="_blank" rel="noopener">Find on Amazon</a></div>
+  </div>
+</div></div>
+
+<div id="grade3" class="band t3"><div class="in">
+  <div class="top"><img src="img/fox.png" alt="Fox"><div><h3>Grade 3 with Fox</h3><p>Ages 8&ndash;9 &bull; Multiplication, stories, logic grids</p></div></div>
+  <div class="tri">
+    <div class="bk"><img src="img/g3_math.jpg" alt="Grade 3 Math Practice Workbook" loading="lazy"><h4>Math Practice</h4><span>72 pages</span><a href="https://www.amazon.com/s?k=Maple+Hill+Learning+Press+Grade+3+Math" target="_blank" rel="noopener">Find on Amazon</a></div>
+    <div class="bk"><img src="img/g3_reading.jpg" alt="Grade 3 Reading and Writing Workbook" loading="lazy"><h4>Reading &amp; Writing</h4><span>64 pages</span><a href="https://www.amazon.com/s?k=Maple+Hill+Learning+Press+Grade+3+Reading" target="_blank" rel="noopener">Find on Amazon</a></div>
+    <div class="bk"><img src="img/g3_logic.jpg" alt="Grade 3 Logic and Brain Puzzles" loading="lazy"><h4>Logic &amp; Brain Puzzles</h4><span>62 pages</span><a href="https://www.amazon.com/s?k=Maple+Hill+Learning+Press+Grade+3+Logic" target="_blank" rel="noopener">Find on Amazon</a></div>
+  </div>
+</div></div>
+
+<div id="grade4" class="band t4"><div class="in">
+  <div class="top"><img src="img/panda.png" alt="Panda"><div><h3>Grade 4 with Panda</h3><p>Ages 9&ndash;10 &bull; Fractions, word roots, magic squares</p></div></div>
+  <div class="tri">
+    <div class="bk"><img src="img/g4_math.jpg" alt="Grade 4 Math Practice Workbook" loading="lazy"><h4>Math Practice</h4><span>74 pages</span><a href="https://www.amazon.com/s?k=Maple+Hill+Learning+Press+Grade+4+Math" target="_blank" rel="noopener">Find on Amazon</a></div>
+    <div class="bk"><img src="img/g4_reading.jpg" alt="Grade 4 Reading and Writing Workbook" loading="lazy"><h4>Reading &amp; Writing</h4><span>66 pages</span><a href="https://www.amazon.com/s?k=Maple+Hill+Learning+Press+Grade+4+Reading" target="_blank" rel="noopener">Find on Amazon</a></div>
+    <div class="bk"><img src="img/g4_logic.jpg" alt="Grade 4 Logic and Brain Puzzles" loading="lazy"><h4>Logic &amp; Brain Puzzles</h4><span>62 pages</span><a href="https://www.amazon.com/s?k=Maple+Hill+Learning+Press+Grade+4+Logic" target="_blank" rel="noopener">Find on Amazon</a></div>
+  </div>
+</div></div>
+
+<div id="grade5" class="band t5"><div class="in">
+  <div class="top"><img src="img/raccoon.png" alt="Raccoon"><div><h3>Grade 5 with Raccoon</h3><p>Ages 10&ndash;11 &bull; Decimals, grammar, 9x9 sudoku</p></div></div>
+  <div class="tri">
+    <div class="bk"><img src="img/g5_math.jpg" alt="Grade 5 Math Practice Workbook" loading="lazy"><h4>Math Practice</h4><span>72 pages</span><a href="https://www.amazon.com/s?k=Maple+Hill+Learning+Press+Grade+5+Math" target="_blank" rel="noopener">Find on Amazon</a></div>
+    <div class="bk"><img src="img/g5_reading.jpg" alt="Grade 5 Reading and Writing Workbook" loading="lazy"><h4>Reading &amp; Writing</h4><span>74 pages</span><a href="https://www.amazon.com/s?k=Maple+Hill+Learning+Press+Grade+5+Reading" target="_blank" rel="noopener">Find on Amazon</a></div>
+    <div class="bk"><img src="img/g5_logic.jpg" alt="Grade 5 Logic and Brain Puzzles" loading="lazy"><h4>Logic &amp; Brain Puzzles</h4><span>62 pages</span><a href="https://www.amazon.com/s?k=Maple+Hill+Learning+Press+Grade+5+Logic" target="_blank" rel="noopener">Find on Amazon</a></div>
+  </div>
+</div></div>
+
+<div id="grade6" class="band t6"><div class="in">
+  <div class="top"><img src="img/beaver.png" alt="Beaver"><div><h3>Grade 6 with Beaver</h3><p>Ages 11&ndash;12 &bull; Ratios, analogies, advanced puzzles</p></div></div>
+  <div class="tri">
+    <div class="bk"><img src="img/g6_math.jpg" alt="Grade 6 Math Practice Workbook" loading="lazy"><h4>Math Practice</h4><span>58 pages</span><a href="https://www.amazon.com/s?k=Maple+Hill+Learning+Press+Grade+6+Math" target="_blank" rel="noopener">Find on Amazon</a></div>
+    <div class="bk"><img src="img/g6_reading.jpg" alt="Grade 6 Reading and Writing Workbook" loading="lazy"><h4>Reading &amp; Writing</h4><span>60 pages</span><a href="https://www.amazon.com/s?k=Maple+Hill+Learning+Press+Grade+6+Reading" target="_blank" rel="noopener">Find on Amazon</a></div>
+    <div class="bk"><img src="img/g6_logic.jpg" alt="Grade 6 Logic and Brain Puzzles" loading="lazy"><h4>Logic &amp; Brain Puzzles</h4><span>64 pages</span><a href="https://www.amazon.com/s?k=Maple+Hill+Learning+Press+Grade+6+Logic" target="_blank" rel="noopener">Find on Amazon</a></div>
+  </div>
+</div></div>
+
+<section style="padding-top:10px">
+  <div class="promos">
+    <div class="promo p1"><div class="pt"><h3>One book for every grade</h3><p>Math, reading and writing, and logic puzzles, each written for its own grade.</p><a class="tl" href="#grades">Shop by grade</a></div><div class="pi"><img src="img/g1_math.jpg" alt=""><img src="img/g3_reading.jpg" alt=""><img src="img/g5_logic.jpg" alt=""></div></div>
+    <div class="promo p2 rev"><div class="pi"><img src="img/owl.png" alt="" style="height:200px;box-shadow:none"><img src="img/panda.png" alt="" style="height:200px;box-shadow:none"><img src="img/beaver.png" alt="" style="height:200px;box-shadow:none"></div><div class="pt"><h3>Meet the class</h3><p>A new animal friend for every grade, on the cover and through the pages.</p><a class="tl" href="#grades">Meet the animals</a></div></div>
+    <div class="promo p3"><div class="pt"><h3>Answer key in every book</h3><p>Check each page together at the back, plus a certificate for finishing.</p><a class="tl" href="#inside">See what is inside</a></div><div class="pi"><img src="img/sample-math.jpg" alt=""><img src="img/sample-logic.jpg" alt=""></div></div>
+  </div>
+</section>
+
+<section id="inside">
+  <div class="two">
+    <div class="notebook">
+      <h3>What is inside every book</h3>
+      <ul>
+        <li>A full answer key at the back</li>
+        <li>Large print with room to write</li>
+        <li>A note for parents and teachers</li>
+        <li>Challenge pages for kids who want more</li>
+        <li>A certificate to sign and date</li>
+        <li>Original puzzles, stories and problems</li>
+      </ul>
+    </div>
+    <div>
+      <div class="photo">
+        <img src="img/sample-math.jpg" alt="Sample math page about telling time" loading="lazy">
+        <img src="img/sample-reading.jpg" alt="Sample reading page with a short story" loading="lazy">
+        <img src="img/sample-logic.jpg" alt="Sample logic page with a maze" loading="lazy">
+      </div>
+      <p class="cap">Sample pages from the Grade 1 books: math, reading and logic.</p>
+    </div>
+  </div>
+</section>
+
+<section class="faq" id="faq">
+  <div class="title"><span class="ribbon">Parent corner</span><h2>Questions families ask</h2></div>
+  <details open><summary>What does "gifted" mean here?</summary><p>These workbooks go a step beyond a typical grade-level worksheet, for kids who are ready for more. They are not a test or an official program.</p></details>
+  <details><summary>Which grade should we buy?</summary><p>Start with your child's current grade. If it feels easy, try the next one up. The pages build step by step, so it is simple to move around.</p></details>
+  <details><summary>Are the pages in color?</summary><p>The covers are full color. The inside pages are black and white, which keeps the price low and makes them easy to photocopy for your own family.</p></details>
+  <details><summary>Is there an answer key?</summary><p>Yes. Every book has a full answer key at the back.</p></details>
+  <details><summary>Where do I buy them?</summary><p>On Amazon. Use any "Find on Amazon" button, or search for Maple Hill Learning Press. New titles are being added over the coming weeks.</p></details>
+</section>
+
+<section>
+  <div class="final"><h2>Ready to start the school year strong?</h2><p>Pick a grade, pick a subject, and let the animals do the cheering.</p><a class="btn" href="https://www.amazon.com/s?k=Maple+Hill+Learning+Press" target="_blank" rel="noopener">Shop on Amazon</a></div>
+</section>
+</div>
+
+<footer><div class="fcols">
+  <div><b>Maple Hill Learning Press</b><p style="margin-top:8px;font-weight:600">Workbooks for bright kids, Grades 1 to 6.</p></div>
+  <div><h6>Shop</h6><a href="#grades">By grade</a><a href="#subjects">By subject</a><a href="https://www.amazon.com/s?k=Maple+Hill+Learning+Press" target="_blank" rel="noopener">On Amazon</a></div>
+  <div><h6>Grades</h6><a href="#grade1">Grade 1</a><a href="#grade2">Grade 2</a><a href="#grade3">Grade 3</a><a href="#grade4">Grade 4</a><a href="#grade5">Grade 5</a><a href="#grade6">Grade 6</a></div>
+  <div><h6>Parents</h6><a href="#inside">What is inside</a><a href="#faq">Questions</a></div>
+</div><div class="fbot">Printed and sold through Amazon. &copy; Maple Hill Learning Press. All rights reserved.</div></footer>
