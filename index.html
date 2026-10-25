@@ -315,3 +315,17 @@ footer b{font:800 1.3rem var(--display);color:#fff}
   <div><h6>Grades</h6><a href="#grade1">Grade 1</a><a href="#grade2">Grade 2</a><a href="#grade3">Grade 3</a><a href="#grade4">Grade 4</a><a href="#grade5">Grade 5</a><a href="#grade6">Grade 6</a></div>
   <div><h6>Parents</h6><a href="#inside">What is inside</a><a href="#faq">Questions</a></div>
 </div><div class="fbot">Printed and sold through Amazon. &copy; Maple Hill Learning Press. All rights reserved.</div></footer>
+
+<script>
+(function(){
+  var D={US:"com",CA:"ca",GB:"co.uk",UK:"co.uk",IE:"ie",DE:"de",AT:"de",FR:"fr",IT:"it",ES:"es",NL:"nl",BE:"com.be",SE:"se",PL:"pl",TR:"com.tr",AE:"ae",SA:"sa",EG:"eg",IN:"in",JP:"co.jp",AU:"com.au",NZ:"com.au",BR:"com.br",MX:"com.mx",SG:"sg",ZA:"co.za"};
+  var TZ=[[/^America\/(Toronto|Vancouver|Edmonton|Winnipeg|Halifax|St_Johns|Regina|Montreal|Moncton|Glace_Bay|Whitehorse|Yellowknife|Iqaluit)/,"CA"],[/^Europe\/London/,"GB"],[/^Europe\/Dublin/,"IE"],[/^Australia\//,"AU"],[/^Pacific\/Auckland/,"NZ"],[/^Europe\/(Berlin|Vienna)/,"DE"],[/^Europe\/Paris/,"FR"],[/^Europe\/Rome/,"IT"],[/^Europe\/Madrid/,"ES"],[/^Europe\/Amsterdam/,"NL"],[/^Asia\/Tokyo/,"JP"],[/^Asia\/(Kolkata|Calcutta)/,"IN"],[/^Asia\/Dubai/,"AE"],[/^America\/Mexico_City/,"MX"],[/^America\/Sao_Paulo/,"BR"],[/^Asia\/Singapore/,"SG"],[/^Africa\/Johannesburg/,"ZA"]];
+  var c="";
+  try{var z=Intl.DateTimeFormat().resolvedOptions().timeZone||"";for(var i=0;i<TZ.length;i++){if(TZ[i][0].test(z)){c=TZ[i][1];break}}}catch(e){}
+  if(!c){try{var l=(navigator.languages&&navigator.languages.length?navigator.languages:[navigator.language||""]);for(var j=0;j<l.length;j++){var m=/[-_]([A-Za-z]{2})$/.exec(l[j]);if(m&&D[m[1].toUpperCase()]){c=m[1].toUpperCase();break}}}catch(e){}}
+  var tld=D[c]||"com";
+  if(tld==="com")return;
+  var a=document.querySelectorAll('a[href*="www.amazon.com/"]');
+  for(var k=0;k<a.length;k++){a[k].href=a[k].href.replace("www.amazon.com","www.amazon."+tld)}
+})();
+</script>
