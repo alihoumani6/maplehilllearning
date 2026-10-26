@@ -197,6 +197,18 @@ body[data-s=hero]{background:radial-gradient(circle at 50% 18%,#fff3b8 0,#ffe08a
 @keyframes fbup{from{transform:translateY(100%)}}
 .lf{background:transparent;border-top:0}
 @media (max-width:400px){.sc.l{right:calc(100% + 56px)}.sc.r{left:calc(100% + 56px)}.sc{font-size:28px}}
+
+/* ---- seasonal themes ---- */
+#fx{position:fixed;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+#fx span{position:absolute;top:-70px;left:var(--x);font-size:var(--sz);opacity:.9;animation:fxfall var(--dur) linear var(--dl) infinite;filter:drop-shadow(0 2px 0 rgba(0,0,0,.08))}
+#fx.rise span{top:auto;bottom:-70px;animation-name:fxrise}
+#fx.float span{top:var(--y);bottom:auto;animation-name:fxfloat;opacity:.8}
+@keyframes fxfall{0%{transform:translate(0,-70px) rotate(0)}50%{transform:translate(calc(var(--dx)*.5),55vh) rotate(180deg)}100%{transform:translate(var(--dx),112vh) rotate(360deg)}}
+@keyframes fxrise{0%{transform:translate(0,0) rotate(-8deg)}50%{transform:translate(calc(var(--dx)*.5),-55vh) rotate(8deg)}100%{transform:translate(var(--dx),-115vh) rotate(-8deg)}}
+@keyframes fxfloat{0%,100%{transform:translate(0,0) rotate(-6deg)}50%{transform:translate(var(--dx),-26px) rotate(8deg)}}
+.thb{display:flex;align-items:center;gap:10px;margin:2px 0 12px;padding:9px 14px;border-radius:16px;background:rgba(255,255,255,.78);border:2px solid #fff;box-shadow:0 3px 0 rgba(0,0,0,.08);font-weight:800;font-size:14px;color:var(--navy)}
+.thb b{font-size:26px;animation:bob 2.2s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){#fx{display:none}}
 body{overflow-x:hidden}
 </style></head><body>
 <span class="cld" aria-hidden="true">☁️</span><span class="cld b" aria-hidden="true">☁️</span><div class="wrap" id="app"></div><nav class="nav" id="nav"></nav>
@@ -284,7 +296,53 @@ async function scheduleRem(){const ln=PL('LocalNotifications');if(!NATIVE||!ln)r
 function topbar(p){const goalPct=Math.min(100,Math.round(p.q.xp/p.goal*100));
  return `<div class="top"><div class="chip" data-act="tab" data-a="me">${avh(p,28)}<span>${p.name}</span></div><div style="display:flex;gap:5px"><div class="chip" data-act="tab" data-a="me">🔥${p.streak}</div><div class="chip" data-act="tab" data-a="quests">💎${p.gems}</div><div class="chip" data-act="${isPlus()?'tab':'heartinfo'}" data-a="me">${isPlus()?'❤️∞':'❤️'+p.hearts}</div>${isPlus()?'':'<div class="chip plus" data-act="paywall">PLUS</div>'}</div></div>`}
 function adBanner(){return''}
-function render(){const p=P();let h='';$('nav').style.display='none';document.body.dataset.s=(!p||S.adding)?'hero':(S.tab=='learn'?S.subj:'math');
+
+/* ---- seasonal themes ---- */
+const THEMES={
+ halloween:{n:'Halloween',e:'🎃',bg:{math:['#ffe3c4','#fff0dc'],read:['#ffd6a8','#ffeedd'],logic:['#e4d6fb','#f1eafd'],hero:['#ffe0a8','#ffc78a','#ffe9d6']},cld:['🦇','👻'],fx:['🦇','🎃','👻','🍬','🕸️','🌙'],mode:'float',
+  scn:{math:['🎃','👻','🕸️','🦇','🍬','🌕'],read:['📚','🕯️','🦉','🎃','🍂','🧙'],logic:['🔮','🧪','⭐','🎲','💡','🪄']},msg:'Happy Halloween! Spooky-cute theme is on.'},
+ christmas:{n:'Christmas',e:'🎄',bg:{math:['#d8ecff','#eef7ff'],read:['#ffdede','#fff0f0'],logic:['#d9f3e2','#eefaf2'],hero:['#fff0c8','#ffd6d6','#e6f6ea']},cld:['❄️','☃️'],fx:['❄️','❄️','⭐','🎄','🎁','❄️'],mode:'fall',
+  scn:{math:['🎄','⛄','🎁','❄️','🦌','⭐'],read:['📚','🕯️','🎅','🎄','🧦','✏️'],logic:['🧩','🔔','⭐','🎁','💡','🪄']},msg:'Happy holidays! Snowy theme is on.'},
+ easter:{n:'Easter & Spring',e:'🐣',bg:{math:['#dff5e7','#f1fbf4'],read:['#ffe0ee','#fff0f6'],logic:['#e7e0fb','#f3f0fd'],hero:['#fff3b8','#ffd9ec','#e4f7e9']},cld:['☁️','🐇'],fx:['🌷','🐣','🥚','🦋','🌸','🐇'],mode:'rise',
+  scn:{math:['🌷','🐣','🥕','🦋','🥚','🐇'],read:['📚','🌷','🐣','🦉','🥚','✏️'],logic:['🧩','🥚','⭐','🐇','💡','🪄']},msg:'Happy spring! Easter egg theme is on.'},
+ summer:{n:'Summer',e:'☀️',bg:{math:['#c6ebff','#e6f7ff'],read:['#fff0b0','#fff8d9'],logic:['#d3f4ec','#ecfbf7'],hero:['#fff3a8','#ffe08a','#d9f2ff']},cld:['☀️','☁️'],fx:['🫧','🍦','🐚','🌊','☀️','🏖️'],mode:'rise',
+  scn:{math:['🌴','🏖️','🍦','🐚','🦀','🌊'],read:['📚','🍉','🕶️','🦉','🌴','✏️'],logic:['🧩','🏐','⭐','🍦','💡','🪄']},msg:'Summer vibes! Beach theme is on.'},
+ spring:{n:'Spring',e:'🌸',bg:{math:['#dcf3e6','#f0fbf5'],read:['#ffe1ec','#fff2f7'],logic:['#e6e0fa','#f3f0fd'],hero:['#fff3c0','#ffdcea','#e1f6e8']},cld:['☁️','🦋'],fx:['🌸','🌼','🦋','🐝','🌷','🌸'],mode:'fall',
+  scn:{math:['🌸','🌼','🐝','🦋','🌷','🌱'],read:['📚','🌷','🐞','🦉','🌼','✏️'],logic:['🧩','🌈','⭐','🦋','💡','🪄']},msg:'Spring is here! Flower theme is on.'},
+ autumn:{n:'Autumn',e:'🍁',bg:{math:['#ffe6c8','#fff2df'],read:['#ffdcb8','#ffeedd'],logic:['#efdcf5','#f7edfb'],hero:['#ffe0a0','#ffc48a','#ffe9d6']},cld:['🍂','☁️'],fx:['🍁','🍂','🍁','🌰','🍄','🍂'],mode:'fall',
+  scn:{math:['🍁','🍂','🌰','🦊','🍄','🐿️'],read:['📚','🍂','🦉','🍎','🍁','✏️'],logic:['🧩','🍁','⭐','🌰','💡','🪄']},msg:'Cozy autumn! Falling leaves theme is on.'},
+ winter:{n:'Winter',e:'⛄',bg:{math:['#d6ecff','#eef7ff'],read:['#e2e8fb','#f2f4fd'],logic:['#e3dcf8','#f1eefc'],hero:['#e8f4ff','#cfe6ff','#f4f9ff']},cld:['❄️','☁️'],fx:['❄️','❄️','⛄','🧣','❄️','⭐'],mode:'fall',
+  scn:{math:['⛄','❄️','🧣','🐧','🌲','⛷️'],read:['📚','☕','🧣','🦉','❄️','✏️'],logic:['🧩','❄️','⭐','🔮','💡','🪄']},msg:'Brrr! Snowy winter theme is on.'},
+ valentine:{n:'Valentine’s',e:'💖',bg:{math:['#ffe0ea','#fff0f5'],read:['#ffd9e6','#ffeef4'],logic:['#ece0fa','#f6effd'],hero:['#ffe3ec','#ffc7da','#ffeef3']},cld:['💗','☁️'],fx:['💖','💝','🌹','🦋','💗','✨'],mode:'rise',
+  scn:{math:['💖','🌹','🦋','💌','🧸','💝'],read:['📚','💌','🦉','🌹','💖','✏️'],logic:['🧩','💘','⭐','💝','💡','🪄']},msg:'Spread the love! Heart theme is on.'},
+ school:{n:'Back to School',e:'🎒',bg:{math:['#d9eefc','#eef8ff'],read:['#fff0c4','#fff8de'],logic:['#e7dff8','#f3effd'],hero:['#fff1b0','#ffe39a','#ffeed2']},cld:['☁️','🍎'],fx:['✏️','📚','🍎','🎒','🍂','📏'],mode:'fall',
+  scn:{math:['🍎','📏','🎒','🦋','🍂','🐝'],read:['📚','🖍️','🍎','🦉','🍂','✏️'],logic:['🧩','🔬','⭐','🎲','💡','🪄']},msg:'Back to school! Let’s learn something new.'}
+};
+const THORDER=['auto','halloween','christmas','easter','summer','spring','autumn','winter','valentine','school','off'];
+function seasonKey(dt){dt=dt||new Date();const m=dt.getMonth()+1,d=dt.getDate();
+ if(m==10)return'halloween';if(m==11)return d==1?'halloween':'autumn';if(m==12)return'christmas';if(m==1)return'winter';
+ if(m==2)return d<=14?'valentine':'winter';if(m==3)return d<10?'winter':'spring';if(m==4)return'easter';if(m==5)return'spring';
+ if(m==6)return d<15?'spring':'summer';if(m==7||m==8)return'summer';return'school'}
+function themeKey(){let q='';try{q=new URLSearchParams(location.search).get('theme')||''}catch(e){}
+ if(q&&(THEMES[q]||q=='off'))return q=='off'?null:q;
+ const c=S.theme||'auto';if(c=='off')return null;if(THEMES[c])return c;return seasonKey()}
+function TH(){const k=themeKey();return k?THEMES[k]:null}
+function themeScn(sub){const t=TH();return t&&t.scn&&t.scn[sub]||null}
+function themeLabel(){const c=S.theme||'auto';if(c=='off')return'Off';if(c=='auto')return'Auto · '+THEMES[seasonKey()].n;return THEMES[c].e+' '+THEMES[c].n}
+function themeBanner(){const t=TH();return t?`<div class="thb"><b aria-hidden="true">${t.e}</b><span>${t.msg}</span></div>`:''}
+let _thApplied=null;
+function applyTheme(){const k=themeKey();if(k===_thApplied)return;_thApplied=k;const t=k?THEMES[k]:null;
+ let st=document.getElementById('thcss');if(!st){st=document.createElement('style');st.id='thcss';document.head.appendChild(st)}
+ const de=document.documentElement;if(k)de.dataset.th=k;else delete de.dataset.th;
+ if(t){const g=a=>`linear-gradient(180deg,${a[0]} 0,${a[1]} 220px,#fffdf6 560px) fixed`,l=a=>`linear-gradient(180deg,${a[0]},#fffdf6 340px)`,b=t.bg,hh=b.hero;
+  st.textContent=`html[data-th] body[data-s=math]{background:${g(b.math)}}html[data-th] body[data-s=read]{background:${g(b.read)}}html[data-th] body[data-s=logic]{background:${g(b.logic)}}html[data-th] body[data-s=hero]{background:radial-gradient(circle at 50% 18%,${hh[0]} 0,${hh[1]} 40%,${hh[2]} 100%) fixed}html[data-th] #lesson{background:${l(b.math)}}html[data-th] #lesson[data-s=read]{background:${l(b.read)}}html[data-th] #lesson[data-s=logic]{background:${l(b.logic)}}`;
+ }else st.textContent='';
+ const cl=document.querySelectorAll('.cld');cl.forEach((c,i)=>{c.textContent=t?t.cld[i%2]:'☁️'});
+ let f=document.getElementById('fx');if(!f){f=document.createElement('div');f.id='fx';f.setAttribute('aria-hidden','true');document.body.insertBefore(f,document.body.firstChild)}
+ f.innerHTML='';f.className=t?t.mode:'';if(!t)return;
+ let r=7;const rnd=()=>(r=(r*9301+49297)%233280)/233280;
+ for(let i=0;i<14;i++){const sp=document.createElement('span');sp.textContent=t.fx[i%t.fx.length];sp.style.cssText=`--x:${Math.round(rnd()*94)}%;--y:${Math.round(8+rnd()*80)}%;--sz:${Math.round(18+rnd()*18)}px;--dur:${Math.round(12+rnd()*12)}s;--dl:-${Math.round(rnd()*20)}s;--dx:${Math.round((rnd()-.5)*90)}px`;f.appendChild(sp)}}
+function render(){const p=P();let h='';$('nav').style.display='none';document.body.dataset.s=(!p||S.adding)?'hero':(S.tab=='learn'?S.subj:'math');applyTheme();
  if(!p||S.adding){h=onb();}else{rollover(p);const t=S.tab;
   h=topbar(p)+(t=='learn'?vLearn(p):t=='practice'?vPractice(p):t=='league'?vLeague(p):t=='quests'?vQuests(p):vMe(p));
   $('nav').style.display='flex';$('nav').innerHTML=[['learn','🗺️','Learn'],['practice','🎯','Practice'],['league','🏆','League'],['quests','🎁','Quests'],['me','🙂','Me']].map(a=>`<button data-act="tab" data-a="${a[0]}" class="${t==a[0]?'on':''}"><b>${a[1]}</b>${a[2]}</button>`).join('')}
@@ -297,7 +355,7 @@ function onb(){const d=S.draft,o=S.onb;const dots=`<div class="dots">${[0,1,2,3,
  return dots+`<div class="step"><h2>Ready, ${d.name||'friend'}!</h2><div class="card"><h3>Free forever</h3>All lessons, streaks, leagues and quests. 5 hearts that refill over time, or top up any time.</div><div class="card" style="border-color:var(--purple)"><h3>Maple Leap Plus ✨</h3>Unlimited hearts · Mistakes practice · Weekly parent report. <b>7 days free.</b></div><button class="btn red full" data-act="finishonb" data-a="0">Start learning (free)</button><p></p><button class="btn purple full" data-act="finishonb" data-a="1">Try Plus free for 7 days</button></div>`}
 function starsHtml(n){return `<span class="stv" aria-label="${n} of 3 stars">${'★'.repeat(n)}<i>${'★'.repeat(3-n)}</i></span>`}
 function vLearn(p){const sb=SUBJ[S.subj],d=p.prog[p.grade+S.subj]||0;const m=MASC[p.av][0];
- let h=`<div class="tabs">${Object.keys(SUBJ).map(k=>`<button class="tab" data-act="subj" data-a="${k}" style="${k==S.subj?`background:${SUBJ[k].c};color:#fff;border-color:transparent;box-shadow:0 3px 0 rgba(0,0,0,.25)`:''}">${SUBJ[k].e} ${SUBJ[k].n}</button>`).join('')}</div>`;
+ let h=`<div class="tabs">${Object.keys(SUBJ).map(k=>`<button class="tab" data-act="subj" data-a="${k}" style="${k==S.subj?`background:${SUBJ[k].c};color:#fff;border-color:transparent;box-shadow:0 3px 0 rgba(0,0,0,.25)`:''}">${SUBJ[k].e} ${SUBJ[k].n}</button>`).join('')}</div>`;h+=themeBanner();
  if(p.q.d===dk()&&p.q.xp<p.goal)h+=`<div class="card" style="padding:10px 14px"><div class="row" style="margin:0"><span>🎯 Daily goal</span><span>${p.q.xp}/${p.goal} XP</span></div><div class="meter"><i style="width:${p.q.xp/p.goal*100}%"></i></div></div>`;
  for(let u=0;u<UNITS;u++){const un=sb.units[u];h+=`<div class="unit" style="background:${sb.c}"><div style="flex:1"><small>GRADE ${p.grade} · UNIT ${u+1}</small><h3>${un[0]}</h3><p>${un[1]}</p></div><span style="font-size:34px">${sb.e}</span></div><div class="path">`;
   const seq=['l','l','c','l','l','t'];let li=0;
@@ -305,7 +363,7 @@ function vLearn(p){const sb=SUBJ[S.subj],d=p.prog[p.grade+S.subj]||0;const m=MAS
    if(k=='c'){const id=p.grade+S.subj+u,open=(d>=u*UL+2),got=p.chests[id];node=`<button class="node chest ${open&&!got?'cur':(open?'done':'lock')}" data-act="chest" data-a="${id}">${got?'✔':'🎁'}</button>`}
    else{const n=u*UL+li;li++;const st=n<d?'done':(n==d?'cur':'lock');const isT=k=='t';
     node=`${n==d?'<div class="tag">START</div>':''}${n==d?`<span class="pm">${avh(p,62,'idle')}</span>`:''}<button class="node ${st}" aria-label="${isT?'Unit test':'Lesson '+((n%UL)+1)}, ${st=='lock'?'locked':(st=='done'?'completed':'ready')}" data-act="node" data-a="${n}" style="background:${isT?'var(--orange)':sb.c}">${st=='lock'?'🔒':(isT?'🏆':(n%UL)+1)}</button>${st=='done'?starsHtml(p.stars[p.grade+S.subj+n]||1):''}`}
-   const SCN={math:['🌳','🌼','🍄','🦋','🌻','🐝'],read:['📚','🌷','🕯️','🦉','🍂','✏️'],logic:['🧩','🔮','⭐','🎲','💡','🪄']}[S.subj]||[];const sc=SCN.length?`<span class="sc ${off>0?'l':'r'}" style="animation-delay:-${(j*7+u*3)%9/3}s">${SCN[(j+u*2)%SCN.length]}</span>`:'';h+=`<div class="pn" style="transform:translateX(${off}px)">${node}${sc}</div>`});h+='</div>'}
+   const SCN=themeScn(S.subj)||{math:['🌳','🌼','🍄','🦋','🌻','🐝'],read:['📚','🌷','🕯️','🦉','🍂','✏️'],logic:['🧩','🔮','⭐','🎲','💡','🪄']}[S.subj]||[];const sc=SCN.length?`<span class="sc ${off>0?'l':'r'}" style="animation-delay:-${(j*7+u*3)%9/3}s">${SCN[(j+u*2)%SCN.length]}</span>`:'';h+=`<div class="pn" style="transform:translateX(${off}px)">${node}${sc}</div>`});h+='</div>'}
  if(d>=TOTAL)h+=`<div class="card" style="text-align:center"><h3>🏆 Path complete!</h3>${m} is so proud. Replay any lesson for XP or try another subject.<br><br><button class="btn sm" data-act="node" data-a="r">Practise again</button></div>`;
  return h+adBanner(p)}
 function vPractice(p){const tot=p.lessons;return `<h2 style="color:var(--navy);margin:8px 0">Practice</h2>
@@ -335,7 +393,7 @@ function vMe(p){const L=LEAGUES[p.league];const t=dk(),d0=pd(t);const first=new 
  ${isPlus()?`<div class="card" style="border-color:var(--purple)"><h3>✨ Maple Leap ${S.plan.tier=='family'?'Family':'Plus'}</h3>Unlimited hearts · Mistakes practice · Weekly parent report. Manage in the Parent Zone.</div>`:`<div class="card" style="border-color:var(--purple);background:#f8f3ff"><h3>Try Maple Leap Plus</h3>Unlimited hearts, mistakes practice and a weekly parent report. 7 days free.<br><br><button class="btn sm purple" data-act="paywall">Try 7 days free</button></div>`}
  <div class="card"><div class="row" style="margin:0"><span>👪 ${AU?AU.email:'Not signed in'}</span><button class="btn sm ghost" data-act="${AU?'signout':'acct'}">${AU?'Sign out':'Sign in'}</button></div>${testOn()?'<p class="fine" style="text-align:left">Test account is on.</p>':''}</div>
   <div class="card"><h3>Badges</h3>${BADGES.map(b=>`<span class="bd ${b[2](p)?'':'off'}" title="${b[1]}">${b[0]}</span>`).join('')}</div>
- <div class="card"><div class="row"><span>Switch / add child</span><button class="btn sm ghost" data-act="profiles">Open</button></div><div class="row"><span>Sound &amp; haptics</span><button class="btn sm ghost" data-act="snd">${S.snd?'On':'Off'}</button></div><div class="row"><span>👪 Parent Zone</span><button class="btn sm blue" data-act="parent">Open</button></div></div>
+ <div class="card"><div class="row"><span>Switch / add child</span><button class="btn sm ghost" data-act="profiles">Open</button></div><div class="row"><span>Sound &amp; haptics</span><button class="btn sm ghost" data-act="snd">${S.snd?'On':'Off'}</button></div><div class="row"><span>🎨 Seasonal theme</span><button class="btn sm ghost" data-act="theme">${themeLabel()}</button></div><div class="row"><span>👪 Parent Zone</span><button class="btn sm blue" data-act="parent">Open</button></div></div>
  <p class="fine"><a href="#" data-act="shop">Maple Hill Learning Press</a> · <a href="#" data-act="privacy">Privacy</a> · <a href="#" data-act="terms">Terms</a></p>`}
 /* ============ EVENTS ============ */
 
@@ -383,7 +441,7 @@ const ACT={
  chest(a){const p=P();const open=(p.prog[p.grade+S.subj]||0)>=(+a.slice(-1))*UL+2;if(!open){toast('Finish 2 lessons in this unit to open it');return}if(p.chests[a]){toast('Already opened');return}p.chests[a]=1;const g=15+ri(11);p.gems+=g;save();confetti();sWIN();toast('🎁 Chest: +'+g+' gems!');render()},
  wear(a){const p=P();p.acc=a||'';save();sOK();render()},buyacc(a){const[k,c]=a.split('|'),p=P();if(p.gems<+c){toast('Not enough gems yet. Keep learning to earn more!');return}p.gems-=+c;p.own.push(k);p.acc=k;save();sWIN();confetti();toast('New look unlocked!');render()},claim(a){const[k,g]=a.split('|'),p=P();p.q.claim[k]=1;p.gems+=+g;save();sOK();toast('+'+g+' gems');render()},
  buy(a){const[k,c]=a.split('|'),p=P();if(p.gems<+c){toast('Not enough gems. Complete quests and lessons to earn more!');return}p.gems-=+c;if(k=='freeze')p.freezes++;if(k=='hearts'){p.hearts=5;p.hAt=0}if(k=='boost')p.boost=Date.now()+15*60000;save();sOK();toast('Purchased!');render()},
- snd(){S.snd=!S.snd;save();render()},heartinfo(){hearts()},
+ snd(){S.snd=!S.snd;save();render()},theme(){const c=S.theme||'auto';S.theme=THORDER[(THORDER.indexOf(c)+1)%THORDER.length];save();render()},heartinfo(){hearts()},
  mixed(){startMixed()},mist(){if(!isPlus())return ACT.paywall();startMist()},heartprac(){startMixed(true)},
  shop(){gate(()=>openUrl(SITE+'/#grades'))},
  paywall(){paywall()},profiles(){profiles()},
