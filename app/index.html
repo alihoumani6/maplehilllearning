@@ -562,7 +562,12 @@ function begin(o){const p=P();L=Object.assign({i:0,ok:0,ok1:0,skips:0,miss:[],co
 function startAsk(){if(!L||L.state!=='intro')return;clearTimeout(L.it);L.state='ask';show()}
 function popText(el,t){try{const b=el.getBoundingClientRect(),d=document.createElement('div');d.className='fl';d.textContent=t;d.style.left=(b.left+b.width/2)+'px';d.style.top=(b.top+b.height)+'px';document.body.appendChild(d);setTimeout(()=>d.remove(),1000)}catch(e){}}
 function hh(){$('hh').textContent=isPlus()?'❤️∞':'❤️ '+P().hearts}
-function say(q){if(!window.speechSynthesis)return;speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(((q.passage||'')+' '+(q.say||q.q)).replace(/___/g,'blank').replace(/\n/g,' ').replace(/×/g,'times').replace(/÷/g,'divided by').replace(/−/g,'minus'));u.rate=(P()&&P().grade===0)?.8:.9;u.pitch=(P()&&P().grade===0)?1.1:1;speechSynthesis.speak(u)}
+let AM=null,AQ=0,AEL=null;
+function amLoad(){if(AM!==null)return;AM=false;fetch('audio/manifest.json').then(r=>r.json()).then(j=>{AM=j}).catch(()=>{AM=false})}
+function playClips(fs,i,tok){if(tok!==AQ||i>=fs.length)return;const a=AEL=new Audio('audio/'+fs[i]+'.mp3');a.onended=()=>setTimeout(()=>playClips(fs,i+1,tok),90);a.onerror=()=>{};a.play().catch(()=>{})}
+function say(q){const txt0=(((q.passage||'')+' '+(q.say||q.q)).replace(/___/g,'blank').replace(/\n/g,' ')).trim();
+ if(P()&&P().grade===0){amLoad();if(AM){const ch=txt0.split(/(?<=[.?!])\s+/).map(x=>x.trim()).filter(Boolean),fs=ch.map(c=>AM[c]);if(fs.length&&fs.every(Boolean)){AQ++;try{AEL&&AEL.pause()}catch(e){}window.speechSynthesis&&speechSynthesis.cancel();playClips(fs,0,AQ);return}}}
+ if(!window.speechSynthesis)return;try{AEL&&AEL.pause();AQ++}catch(e){}speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(((q.passage||'')+' '+(q.say||q.q)).replace(/___/g,'blank').replace(/\n/g,' ').replace(/×/g,'times').replace(/÷/g,'divided by').replace(/−/g,'minus'));u.rate=(P()&&P().grade===0)?.8:.9;u.pitch=(P()&&P().grade===0)?1.1:1;speechSynthesis.speak(u)}
 
 /* ---- finger tracing (Little Leapers) ---- */
 const TR={ink:0,len:0,last:null};

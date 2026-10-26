@@ -214,7 +214,7 @@ const KABC_W=[[0,1,2],[0,1,2,3,4],[1,2,3,4,5,6],[2,3,4,5,6]];
 function genKAbc(d,n){const idx=KABC_W[Math.min(3,d)];const out=[];for(let i=0;i<n;i++)out.push(KABC[idx[i%idx.length]](d));return shuffle(out);}
 const KSND=[
  d=>{const L=SOUNDSET,l=pick(L),w=PIC[l];const wr=shuffle(L.filter(x=>!sameSnd(x,l))).slice(0,3).map(x=>PIC[x]);const names=[w,...wr];const sh=shuffle(names);
-  return kmc(`Starts with ${l}?`,`Which one starts with the letter ${l}? Is it ${sh.map(x=>'a '+x[0]).join(', ')}?`,w[1],wr.map(x=>x[1]),{svg:bigl(l),after:`${l}. ${w[0]}. ${l} says ${PHON[l]||l}.`,pics:1});},
+  return kmc(`Starts with ${l}?`,`Which picture starts with the letter ${l}?`,w[1],wr.map(x=>x[1]),{svg:bigl(l),after:`${l}. ${w[0]}. ${l} says ${PHON[l]||l}.`,pics:1});},
  d=>{const g=pick(RHYME),a=g[0],b=g[1],wr=shuffle(RHYME.filter(x=>x!==g)).slice(0,3).map(x=>pick(x));return kmc(`What rhymes with ${a[0]}?`,`Which one rhymes with ${a[0]}?`,b[1],wr.map(x=>x[1]),{svg:bigl(a[1]),after:`${a[0]} and ${b[0]} rhyme.`,pics:1});},
  d=>{const l=pick(SOUNDSET.filter(x=>PHON[x])),w=PIC[l];return kmc(`${l} says…`,`The letter ${l} says ${PHON[l]}. Which one starts with ${PHON[l]}?`,w[1],shuffle(SOUNDSET.filter(x=>!sameSnd(x,l))).slice(0,3).map(x=>PIC[x][1]),{svg:bigl(l),after:`${l} says ${PHON[l]}, like ${w[0]}.`,pics:1});},
  d=>{const c=pick(CVC),wr=others(CVC.map(x=>x[1]),c[1],3);return kmc('Blend the sounds.',`Let's blend the sounds. ${c[0].split('').join(', ')}. What word is it?`,c[1],wr,{svg:bigl(c[0].split('').join(' ')),after:`${c[0].split('').join(', ')}. ${c[0]}!`,pics:1});}
