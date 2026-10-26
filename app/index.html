@@ -582,12 +582,12 @@ function startAsk(){if(!L||L.state!=='intro')return;clearTimeout(L.it);L.state='
 function popText(el,t){try{const b=el.getBoundingClientRect(),d=document.createElement('div');d.className='fl';d.textContent=t;d.style.left=(b.left+b.width/2)+'px';d.style.top=(b.top+b.height)+'px';document.body.appendChild(d);setTimeout(()=>d.remove(),1000)}catch(e){}}
 function hh(){$('hh').textContent=isPlus()?'❤️∞':'❤️ '+P().hearts}
 let AM=null,AQ=0,AEL=null;
-function amLoad(){if(AM!==null)return;AM=false;fetch('audio/manifest.json?v=2').then(r=>r.json()).then(j=>{AM=j}).catch(()=>{AM=false})}
+let AMP=null;function amLoad(){if(AMP)return AMP;AMP=fetch('audio/manifest.json?v=2').then(r=>r.json()).then(j=>{AM=j}).catch(()=>{AM=false});return AMP}amLoad();
 function playClips(fs,i,tok){if(tok!==AQ||i>=fs.length)return;const a=AEL=new Audio('audio/'+fs[i]+'.mp3?v=2');a.onended=()=>setTimeout(()=>playClips(fs,i+1,tok),90);a.onerror=()=>{};a.play().catch(()=>{})}
 let VC=null;function pickVoice(){if(VC!==null)return VC;try{const vs=speechSynthesis.getVoices().filter(v=>/^en/i.test(v.lang));if(!vs.length)return null;const pref=[/premium|enhanced/i,/natural/i,/aria|jenny|ava|emma|libby|sonia/i,/samantha|ava \(|allison|nicky|siri/i,/google us english/i,/google uk english female/i,/karen|moira|tessa|serena/i,/female|zira/i];for(const r of pref){const v=vs.find(x=>r.test(x.name));if(v){VC=v;return v}}VC=vs.find(v=>/en-US|en_US/i.test(v.lang))||vs[0]}catch(e){VC=null}return VC}
 try{speechSynthesis.onvoiceschanged=()=>{VC=null}}catch(e){}
 function say(q){const txt0=(((q.passage||'')+' '+(q.say||q.q)).replace(/___/g,'blank').replace(/\n/g,' ')).trim();
- if(P()&&P().grade===0){amLoad();if(AM){const ch=txt0.split(/(?<=[.?!])\s+/).map(x=>x.trim()).filter(Boolean),fs=ch.map(c=>AM[c]);if(fs.length&&fs.every(Boolean)){AQ++;try{AEL&&AEL.pause()}catch(e){}window.speechSynthesis&&speechSynthesis.cancel();playClips(fs,0,AQ);return}}}
+ if(P()&&P().grade===0){if(AM===null){amLoad().then(()=>say(q));return}if(AM){const ch=txt0.split(/(?<=[.?!])\s+/).map(x=>x.trim()).filter(Boolean),fs=ch.map(c=>AM[c]);if(fs.length&&fs.every(Boolean)){AQ++;try{AEL&&AEL.pause()}catch(e){}window.speechSynthesis&&speechSynthesis.cancel();playClips(fs,0,AQ);return}}}
  if(!window.speechSynthesis)return;try{AEL&&AEL.pause();AQ++}catch(e){}speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(((q.passage||'')+' '+(q.say||q.q)).replace(/___/g,'blank').replace(/\n/g,' ').replace(/×/g,'times').replace(/÷/g,'divided by').replace(/−/g,'minus'));const _v=pickVoice();if(_v)u.voice=_v;u.rate=(P()&&P().grade===0)?.8:.95;u.pitch=(P()&&P().grade===0)?1.05:1;speechSynthesis.speak(u)}
 
 /* ---- finger tracing (Little Leapers) ---- */
