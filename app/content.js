@@ -184,7 +184,61 @@ function pairQ(g,subj){let src;
  const pairs=shuffle(src).slice(0,4);if(pairs.length<4)return null;
  const type=subj==='read'&&g<=2?'Match the opposites.':(subj==='read'?'Match the words that mean the same.':'Match each pair.');
  return {t:'pair',q:type,pairs,left:shuffle(pairs.map(p=>p[0])),right:shuffle(pairs.map(p=>p[1])),a:pairs.map(p=>p[0]+' = '+p[1]).join(', ')};}
-function makeLesson(g,subject,d){const L=subject==='math'?genMath(g,d,8):(subject==='read'?genRead(g,8):genLogic(g,d,8));const pq=pairQ(g,subject);if(pq&&L.length>=4)L.splice(3,1,pq);return L;}
-const api={makeLesson,MATH,READ,genMath,genRead,genLogic};
+
+/* ---------------- LITTLE LEAPERS (Pre-K / K): audio-first pre-reader content ---------------- */
+const ABC='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+const PIC={A:['apple','🍎'],B:['bear','🐻'],C:['cat','🐱'],D:['dog','🐶'],E:['egg','🥚'],F:['fish','🐟'],G:['goat','🐐'],H:['hat','🎩'],I:['ice cream','🍦'],J:['juice','🧃'],K:['kite','🪁'],L:['lion','🦁'],M:['moon','🌙'],N:['nut','🥜'],O:['octopus','🐙'],P:['pig','🐷'],Q:['queen','👑'],R:['rabbit','🐰'],S:['sun','☀️'],T:['tiger','🐯'],U:['umbrella','☂️'],V:['van','🚐'],W:['whale','🐳'],Z:['zebra','🦓']};
+const PHON={B:'buh',C:'kuh',D:'duh',F:'fff',G:'guh',H:'huh',J:'juh',K:'kuh',L:'lll',M:'mmm',N:'nnn',P:'puh',R:'rrr',S:'sss',T:'tuh',V:'vvv',W:'wuh',Z:'zzz'};
+const SOUNDSET='BCDFGHJKLMNPRSTVWZAEOU'.split('').filter(l=>PIC[l]);
+const sameSnd=(a,b)=>a===b||(a==='C'&&b==='K')||(a==='K'&&b==='C');
+const CVC=[['cat','🐱'],['dog','🐶'],['pig','🐷'],['sun','☀️'],['hat','🎩'],['bus','🚌'],['bed','🛏️'],['box','📦'],['fox','🦊'],['log','🪵'],['pen','🖊️'],['van','🚐'],['web','🕸️'],['ant','🐜'],['bat','🦇'],['bug','🐛'],['rat','🐀'],['cap','🧢'],['map','🗺️']];
+const RHYME=[[['cat','🐱'],['hat','🎩'],['bat','🦇']],[['dog','🐶'],['log','🪵'],['frog','🐸']],[['bee','🐝'],['tree','🌳'],['key','🔑']],[['star','⭐'],['car','🚗']],[['mouse','🐭'],['house','🏠']],[['fish','🐟'],['dish','🍽️']],[['boat','⛵'],['coat','🧥']],[['cake','🎂'],['snake','🐍']],[['bear','🐻'],['chair','🪑']]];
+const SIGHT=['the','and','I','a','to','is','you','it','we','see','like','go','my','can','look','me','he','she','are','was','said','in','on','up'];
+const SENT=['I see a cat.','The dog can run.','We like the sun.','I can see a bug.','The pig is big.','I go to bed.','A fox can run.','The bus is red.','I like my hat.','Look at the bat.'];
+const bigl=t=>`<div class="bigl">${t}</div>`;
+const spoken=a=>a.join(', ');
+function kmc(q,say,a,wrongs,o){a=String(a);const w=uniq(wrongs.map(String)).filter(x=>x!==a);return Object.assign({t:'mc',q,say,a,choices:shuffle([a,...w.slice(0,3)]),big:true,k:1},o||{});}
+const lower=l=>l.toLowerCase();
+const others=(pool,not,n)=>shuffle(pool.filter(x=>x!==not)).slice(0,n);
+function kLetterPool(d){return ABC.slice(0,d<1?8:(d<2?16:26)).split('');}
+const KABC=[
+ d=>{const P=kLetterPool(d),l=pick(P);return kmc(`Tap the letter ${l}`,`Find the letter ${l}.`,l,others(P,l,3),{after:`${l}. That's the letter ${l}.`});},
+ d=>{const P=kLetterPool(d),l=pick(P);return kmc('What letter is this?','What letter is this?',l,others(P,l,3),{svg:bigl(l),after:`${l}. That's the letter ${l}.`});},
+ d=>{const P=kLetterPool(Math.max(1,d)),l=pick(P);return kmc('Find the big letter.','Find the big letter that matches the little letter.',l,[...others(['B','D','P','Q','R','M','N','H','U','V'],l,3)],{svg:bigl(lower(l)),after:`${lower(l)} is the little ${l}.`});},
+ d=>{const P=kLetterPool(Math.max(1,d)),l=pick(P);return kmc('Find the little letter.','Find the little letter that matches the big letter.',lower(l),others(['b','d','p','q','r','m','n','h','u','v'],lower(l),3),{svg:bigl(l),after:`${l} is the big ${lower(l)}.`});},
+ d=>{const P=ABC.split('').filter(l=>PIC[l]),l=pick(P.slice(0,d<1?10:P.length)),w=PIC[l];return kmc(`${w[1]} starts with…`,`${w[0]} starts with which letter?`,l,others(P,l,3),{svg:bigl(w[1]),after:`${w[0]} starts with ${l}.`});},
+ d=>{const i=ri(0,d<2?7:22);const seq=ABC.slice(i,i+3).split('');const l=seq[2];return kmc('What comes next?','What letter comes next?',l,others(kLetterPool(3),l,3),{svg:bigl(seq.slice(0,2).join(' ')+' _'),after:`${seq.join(', ')}.`});},
+ d=>{const i=ri(0,22);const seq=ABC.slice(i,i+3).split('');const l=seq[1];return kmc('What is missing?','Which letter is missing?',l,others(kLetterPool(3),l,3),{svg:bigl(seq[0]+' _ '+seq[2]),after:`${seq.join(', ')}.`});}
+];
+const KABC_W=[[0,1,2],[0,1,2,3,4],[1,2,3,4,5,6],[2,3,4,5,6]];
+function genKAbc(d,n){const idx=KABC_W[Math.min(3,d)];const out=[];for(let i=0;i<n;i++)out.push(KABC[idx[i%idx.length]](d));return shuffle(out);}
+const KSND=[
+ d=>{const L=SOUNDSET,l=pick(L),w=PIC[l];const wr=shuffle(L.filter(x=>!sameSnd(x,l))).slice(0,3).map(x=>PIC[x]);const names=[w,...wr];const sh=shuffle(names);
+  return kmc(`Starts with ${l}?`,`Which one starts with the letter ${l}? Is it ${sh.map(x=>'a '+x[0]).join(', ')}?`,w[1],wr.map(x=>x[1]),{svg:bigl(l),after:`${l}. ${w[0]}. ${l} says ${PHON[l]||l}.`,pics:1});},
+ d=>{const g=pick(RHYME),a=g[0],b=g[1],wr=shuffle(RHYME.filter(x=>x!==g)).slice(0,3).map(x=>pick(x));return kmc(`What rhymes with ${a[0]}?`,`Which one rhymes with ${a[0]}?`,b[1],wr.map(x=>x[1]),{svg:bigl(a[1]),after:`${a[0]} and ${b[0]} rhyme.`,pics:1});},
+ d=>{const l=pick(SOUNDSET.filter(x=>PHON[x])),w=PIC[l];return kmc(`${l} says…`,`The letter ${l} says ${PHON[l]}. Which one starts with ${PHON[l]}?`,w[1],shuffle(SOUNDSET.filter(x=>!sameSnd(x,l))).slice(0,3).map(x=>PIC[x][1]),{svg:bigl(l),after:`${l} says ${PHON[l]}, like ${w[0]}.`,pics:1});},
+ d=>{const c=pick(CVC),wr=others(CVC.map(x=>x[1]),c[1],3);return kmc('Blend the sounds.',`Let's blend the sounds. ${c[0].split('').join(', ')}. What word is it?`,c[1],wr,{svg:bigl(c[0].split('').join(' ')),after:`${c[0].split('').join(', ')}. ${c[0]}!`,pics:1});}
+];
+const KSND_W=[[0,2],[0,1,2],[0,1,2,3],[1,2,3]];
+function genKSound(d,n){const idx=KSND_W[Math.min(3,d)];const out=[];for(let i=0;i<n;i++)out.push(KSND[idx[i%idx.length]](d));return shuffle(out);}
+const KWRD=[
+ d=>{const c=pick(CVC),wr=others(CVC.map(x=>x[1]),c[1],3);return kmc('Which picture is this word?','Read the word. Which picture matches?',c[1],wr,{svg:bigl(c[0]),after:`${c[0]}. That says ${c[0]}.`,pics:1});},
+ d=>{const c=pick(CVC),near=others(CVC.map(x=>x[0]),c[0],3);return kmc(`Tap the word ${c[0]}`,`Tap the word ${c[0]}.`,c[0],near,{svg:bigl(c[1]),after:`${c[0]}.`});},
+ d=>{const w=pick(SIGHT);return kmc(`Tap the word "${w}"`,`Tap the word ${w}.`,w,others(SIGHT,w,3),{svg:bigl(w),after:`${w}.`});},
+ d=>{const c=pick(CVC);return {t:'ord',q:'Spell the word.',say:`Spell the word ${c[0]}. Put the letters in order.`,words:shuffle(c[0].split('')),a:c[0].split('').join(' '),end:'',full:c[0].toUpperCase(),svg:bigl(c[1]),big:true,k:1,after:`${c[0].split('').join(', ')}. ${c[0]}!`};},
+ d=>{const s=pick(SENT);const o=ord('Build the sentence.',s,{say:'Put the words in order to make a sentence.',k:1,after:s});return o;}
+];
+const KWRD_W=[[0,1,2],[0,1,2,1],[0,2,3,1,3],[3,4,2,3,4]];
+function genKWords(d,n){const idx=KWRD_W[Math.min(3,d)];const out=[];for(let i=0;i<n;i++)out.push(KWRD[idx[i%idx.length]](d));return shuffle(out);}
+const TR_A=['L','I','T','H','E','F','O','C'],TR_B=['A','V','W','X','Y','Z','N','M','K','U','J','D','P','B','R','S','G','Q'],TR_L=['l','i','t','o','c','a','e','s','u','v','w','n','m','h','r','b','d','p','g'];
+const TR_N=['1','2','3','4','5','6','7','8','9','0'];
+function trq(g,txt,say){return {t:'trace',q:txt,say,a:g,glyph:g,k:1,after:say?'':''};}
+function genKWrite(d,n){const pool=d<1?TR_A:(d<2?TR_A.concat(TR_B.slice(0,8)):(d<3?TR_B.concat(TR_L.slice(0,8)):TR_L.concat(TR_N)));const out=[];const used=new Set();
+ while(out.length<n){const g=pick(pool);if(used.has(g)&&used.size<pool.length)continue;used.add(g);const isN=/\d/.test(g),isLow=/[a-z]/.test(g);out.push(trq(g,`Trace the ${isN?'number':'letter'} ${g}`,`Trace the ${isN?'number':(isLow?'little letter':'big letter')} ${g}. Follow the gray shape with your finger.`));}
+ if(d>=2){out[out.length-1]={t:'trace',q:'Trace your name!',say:'Trace your name! Follow the gray letters with your finger.',a:'{NAME}',glyph:'{NAME}',k:1,name:1};}
+ return out;}
+function genK(subject,d,n){return subject==='abc'?genKAbc(d,n):(subject==='sound'?genKSound(d,n):(subject==='words'?genKWords(d,n):genKWrite(d,n)));}
+function makeLesson(g,subject,d){if(g===0){const n=subject==='write'?6:8;const out=[],seen=new Set();for(let t=0;t<8&&out.length<n;t++){genK(subject,d,n*2).forEach(q=>{const k=q.q+(q.svg||'')+q.a;if(!seen.has(k)&&out.length<n){seen.add(k);out.push(q)}})}return out;}const L=subject==='math'?genMath(g,d,8):(subject==='read'?genRead(g,8):genLogic(g,d,8));const pq=pairQ(g,subject);if(pq&&L.length>=4)L.splice(3,1,pq);return L;}
+const api={genK,makeLesson,MATH,READ,genMath,genRead,genLogic};
 if(typeof module!=='undefined')module.exports=api;else root.MapleContent=api;
 })(typeof window!=='undefined'?window:globalThis);
