@@ -568,8 +568,7 @@ function doShare(o,onOk){const text=o.text,url=o.url||'',title=o.title||'Maple L
  shareFallback(full,url||full)}
 function shareKind(k){const p=P();if(!p)return;let t='',b='',s='';if(k==='streak'){t=p.name+' is on fire!';b='🔥 '+p.streak;s='day learning streak'}else if(k==='badge'){const bd=(p.bd||[]).slice(-1)[0]||'Star learner';t=p.name+' earned a badge!';b='🏅';s=bd}else if(k==='level'){t=p.name+' leveled up!';b='Level '+(p.lvl||1);s=p.xp+' XP earned'}else{t=p.name+' is learning with Maple Leap';b='⚡ '+p.xp+' XP';s=p.lessons+' lessons · 🔥 '+p.streak+' day streak'}
  const url='https://maplehilllearning.com/app/?ref='+encodeURIComponent(String(p.id));const txt=t+' '+s+'. Try Maple Leap free: '+url;
- let file=null;try{const bl=shareImgSync(t,b,s,p);if(bl)file=new File([bl],'maple-leap.png',{type:'image/png'})}catch(e){}
- doShare({title:t,text:txt,url,file},()=>shareReward(p))}
+ doShare({title:t,text:txt,url},()=>shareReward(p))}
 function shareReward(p){const t=dk();if(S.shAt!==t){S.shAt=t;p.gems+=30;save();toast('Thanks for sharing! +💎30')}}
 function parentZone(){const p=P();const days=[];for(let i=6;i>=0;i--){const k=addD(dk(),-i);days.push([k,Math.round((p.secs[k]||0)/60)])}const mx=Math.max(10,...days.map(d=>d[1]));const wkMin=days.reduce((a,d)=>a+d[1],0);
  const ss=subjKeys(p).map(k=>({k,pc:p.stats[k].t?p.stats[k].c/p.stats[k].t:null,t:p.stats[k].t}));const w=ss.filter(s=>s.t>=8).sort((a,b)=>a.pc-b.pc)[0],s=ss.filter(s=>s.t>=8).sort((a,b)=>b.pc-a.pc)[0];
