@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Maple Leap for Teachers</title>
+<meta name="description" content="Free classroom dashboard for Maple Leap. Create a class, share a code, and see every student's progress. Pre-K to Grade 6.">
+<link rel="icon" href="../app/icon-192.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap">
+<style>
+:root{--red:#d62828;--navy:#12306b;--blue:#1d5fd1;--sun:#ffc928;--green:#1f9d5b;--orange:#f47b20;--purple:#7b45c9;--paper:#fffdf6;--ink:#1b2440;--mut:#5b6478;--line:#e6dfc8;--card:#fff;--display:'Baloo 2',system-ui,sans-serif;--body:'Nunito',system-ui,sans-serif;color-scheme:light}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--paper);color:var(--ink);font:500 16px/1.5 var(--body);min-height:100vh;padding:0 max(16px,env(safe-area-inset-right)) 60px max(16px,env(safe-area-inset-left))}
+h1,h2,h3{font-family:var(--display);margin:0;line-height:1.1;color:var(--navy)}
+a{color:var(--blue)}
+:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+.top{position:sticky;top:0;z-index:20;margin:0 calc(50% - 50vw);width:100vw;background:rgba(214,40,40,.96);-webkit-backdrop-filter:saturate(180%) blur(14px);backdrop-filter:saturate(180%) blur(14px);color:#fff}
+.top .in{max-width:1100px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px}
+.top b{font-family:var(--display);font-size:22px;flex:1}
+.top a,.top button{color:#fff;font:700 14px var(--body);background:rgba(255,255,255,.18);border:0;border-radius:12px;padding:9px 14px;text-decoration:none;min-height:40px}
+.wrap{max-width:1100px;margin:0 auto;padding-top:22px}
+.btn{border:0;border-radius:14px;padding:12px 20px;font:800 15px var(--body);color:#fff;background:var(--green);box-shadow:0 4px 0 #14703f;cursor:pointer;min-height:44px;transition:transform .12s cubic-bezier(.2,.8,.2,1)}
+.btn:active{transform:translateY(2px) scale(.98);box-shadow:0 1px 0 #14703f}
+.btn.blue{background:var(--blue);box-shadow:0 4px 0 #12306b}.btn.red{background:var(--red);box-shadow:0 4px 0 #8f1717}
+.btn.ghost{background:#fff;color:var(--navy);border:2px solid var(--line);box-shadow:0 3px 0 var(--line)}
+.btn.sm{padding:8px 14px;font-size:14px;min-height:38px}
+.btn:disabled{opacity:.5}
+.card{background:var(--card);border:2px solid var(--line);border-radius:20px;padding:18px 20px;margin:14px 0;box-shadow:0 4px 0 var(--line)}
+input,select{font:600 16px var(--body);padding:12px 14px;border:2px solid var(--line);border-radius:12px;width:100%;background:#fff;color:var(--ink);min-height:46px}
+label{display:block;font-weight:800;font-size:14px;margin:12px 0 4px;color:var(--navy)}
+.hero{text-align:center;padding:36px 0 10px}
+.hero h1{font-size:clamp(34px,7vw,56px)}
+.hero p{font-size:19px;color:var(--mut);max-width:620px;margin:12px auto 22px}
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin:22px 0}
+.steps .card{margin:0}.steps .n{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--sun);font-weight:800;color:var(--navy);margin-bottom:6px}
+.err{color:var(--red);font-weight:700;min-height:22px;margin:8px 0}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.grow{flex:1}
+.tabs{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 10px;-webkit-overflow-scrolling:touch}
+.tab{flex:0 0 auto;border:2px solid var(--line);background:#fff;border-radius:99px;padding:8px 16px;font:800 14px var(--body);color:var(--navy);cursor:pointer;min-height:40px}
+.tab.on{background:var(--navy);border-color:var(--navy);color:#fff}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:12px 0}
+.stat{background:#fff;border:2px solid var(--line);border-radius:16px;padding:12px 14px}.stat small{display:block;color:var(--mut);font-weight:700}.stat span{font:800 28px var(--display);color:var(--navy)}
+.code{font:800 44px var(--display);letter-spacing:.18em;color:var(--navy);background:#eef4ff;border-radius:16px;padding:6px 18px;display:inline-block}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--mut);text-align:left;padding:8px 10px;cursor:pointer;white-space:nowrap;user-select:none}
+td{padding:11px 10px;border-top:1px solid var(--line);white-space:nowrap}
+tr.s{cursor:pointer}tr.s:hover td{background:#fff8e1}
+.tw{overflow-x:auto;margin:0 -6px;padding:0 6px}
+.chip{display:inline-block;border-radius:99px;padding:3px 10px;font-weight:800;font-size:12px}
+.chip.g{background:#e6f7ee;color:#136b3f}.chip.y{background:#fff4d1;color:#8a5a00}.chip.r{background:#fde6e6;color:#a31616}.chip.b{background:#e6efff;color:#12306b}.chip.n{background:#eef0f4;color:#566}
+.bar{height:10px;background:#eceff5;border-radius:99px;overflow:hidden;min-width:70px}.bar i{display:block;height:100%;border-radius:99px}
+.spark{display:flex;gap:3px;align-items:flex-end;height:54px}.spark i{flex:1;background:var(--blue);border-radius:4px 4px 0 0;min-height:3px;opacity:.85}
+dialog{border:0;border-radius:22px;padding:22px;max-width:520px;width:calc(100% - 28px);box-shadow:0 20px 60px rgba(0,0,0,.35)}
+dialog::backdrop{background:rgba(18,26,48,.55)}
+.fine{font-size:13px;color:var(--mut)}
+.note{background:#f1fbf5;border:2px solid #bfe8d0;border-radius:16px;padding:12px 16px;margin:12px 0;font-weight:600}
+.poster{display:none}
+@media print{
+ body>*:not(.poster){display:none!important}
+ .poster{display:block!important;position:static;padding:0;text-align:center;font-family:var(--body)}
+ .poster h1{font-size:54px;margin:10px 0}.poster .pc{font:800 96px var(--display);letter-spacing:.2em;border:6px solid var(--navy);border-radius:28px;padding:10px 30px;display:inline-block;margin:20px 0;color:var(--navy)}
+ .poster ol{text-align:left;font-size:26px;max-width:620px;margin:20px auto;line-height:1.7}.poster .qr{margin:10px auto}.poster .qr svg,.poster .qr img{width:260px;height:260px}
+ .letter{display:none}
+ @page{margin:.6in}
+}
+.letter{display:none}
+@media print{body.pl>*:not(.letter){display:none!important}body.pl .letter{display:block!important;font:16px/1.55 Georgia,serif;color:#000}body.pl .poster{display:none!important}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+@media (max-width:620px){.code{font-size:34px}}
+</style>
+</head>
+<body>
+<div class="top"><div class="in"><b>🍁 Maple Leap · Teachers</b><span id="who" class="fine" style="color:#fff;opacity:.9"></span><button id="signout" hidden>Sign out</button><a href="../">Home</a></div></div>
+<div class="wrap" id="app"></div>
+
+<dialog id="dlg"></dialog>
+
+<div class="poster" id="poster"></div>
+<div class="letter" id="letter"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script>
+(function(){
+'use strict';
+var SB={url:'https://hzwaoskfrszsniubbhix.supabase.co',key:'sb_publishable_sjVpAXRIKvI__wPT_I5Dbg_6TCn5ihl'};
+var APP='https://maplehilllearning.com/app/';
+var SUBJ={math:['Math','#d62828'],read:['Reading','#1d5fd1'],logic:['Logic','#7b45c9'],abc:['Letters','#f47b20'],sound:['Sounds','#1f9d5b'],words:['Words','#1d5fd1'],write:['Writing','#d62828']};
+var GM={mem:'Memory Match',seq:'Leaf Echo',dash:'Number Dash',odd:'Odd One Out',word:'Word Whiz',clash:'Color Clash',pat:'Pattern Pop',miss:'Number Detective',cmp:'Size Showdown',sort:'Sort Squad',digit:'Digit Memory'};
+var $=function(id){return document.getElementById(id)};
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+var ses=null,classes=[],cur=null,members=[],sortK='name',sortD=1,timer=null,detailId=null;
+try{ses=JSON.parse(localStorage.getItem('mlt')||'null')}catch(e){}
+function setSes(s){ses=s;try{if(s)localStorage.setItem('mlt',JSON.stringify(s));else localStorage.removeItem('mlt')}catch(e){}}
+function dstr(d){d=d||new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function addD(k,n){var p=k.split('-');var d=new Date(+p[0],+p[1]-1,+p[2]+n);return dstr(d)}
+function gl(g){return g===0?'Pre-K':'Grade '+g}
+
+async function api(path,o,retry){
+  o=o||{};var h={apikey:SB.key,'Content-Type':'application/json',Authorization:'Bearer '+(ses?ses.access:SB.key)};
+  var r=await fetch(SB.url+path,Object.assign({},o,{headers:Object.assign(h,o.headers||{})}));
+  if(r.status===401&&ses&&ses.refresh&&retry!==false){if(await refresh())return api(path,o,false)}
+  return r;
+}
+async function refresh(){
+  try{var r=await fetch(SB.url+'/auth/v1/token?grant_type=refresh_token',{method:'POST',headers:{apikey:SB.key,'Content-Type':'application/json'},body:JSON.stringify({refresh_token:ses.refresh})});
+    if(!r.ok){setSes(null);return false}var j=await r.json();setSes({access:j.access_token,refresh:j.refresh_token,email:(j.user&&j.user.email)||ses.email});return true}catch(e){return false}
+}
+
+/* ---------- login ---------- */
+function viewLogin(msg,email,stage){
+  clearInterval(timer);$('who').textContent='';$('signout').hidden=true;
+  $('app').innerHTML='<div class="hero"><div style="font-size:64px" aria-hidden="true">🍎</div><h1>A free classroom dashboard</h1><p>Create a class, give your students a 6-letter code, and see who is learning, who is stuck and who needs a nudge. Works for Pre-K to Grade 6.</p></div>'+
+  '<div class="card" style="max-width:460px;margin:0 auto"><h3>'+(stage==='code'?'Check your email':'Teacher sign in')+'</h3>'+
+  (stage==='code'?'<p class="fine">We sent a 6-digit code to <b>'+esc(email)+'</b>. Type it below.</p><label for="code">Code</label><input id="code" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="123456"><div class="err" id="err">'+esc(msg||'')+'</div><button class="btn full" id="go" style="width:100%">Sign in</button><p class="fine"><a href="#" id="back">Use a different email</a></p>'
+  :'<p class="fine">No password. We email you a code.</p><label for="em">School or personal email</label><input id="em" type="email" autocomplete="email" placeholder="you@school.ca" value="'+esc(email||'')+'"><div class="err" id="err">'+esc(msg||'')+'</div><button class="btn" id="go" style="width:100%">Email me a code</button>')+'</div>'+
+  '<div class="steps"><div class="card"><div class="n">1</div><h3>Create a class</h3><p class="fine">Takes 20 seconds. Pick a name and grade.</p></div><div class="card"><div class="n">2</div><h3>Share the code</h3><p class="fine">Print a ready-made poster with a QR code, or send the join link.</p></div><div class="card"><div class="n">3</div><h3>Watch progress</h3><p class="fine">Minutes, accuracy by subject, streaks and brain-game stars. Export to CSV.</p></div></div>'+
+  '<div class="note">🔒 <b>Student privacy:</b> students join with a first name only. We never collect student emails, photos or last names, there is no chat, and no ads are shown to students in your class. You can remove any student or delete the whole class at any time.</div>'+
+  '<div class="card"><h3>What students get</h3><p>Every student in your class gets <b>unlimited hearts and Maple Leap Plus features for free</b> while they are in the class. Maple Leap is free for teachers.</p></div>';
+  var go=$('go');
+  if(stage==='code'){
+    $('code').focus();
+    var doV=async function(){var c=$('code').value.trim();if(!c){$('err').textContent='Type the code from your email';return}go.disabled=true;
+      try{var r=await fetch(SB.url+'/auth/v1/verify',{method:'POST',headers:{apikey:SB.key,'Content-Type':'application/json'},body:JSON.stringify({type:'email',email:email,token:c})});var j=await r.json();
+        if(!r.ok||!j.access_token){viewLogin('That code did not work. It may have expired.',email,'code');return}
+        setSes({access:j.access_token,refresh:j.refresh_token,email:(j.user&&j.user.email)||email});boot()}catch(e){viewLogin('No connection. Try again.',email,'code')}};
+    go.onclick=doV;$('code').onkeydown=function(e){if(e.key==='Enter')doV()};
+    $('back').onclick=function(e){e.preventDefault();viewLogin('','','email')};
+  }else{
+    var send=async function(){var em=$('em').value.trim().toLowerCase();if(!/^\S+@\S+\.\S+$/.test(em)){$('err').textContent='Enter a valid email';return}go.disabled=true;
+      try{var r=await fetch(SB.url+'/auth/v1/otp',{method:'POST',headers:{apikey:SB.key,'Content-Type':'application/json'},body:JSON.stringify({email:em,create_user:true})});
+        if(!r.ok){viewLogin('Could not send the code. Please try again in a minute.',em,'email');return}viewLogin('',em,'code')}catch(e){viewLogin('No connection. Try again.',em,'email')}};
+    go.onclick=send;$('em').onkeydown=function(e){if(e.key==='Enter')send()};
+  }
+}
+
+/* ---------- data ---------- */
+async function loadClasses(){
+  var r=await api('/rest/v1/classes?select=id,name,grade,code,weekly_goal,closed,created_at&order=created_at.asc');
+  if(r.status===401){setSes(null);return false}
+  classes=r.ok?await r.json():[];return true;
+}
+async function loadMembers(){
+  if(!cur)return;
+  var r=await api('/rest/v1/class_members?select=id,name,snapshot,joined_at,last_seen&class_id=eq.'+cur.id+'&order=name.asc');
+  if(r.ok){members=(await r.json()).map(calc)}
+}
+function calc(m){
+  var s=m.snapshot||{},mins=s.mins||{},today=dstr(),wk=0,i,days=[];
+  for(i=6;i>=0;i--)wk+=(+mins[addD(today,-i)]||0);
+  for(i=13;i>=0;i--)days.push(+mins[addD(today,-i)]||0);
+  var c=0,t=0,acc=s.acc||{},bySub={};
+  Object.keys(acc).forEach(function(k){var a=acc[k]||[0,0];c+=a[0];t+=a[1];bySub[k]={c:a[0],t:a[1]}});
+  var stars=0,bg=s.bg||{};Object.keys(bg).forEach(function(k){stars+=(+bg[k][0]||0)});
+  var last=s.last||'';var seen=m.last_seen?dstr(new Date(m.last_seen)):'';var la=last>seen?last:seen;
+  var idle=la?Math.round((new Date(today)-new Date(la))/864e5):99;
+  return {id:m.id,name:m.name,grade:s.g,wk:wk,days:days,xp:+s.wxp||0,txp:+s.xp||0,streak:+s.st||0,les:+s.les||0,q:t,acc:t?Math.round(c/t*100):null,bySub:bySub,stars:stars,bg:bg,idle:idle,la:la,joined:m.joined_at,perf:+s.perf||0};
+}
+function status(m,goal){
+  if(!m.les&&!m.wk)return ['New','n'];
+  if(m.acc!=null&&m.q>=20&&m.acc<60)return ['Needs help','r'];
+  if(m.idle>=4)return ['Inactive '+m.idle+'d','y'];
+  if(m.wk>=goal&&(m.acc==null||m.acc>=85))return ['Star ⭐','g'];
+  if(m.wk>=goal)return ['On track','g'];
+  return ['In progress','b'];
+}
+
+/* ---------- main view ---------- */
+async function boot(){
+  if(!ses){viewLogin('','','email');return}
+  $('who').textContent=ses.email||'';$('signout').hidden=false;
+  var ok=await loadClasses();if(!ok){viewLogin('Your session expired. Please sign in again.','','email');return}
+  var keep=null;try{keep=localStorage.getItem('mlt_cur')}catch(e){}
+  cur=classes.find(function(c){return c.id===keep})||classes[0]||null;
+  await loadMembers();render();
+  clearInterval(timer);timer=setInterval(async function(){if(document.hidden||!cur)return;await loadMembers();paintRoster()},30000);
+}
+function render(){
+  var h='<div class="tabs" role="tablist">'+classes.map(function(c){return '<button class="tab '+(cur&&c.id===cur.id?'on':'')+'" data-cls="'+c.id+'" role="tab">'+esc(c.name)+'</button>'}).join('')+'<button class="tab" id="newc">＋ New class</button></div>';
+  if(!cur){
+    h+='<div class="hero" style="padding-top:20px"><div style="font-size:56px" aria-hidden="true">🏫</div><h1>Create your first class</h1><p>Name it, pick a grade, and you will get a join code for your students.</p><button class="btn" id="newc2">Create a class</button></div>';
+    $('app').innerHTML=h;bind();return;
+  }
+  h+='<div class="card"><div class="row"><div class="grow"><h2>'+esc(cur.name)+'</h2><div class="fine">'+gl(cur.grade)+' · weekly goal '+cur.weekly_goal+' min · '+(cur.closed?'<b style="color:var(--red)">joining is paused</b>':'joining is open')+'</div></div>'+
+   '<div style="text-align:center"><div class="fine" style="margin-bottom:4px">Class code</div><div class="code" id="codeb" aria-label="Class code '+cur.code.split('').join(' ')+'">'+esc(cur.code)+'</div></div></div>'+
+   '<div class="row" style="margin-top:14px"><button class="btn sm blue" id="pposter">🖨️ Print join poster</button><button class="btn sm ghost" id="clink">🔗 Copy join link</button><button class="btn sm ghost" id="pletter">✉️ Parent letter</button><button class="btn sm ghost" id="csv">⬇️ Export CSV</button><button class="btn sm ghost" id="settings">⚙️ Class settings</button></div></div>';
+  h+='<div id="roster"></div>';
+  $('app').innerHTML=h;paintRoster();bind();
+}
+function paintRoster(){
+  var el=$('roster');if(!el||!cur)return;
+  var goal=cur.weekly_goal,ms=members.slice();
+  if(!ms.length){el.innerHTML='<div class="card" style="text-align:center"><h3>No students yet</h3><p>Students open <b>maplehilllearning.com/app</b> (or the Maple Leap app), tap <b>Me → Join with a code</b>, and type <b>'+esc(cur.code)+'</b>.</p><p class="fine">Tip: print the poster, it includes a QR code that fills in the code automatically.</p></div>';return}
+  var tot=ms.reduce(function(a,m){return a+m.wk},0),act=ms.filter(function(m){return m.wk>0}).length,goalN=ms.filter(function(m){return m.wk>=goal}).length;
+  var accs=ms.filter(function(m){return m.acc!=null&&m.q>=10}),avg=accs.length?Math.round(accs.reduce(function(a,m){return a+m.acc},0)/accs.length):null;
+  var sub={};ms.forEach(function(m){Object.keys(m.bySub).forEach(function(k){var b=m.bySub[k];sub[k]=sub[k]||{c:0,t:0};sub[k].c+=b.c;sub[k].t+=b.t})});
+  var subs=Object.keys(sub).filter(function(k){return sub[k].t>=20}).map(function(k){return {k:k,p:Math.round(sub[k].c/sub[k].t*100),t:sub[k].t}}).sort(function(a,b){return a.p-b.p});
+  var need=ms.filter(function(m){var s=status(m,goal)[1];return s==='r'||s==='y'});
+  var h='<div class="stats"><div class="stat"><small>Students</small><span>'+ms.length+'</span></div><div class="stat"><small>Active this week</small><span>'+act+'</span></div><div class="stat"><small>Met weekly goal</small><span>'+goalN+'</span></div><div class="stat"><small>Class minutes (7d)</small><span>'+tot+'</span></div><div class="stat"><small>Average accuracy</small><span>'+(avg==null?'—':avg+'%')+'</span></div></div>';
+  if(subs.length&&subs[0].p<75)h+='<div class="note">💡 <b>Suggestion:</b> the class is weakest in <b>'+esc((SUBJ[subs[0].k]||[subs[0].k])[0])+'</b> ('+subs[0].p+'% correct). A quick whole-class review could help.</div>';
+  if(need.length)h+='<div class="note" style="background:#fff8e1;border-color:#f3dc9a">👀 <b>'+need.length+' student'+(need.length>1?'s':'')+' may need a check-in:</b> '+need.slice(0,8).map(function(m){return esc(m.name)}).join(', ')+(need.length>8?'…':'')+'</div>';
+  var cols=[['name','Student'],['grade','Grade'],['wk','Min (7d)'],['xp','XP (wk)'],['acc','Accuracy'],['streak','Streak'],['les','Lessons'],['stars','Brain ⭐'],['idle','Last active'],['st','Status']];
+  ms.sort(function(a,b){var x,y;if(sortK==='st'){x=status(a,goal)[0];y=status(b,goal)[0]}else{x=a[sortK];y=b[sortK]}if(x==null)x=-1;if(y==null)y=-1;if(typeof x==='string')return x.localeCompare(y)*sortD;return (x-y)*sortD});
+  h+='<div class="card"><div class="tw"><table><thead><tr>'+cols.map(function(c){return '<th data-sort="'+c[0]+'" aria-sort="'+(sortK===c[0]?(sortD>0?'ascending':'descending'):'none')+'">'+c[1]+(sortK===c[0]?(sortD>0?' ▲':' ▼'):'')+'</th>'}).join('')+'</tr></thead><tbody>'+
+   ms.map(function(m){var st=status(m,goal),pc=Math.min(100,Math.round(m.wk/goal*100));
+     return '<tr class="s" tabindex="0" data-m="'+m.id+'"><td><b>'+esc(m.name)+'</b></td><td>'+(m.grade==null?'—':gl(m.grade))+'</td><td><div style="display:flex;gap:8px;align-items:center"><b>'+m.wk+'</b><div class="bar"><i style="width:'+pc+'%;background:'+(pc>=100?'var(--green)':'var(--blue)')+'"></i></div></div></td><td>'+m.xp+'</td><td>'+(m.acc==null?'—':'<span class="chip '+(m.acc>=85?'g':m.acc>=60?'b':'r')+'">'+m.acc+'%</span>')+'</td><td>🔥 '+m.streak+'</td><td>'+m.les+'</td><td>'+m.stars+'</td><td>'+(m.la?(m.idle===0?'Today':m.idle===1?'Yesterday':m.idle+' days ago'):'—')+'</td><td><span class="chip '+st[1]+'">'+esc(st[0])+'</span></td></tr>'}).join('')+'</tbody></table></div></div>';
+  h+='<p class="fine">Progress syncs a few seconds after a student finishes a lesson or game. This page refreshes every 30 seconds. Click a student for details.</p>';
+  el.innerHTML=h;
+  Array.prototype.forEach.call(el.querySelectorAll('th[data-sort]'),function(t){t.onclick=function(){var k=t.dataset.sort;if(sortK===k)sortD=-sortD;else{sortK=k;sortD=(k==='name'||k==='st')?1:-1}paintRoster()}});
+  Array.prototype.forEach.call(el.querySelectorAll('tr.s'),function(t){t.onclick=function(){showStudent(t.dataset.m)};t.onkeydown=function(e){if(e.key==='Enter')showStudent(t.dataset.m)}});
+}
+function showStudent(id){
+  var m=members.find(function(x){return x.id===id});if(!m)return;detailId=id;var goal=cur.weekly_goal;var mx=Math.max.apply(null,m.days.concat([10])),today=dstr();
+  var subs=Object.keys(m.bySub).filter(function(k){return m.bySub[k].t>0});
+  var d=$('dlg');
+  d.innerHTML='<div class="row"><h2 class="grow">'+esc(m.name)+'</h2><button class="btn sm ghost" id="dx" aria-label="Close">✕</button></div><div class="fine">'+(m.grade==null?'':gl(m.grade)+' · ')+'joined '+new Date(m.joined).toLocaleDateString()+'</div>'+
+  '<div class="stats"><div class="stat"><small>Minutes (7d)</small><span>'+m.wk+'</span></div><div class="stat"><small>Accuracy</small><span>'+(m.acc==null?'—':m.acc+'%')+'</span></div><div class="stat"><small>Streak</small><span>🔥'+m.streak+'</span></div><div class="stat"><small>Total XP</small><span>'+m.txp+'</span></div></div>'+
+  '<h3 style="font-size:18px">Last 14 days (minutes)</h3><div class="spark" aria-label="Minutes per day for the last 14 days">'+m.days.map(function(v,i){return '<i title="'+addD(today,i-13)+': '+v+' min" style="height:'+Math.max(5,Math.round(v/mx*100))+'%"></i>'}).join('')+'</div>'+
+  '<h3 style="font-size:18px;margin-top:14px">Accuracy by subject</h3>'+(subs.length?subs.map(function(k){var b=m.bySub[k],p=Math.round(b.c/b.t*100),sj=SUBJ[k]||[k,'#1d5fd1'];return '<div class="row" style="margin:6px 0"><span style="width:90px;font-weight:700">'+esc(sj[0])+'</span><div class="bar grow"><i style="width:'+p+'%;background:'+sj[1]+'"></i></div><span style="width:90px;text-align:right">'+p+'% ('+b.t+')</span></div>'}).join(''):'<p class="fine">No lessons completed yet.</p>')+
+  (Object.keys(m.bg).length?'<h3 style="font-size:18px;margin-top:14px">Brain Gym</h3><div>'+Object.keys(m.bg).map(function(k){return '<span class="chip b" style="margin:2px">'+esc(GM[k]||k)+' '+'⭐'.repeat(m.bg[k][0])+'</span>'}).join('')+'</div>':'')+
+  '<div class="row" style="margin-top:18px"><button class="btn sm ghost" id="drn">Rename</button><button class="btn sm red" id="drm">Remove from class</button></div>';
+  d.showModal();
+  $('dx').onclick=function(){d.close()};
+  $('drn').onclick=async function(){var n=prompt('Student name',m.name);if(!n)return;n=n.trim().slice(0,20);if(!n)return;var r=await api('/rest/v1/class_members?id=eq.'+id,{method:'PATCH',body:JSON.stringify({name:n})});if(r.ok){d.close();await loadMembers();paintRoster()}else alert('Could not rename')};
+  $('drm').onclick=async function(){if(!confirm('Remove '+m.name+' from this class? Their progress will no longer be shared with you.'))return;var r=await api('/rest/v1/class_members?id=eq.'+id,{method:'DELETE'});if(r.ok){d.close();await loadMembers();paintRoster()}else alert('Could not remove')};
+}
+
+/* ---------- actions ---------- */
+function bind(){
+  Array.prototype.forEach.call(document.querySelectorAll('[data-cls]'),function(b){b.onclick=async function(){cur=classes.find(function(c){return c.id===b.dataset.cls});try{localStorage.setItem('mlt_cur',cur.id)}catch(e){}members=[];render();await loadMembers();paintRoster()}});
+  var nc=$('newc'),nc2=$('newc2');if(nc)nc.onclick=newClass;if(nc2)nc2.onclick=newClass;
+  if($('pposter'))$('pposter').onclick=printPoster;
+  if($('pletter'))$('pletter').onclick=printLetter;
+  if($('clink'))$('clink').onclick=function(){var l=joinLink();(navigator.clipboard?navigator.clipboard.writeText(l):Promise.reject()).then(function(){toast('Join link copied')}).catch(function(){prompt('Copy this link',l)})};
+  if($('csv'))$('csv').onclick=exportCsv;
+  if($('settings'))$('settings').onclick=settings;
+  if($('signout'))$('signout').onclick=function(){setSes(null);classes=[];cur=null;viewLogin('','','email')};
+}
+function toast(t){var e=document.createElement('div');e.textContent=t;e.setAttribute('role','status');e.style.cssText='position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:#12306b;color:#fff;padding:10px 18px;border-radius:14px;font-weight:800;z-index:99';document.body.appendChild(e);setTimeout(function(){e.remove()},2200)}
+function joinLink(){return APP+'?class='+cur.code}
+function newClass(){
+  var d=$('dlg');
+  d.innerHTML='<h2>New class</h2><label for="cn">Class name</label><input id="cn" maxlength="60" placeholder="Ms. Lee · Grade 3"><label for="cg">Grade</label><select id="cg">'+[0,1,2,3,4,5,6].map(function(g){return '<option value="'+g+'" '+(g===3?'selected':'')+'>'+gl(g)+'</option>'}).join('')+'</select>'+
+  '<label style="display:flex;gap:10px;align-items:flex-start;font-weight:600;margin-top:16px"><input type="checkbox" id="cc" style="width:22px;min-height:22px;margin-top:2px"><span>I am a teacher or educator, and I have my school\'s permission (and parent consent where required) for students to use Maple Leap. I will not ask students to enter last names, emails or other personal details.</span></label><div class="err" id="ce"></div><div class="row"><button class="btn ghost grow" id="cx">Cancel</button><button class="btn grow" id="cok">Create class</button></div>';
+  d.showModal();$('cn').focus();$('cx').onclick=function(){d.close()};
+  $('cok').onclick=async function(){var n=$('cn').value.trim();if(!n){$('ce').textContent='Give your class a name';return}if(!$('cc').checked){$('ce').textContent='Please confirm the statement above';return}$('cok').disabled=true;
+    var r=await api('/rest/v1/rpc/create_class',{method:'POST',body:JSON.stringify({p_name:n,p_grade:+$('cg').value})});
+    if(!r.ok){var j={};try{j=await r.json()}catch(e){}$('ce').textContent=/limit/i.test(j.message||'')?'You have reached the class limit (12).':'Could not create the class. Try again.';$('cok').disabled=false;return}
+    d.close();await loadClasses();var rows=await r.json().catch(function(){return null});
+    var row=Array.isArray(rows)?rows[0]:rows;cur=classes.find(function(c){return row&&c.id===row.id})||classes[classes.length-1];try{localStorage.setItem('mlt_cur',cur.id)}catch(e){}members=[];render();
+  };
+}
+function settings(){
+  var d=$('dlg');
+  d.innerHTML='<h2>Class settings</h2><label for="sn">Class name</label><input id="sn" maxlength="60" value="'+esc(cur.name)+'"><label for="sg">Weekly goal (minutes per student)</label><input id="sg" type="number" min="10" max="600" step="5" value="'+cur.weekly_goal+'"><label style="display:flex;gap:10px;align-items:center;font-weight:700;margin-top:14px"><input type="checkbox" id="sc" style="width:22px;min-height:22px" '+(cur.closed?'checked':'')+'> Pause joining (new students cannot use the code)</label><div class="err" id="se"></div><div class="row"><button class="btn ghost grow" id="sx">Cancel</button><button class="btn grow" id="ss">Save</button></div><hr style="border:0;border-top:1px solid var(--line);margin:18px 0"><button class="btn red sm" id="sd">Delete this class</button><p class="fine">Deleting a class removes all of its student records permanently.</p>';
+  d.showModal();$('sx').onclick=function(){d.close()};
+  $('ss').onclick=async function(){var g=Math.max(10,Math.min(600,+$('sg').value||60)),n=$('sn').value.trim()||cur.name;var r=await api('/rest/v1/classes?id=eq.'+cur.id,{method:'PATCH',body:JSON.stringify({name:n,weekly_goal:g,closed:$('sc').checked})});if(!r.ok){$('se').textContent='Could not save';return}d.close();var id=cur.id;await loadClasses();cur=classes.find(function(c){return c.id===id});render();await loadMembers();paintRoster()};
+  $('sd').onclick=async function(){if(!confirm('Permanently delete "'+cur.name+'" and all its student records?'))return;var r=await api('/rest/v1/classes?id=eq.'+cur.id,{method:'DELETE'});if(!r.ok){$('se').textContent='Could not delete';return}d.close();await loadClasses();cur=classes[0]||null;members=[];render();await loadMembers();paintRoster()};
+}
+function qrSvg(text){try{var q=qrcode(0,'M');q.addData(text);q.make();return q.createSvgTag({cellSize:6,margin:0,scalable:true})}catch(e){return ''}}
+function printPoster(){
+  $('poster').innerHTML='<h1>Join our Maple Leap class!</h1><div style="font-size:30px;font-weight:700">'+esc(cur.name)+'</div><div class="pc">'+esc(cur.code)+'</div><div class="qr">'+qrSvg(joinLink())+'</div><ol><li>Scan the QR code, or go to <b>maplehilllearning.com/app</b></li><li>Tap <b>Me</b>, then <b>Join with a code</b></li><li>Type the code and your <b>first name</b></li></ol><div style="font-size:20px;color:#555">Free for students. No emails. No ads.</div>';
+  document.body.classList.remove('pl');setTimeout(function(){window.print()},120);
+}
+function printLetter(){
+  var l=joinLink();
+  $('letter').innerHTML='<div style="max-width:6.5in;margin:0 auto"><h2 style="font-family:Georgia,serif;color:#000">Maple Leap in our classroom</h2><p>Dear families,</p><p>This year our class is using <b>Maple Leap</b>, a free learning app for Pre-K to Grade 6 from Maple Hill Learning Press. It covers math, reading and logic, with short lessons and brain games that children enjoy.</p><p><b>How it works.</b> Your child joins our class with a short class code and their <b>first name only</b>. I can see their first name, grade and learning progress (for example minutes practised and accuracy by subject) so I can support them. There is no chat, no ads, and no student emails, photos or last names are collected. While in our class, your child gets unlimited hearts and Plus features at no cost. You can ask your child to leave the class at any time from the Me tab.</p><p><b>To join at home or at school:</b></p><ol><li>Open <b>maplehilllearning.com/app</b> on a phone, tablet or computer (or install the Maple Leap app).</li><li>Tap <b>Me</b>, then <b>Join with a code</b>.</li><li>Class code: <b style="font-size:20px;letter-spacing:.15em">'+esc(cur.code)+'</b>. Type your child\'s first name.</li></ol><p>Direct link: '+esc(l)+'</p><p>Learning a little every day helps most. Our weekly goal is <b>'+cur.weekly_goal+' minutes</b>. Thank you for your support!</p><p>Sincerely,<br>'+esc(ses&&ses.email||'Your teacher')+'</p><p style="font-size:12px;color:#444">Privacy: maplehilllearning.com/privacy.html · Questions: ali.houmani@exprealty.com</p></div>';
+  document.body.classList.add('pl');setTimeout(function(){window.print();setTimeout(function(){document.body.classList.remove('pl')},500)},120);
+}
+function csvCell(v){v=String(v==null?'':v);if(/^[=+\-@\t\r]/.test(v))v="'"+v;return '"'+v.replace(/"/g,'""')+'"'}
+function exportCsv(){
+  var head=['Name','Grade','Minutes (7d)','XP this week','Total XP','Questions answered','Accuracy %','Streak','Lessons','Brain stars','Last active','Status'];
+  var rows=members.map(function(m){return [m.name,m.grade==null?'':gl(m.grade),m.wk,m.xp,m.txp,m.q,m.acc==null?'':m.acc,m.streak,m.les,m.stars,m.la,status(m,cur.weekly_goal)[0]].map(csvCell).join(',')});
+  var blob=new Blob(['﻿'+[head.map(csvCell).join(',')].concat(rows).join('\r\n')],{type:'text/csv'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=(cur.name.replace(/[^\w]+/g,'_')||'class')+'_'+dstr()+'.csv';document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(a.href)},2000);
+}
+window.__t={calc:calc,status:status};
+boot();
+})();
+</script>
+</body>
+</html>
