@@ -484,7 +484,7 @@ shr(a){shareKind(a)},invite(){shareKind('progress')},rpt(a){const p=P(),t=report
  repair(){const p=P();if(!p.lost||p.lost.d!==dk())return;const c=repairCost(p);if(p.gems<c){toast('Need 💎'+c+' to repair. Earn gems from lessons and quests!');return}p.gems-=c;p.streak=p.lost.n;p.last=addD(dk(),-1);p.days.push(addD(dk(),-1));p.lost=null;save();toast('🔥 Streak repaired! Do a lesson today to keep it.');render()},buy(a){const[k,c]=a.split('|'),p=P();if(p.gems<+c){toast('Not enough gems. Complete quests and lessons to earn more!');return}p.gems-=+c;if(k=='freeze')p.freezes++;if(k=='hearts'){p.hearts=5;p.hAt=0}if(k=='boost')p.boost=Date.now()+15*60000;save();sOK();toast('Purchased!');render()},
  snd(){S.snd=!S.snd;save();render()},theme(){const c=S.theme||'auto';S.theme=THORDER[(THORDER.indexOf(c)+1)%THORDER.length];save();render()},heartinfo(){hearts()},
  mixed(){startMixed()},mist(){if(!isPlus())return ACT.paywall();startMist()},heartprac(){startMixed(true)},
- shop(){gate(()=>openUrl('https://www.amazon.com/s?k=%22Maple+Hill+Learning+Press%22&i=stripbooks'))},
+ shop(){gate(()=>openUrl('https://www.amazon.com/author/maplehilllearningpress'))},
  paywall(){paywall()},profiles(){profiles()},grd(){gradePick()},setgrade(a){setGrade(+a)},
  sw(a){S.cur=+a;save();closeModal();render()},addkid(){closeModal();if(S.ps.length>=MAXKIDS()){toast('Family plan lets you add up to 6 children');setTimeout(paywall,400);return}S.adding=1;S.onb=1;save();render()},
  parent(){gate(parentZone)},privacy(){privacy()},pol(){gate(()=>openUrl(SITE+'/privacy.html'))},terms(){gate(()=>openUrl(SITE+'/terms.html'))},
