@@ -8,8 +8,23 @@ var GM=[
  {id:'dash',n:'Number Dash',e:'⚡',skill:'Speed',c:'#f47b20',how:'Answer as many as you can before time runs out!',how0:'Count the pictures. Tap the number!'},
  {id:'odd',n:'Odd One Out',e:'👀',skill:'Attention',c:'#1d5fd1',how:'One picture is different. Spot it fast!',how0:'Find the one that is different!'},
  {id:'word',n:'Word Whiz',e:'🔤',skill:'Language',c:'#d62828',how:'Tap the letters to unscramble each word.',how0:'Find the matching letter!'},
- {id:'clash',n:'Color Clash',e:'🎨',skill:'Flexibility',c:'#12306b',how:'Follow the rule. Tap the right color name!',how0:'Tap the same color!'}
+ {id:'clash',n:'Color Clash',e:'🎨',skill:'Flexibility',c:'#12306b',how:'Follow the rule. Tap the right color name!',how0:'Tap the same color!'},
+ {id:'pat',n:'Pattern Pop',e:'🧩',skill:'Patterns',c:'#0e9aa7',how:'Spot the pattern and tap what comes next.',how0:'What comes next? Tap it!'},
+ {id:'miss',n:'Number Detective',e:'🔍',skill:'Reasoning',c:'#b5651d',how:'Find the missing number that makes it true.',how0:'Find the missing number!'},
+ {id:'cmp',n:'Size Showdown',e:'⚖️',skill:'Number sense',c:'#a23b72',how:'Two values. Tap the one that matches the rule.',how0:'Tap the bigger one!'},
+ {id:'sort',n:'Sort Squad',e:'🗂️',skill:'Classifying',c:'#2e7d32',how:'Tap every item that fits the rule before time runs out.',how0:'Tap all that belong!'},
+ {id:'digit',n:'Digit Memory',e:'🔢',skill:'Working memory',c:'#5e35b1',how:'Remember the digits, then type them back.',how0:'Remember the numbers!'}
 ];
+var LINEUP=[
+ ['mem','seq','dash','odd','word','pat'],
+ ['mem','dash','odd','word','pat','sort'],
+ ['mem','seq','dash','word','pat','miss'],
+ ['mem','dash','word','pat','miss','cmp'],
+ ['seq','dash','word','miss','sort','digit'],
+ ['mem','dash','clash','miss','cmp','digit'],
+ ['seq','dash','clash','miss','cmp','digit']
+];
+function lineup(g){return LINEUP[g]||LINEUP[1]}
 var INK={Red:'#ef4444',Blue:'#3b82f6',Green:'#22c55e',Yellow:'#facc15',Purple:'#a855f7',Orange:'#fb923c'};
 var CN=['Red','Blue','Green','Yellow','Purple','Orange'];
 var run=null;
@@ -26,7 +41,7 @@ function rec(p){
   return p;
 }
 function best(p,id){var r=p.bg&&p.bg[id];return (r&&typeof r==='object')?{b:+r.b||0,s:Math.min(3,+r.s||0),n:+r.n||0}:{b:0,s:0,n:0}}
-function totalStars(p){var t=0;GM.forEach(function(g){t+=best(p,g.id).s});return t}
+function totalStars(p){var t=0;lineup(gradeOf(p)).forEach(function(id){t+=best(p,id).s});return t}
 var TITLES=[[0,'Seedling','🌱'],[3,'Sprout','🌿'],[7,'Sapling','🌳'],[11,'Maple','🍁'],[15,'Mighty Maple','🏆'],[18,'Genius Leaf','🧠']];
 function title(t){var r=TITLES[0];TITLES.forEach(function(x){if(t>=x[0])r=x});return r}
 function stars(n){var s='';for(var i=0;i<3;i++)s+=i<n?'⭐':'☆';return s}
@@ -37,7 +52,7 @@ function view(p){
   var h='<h2 style="color:var(--navy);margin:8px 0 2px">Brain Gym</h2><p class="fine" style="margin:0 0 6px;text-align:left">Quick games that train memory, focus and speed. Tuned for '+esc(gradeLabel(p))+'.</p>';
   h+='<div class="card bgp"><div class="row" style="margin:0"><span style="font-size:36px">'+ti[2]+'</span><span style="flex:1;margin-left:10px"><b style="color:var(--navy);font-size:18px">'+ti[1]+'</b><br><span class="fine" style="text-align:left">'+t+' of 18 stars</span></span></div><div class="meter" style="margin-top:8px"><i style="width:'+Math.round(t/18*100)+'%;background:var(--purple)"></i></div></div>';
   h+='<div class="card"><div class="row" style="margin:0"><b style="color:var(--navy)">Today\'s challenge</b><span>'+(done?'✅ +💎25 earned':Math.min(pl,3)+' / 3 games')+'</span></div><div class="fine" style="text-align:left;margin:4px 0 0">'+(done?'Come back tomorrow for a fresh challenge!':'Play 3 different games to win 💎25.')+'</div></div>';
-  h+='<div class="bgg">'+GM.map(function(g){var b=best(p,g.id);return '<button class="bgc" data-act="bg" data-a="'+g.id+'" style="--c:'+g.c+'" aria-label="'+esc(g.n)+', best '+b.s+' of 3 stars"><span class="bge">'+g.e+'</span><b>'+g.n+'</b><span class="bgk">'+(g0?'':g.skill+' · ')+(b.n?stars(b.s):'New!')+'</span></button>'}).join('')+'</div>';
+  h+='<div class="bgg">'+lineup(gradeOf(p)).map(gm).map(function(g){var b=best(p,g.id);return '<button class="bgc" data-act="bg" data-a="'+g.id+'" style="--c:'+g.c+'" aria-label="'+esc(g.n)+', best '+b.s+' of 3 stars"><span class="bge">'+g.e+'</span><b>'+g.n+'</b><span class="bgk">'+(g0?'':g.skill+' · ')+(b.n?stars(b.s):'New!')+'</span></button>'}).join('')+'</div>';
   return h;
 }
 
@@ -106,7 +121,7 @@ function start(id){
   var gr=run.g;run.over=false;run.score=0;run.streak=0;setScore(0);resizeFn=null;
   var m0=$m();if(m0){var m1=m0.cloneNode(false);m0.parentNode.replaceChild(m1,m0)}
   document.getElementById('bgbw').style.visibility='hidden';
-  ({mem:mem,seq:seq,dash:dash,odd:odd,word:word,clash:clash})[id](gr);
+  ({mem:mem,seq:seq,dash:dash,odd:odd,word:word,clash:clash,pat:pat,miss:miss,cmp:cmp,sort:sortg,digit:digit})[id](gr);
 }
 function timed(sec,onEnd){
   document.getElementById('bgbw').style.visibility='visible';setBar(1);
@@ -371,5 +386,124 @@ function clash(g){
   next();
 }
 
-window.BG={GM:GM,view:view,open:open,close:close,rec:rec,best:best,totalStars:totalStars,css:injectCss,_dq:dq};
+
+/* ---------- generic multiple-choice engine ---------- */
+function mcq(g,gen,TH,secs){
+  var right=0,busy=false,cur,t=timed(secs,function(){end()});
+  function end(){if(!run||run.over)return;finish(run.score,right>=TH[2]?3:right>=TH[1]?2:right>=TH[0]?1:0,right+' correct')}
+  function next(){
+    busy=false;cur=gen(g);run.ans=String(cur.ans);
+    $m().innerHTML=(cur.hint?'<div class="cr">'+esc(cur.hint)+'</div>':'')+'<div class="bq '+(cur.em?'em':'')+'" aria-live="polite" style="'+(cur.qs||'')+'">'+esc(cur.q)+'</div><div class="bc '+(cur.n===3?'c3':'c2')+'">'+cur.ch.map(function(v){return '<button data-v="'+esc(v)+'"'+(cur.bs?' style="'+cur.bs+'"':'')+'>'+esc(v)+'</button>'}).join('')+'</div>';
+    if(g===0&&right===0)speak(cur.hint||'');
+  }
+  $m().addEventListener('pointerdown',function(e){
+    var b=e.target.closest('.bc button');if(!b||busy||!run||run.over)return;busy=true;
+    if(b.dataset.v===String(cur.ans)){right++;run.streak++;run.score+=10+(run.streak>=3?5:0);setScore(run.score);b.classList.add('ok');ok();T(next,g<=1?420:180)}
+    else{run.streak=0;b.classList.add('no');bad();t.sub(g===0?0:1.5);Array.prototype.forEach.call($m().querySelectorAll('.bc button'),function(x){if(x.dataset.v===String(cur.ans))x.classList.add('ok')});T(next,g<=1?800:520)}
+  });
+  next();
+}
+function numch(ans,n,neg){var c=[ans+1,ans-1,ans+2,ans-2,ans+10,ans-10,ans*2];return uniq(ans,sh(c),n,neg).map(String)}
+/* ---------- Pattern Pop ---------- */
+var PE=['🔴','🔵','🟢','🟡','🟣','🟠','⭐','🌙','🍎','🍌','🐶','🐱'];
+function patq(g){
+  if(g<=1){
+    var e=sh(PE).slice(0,3),forms=g===0?[[0,1,0,1,0,1],[0,0,1,0,0,1]]:[[0,1,0,1,0,1],[0,0,1,0,0,1],[0,1,2,0,1,2],[0,1,1,0,1,1],[0,1,2,2,0,1]];
+    var f=forms[ri(forms.length)];
+    return {q:f.slice(0,5).map(function(i){return e[i]}).join(' ')+' ❓',ans:e[f[5]],ch:sh(e),em:true,n:3,hint:'What comes next?',bs:'font-size:48px'};
+  }
+  var a,d,arr=[],k;
+  if(g===2){d=[1,2,5,10,3][ri(5)];a=rr(0,20);for(k=0;k<5;k++)arr.push(a+d*k)}
+  else if(g===3){d=rr(3,9);if(Math.random()<.3){a=rr(40,70);for(k=0;k<5;k++)arr.push(a-d*k)}else{a=rr(0,15);for(k=0;k<5;k++)arr.push(a+d*k)}}
+  else if(g===4){var m=ri(3);if(m===0){a=rr(1,5);for(k=0;k<5;k++)arr.push(a*Math.pow(2,k))}else if(m===1){a=rr(1,3);for(k=0;k<5;k++)arr.push(a*Math.pow(3,k))}else{a=rr(5,20);var u=rr(3,8),v=rr(1,u-1);arr=[a];for(k=1;k<5;k++)arr.push(arr[k-1]+(k%2?u:-v))}}
+  else if(g===5){var m5=ri(3);if(m5===0){for(k=1;k<=5;k++)arr.push(k*k+rr(0,0))}else if(m5===1){a=rr(1,5);d=rr(1,3);arr=[a];for(k=1;k<5;k++)arr.push(arr[k-1]+d*k)}else{a=rr(2,9);d=rr(2,5);arr=[a];for(k=1;k<5;k++)arr.push(arr[k-1]*(k%2?2:1)+(k%2?0:d))}}
+  else{var m6=ri(4);if(m6===0){var x=rr(1,4),y=rr(1,5);arr=[x,y];for(k=2;k<6;k++)arr.push(arr[k-1]+arr[k-2])}else if(m6===1){for(k=1;k<=5;k++)arr.push(k*k*k)}else if(m6===2){a=rr(2,4);var r=rr(3,4);for(k=0;k<5;k++)arr.push(a*Math.pow(r,k))}else{a=rr(1,5);arr=[a];for(k=1;k<6;k++)arr.push(arr[k-1]+k*k)}}
+  var ans=arr[arr.length-1],shown=arr.slice(0,arr.length-1);
+  return {q:shown.join(', ')+', ?',ans:ans,ch:numch(ans,4,false),n:4,hint:'Find the rule. What comes next?',qs:'font-size:clamp(28px,8vw,44px)'};
+}
+function pat(g){mcq(g,patq,g<=1?[4,7,10]:[4,7,10],g===0?60:50)}
+/* ---------- Number Detective ---------- */
+function missq(g){
+  var a,b,c,ans,q,m;
+  if(g<=2){m=ri(3);if(m===0){a=rr(2,9);ans=rr(1,10-a>0?10-a:1);b=a+ans;q='? + '+a+' = '+b;ans=b-a}else if(m===1){a=rr(5,15);ans=rr(2,20-a);q=a+' + ? = '+(a+ans)}else{b=rr(3,9);ans=rr(b+1,20);q='? − '+b+' = '+(ans-b)}}
+  else if(g===3){m=ri(3);if(m===0){a=rr(2,9);ans=rr(2,9);q=a+' × ? = '+(a*ans)}else if(m===1){a=rr(12,60);ans=rr(11,40);q='? + '+a+' = '+(a+ans)}else{ans=rr(11,60);b=rr(5,10);q='? − '+b+' = '+(ans-b)}}
+  else if(g===4){m=ri(3);if(m===0){b=rr(2,9);ans=rr(5,12);q='? ÷ '+b+' = '+ans;ans=b*ans}else if(m===1){a=rr(3,9);ans=rr(3,12);q='? × '+a+' = '+(a*ans)}else{a=rr(2,5);ans=rr(3,10);c=rr(1,9);q=a+' × ? + '+c+' = '+(a*ans+c)}}
+  else if(g===5){m=ri(3);if(m===0){a=rr(2,6);ans=rr(2,12);c=rr(1,15);q=a+'x + '+c+' = '+(a*ans+c)+',  x = ?'}else if(m===1){a=rr(2,5);ans=rr(2,10);c=rr(1,10);q=a+'x − '+c+' = '+(a*ans-c)+',  x = ?'}else{ans=rr(3,15);a=rr(2,9);q='x ÷ '+a+' + '+rr(1,1)+' = ?  (x = '+(a*ans)+')';ans=ans+1}}
+  else{m=ri(3);if(m===0){a=rr(2,9);ans=rr(2,12);c=rr(1,20);q=a+'x − '+c+' = '+(a*ans-c)+',  x = ?'}else if(m===1){a=rr(2,6);ans=rr(2,10);c=rr(1,6);q=a+'(x + '+c+') = '+(a*(ans+c))+',  x = ?'}else{ans=rr(-9,-1);a=rr(2,9);c=rr(1,12);q=a+'x + '+c+' = '+(a*ans+c)+',  x = ?'}}
+  return {q:q,ans:ans,ch:numch(ans,4,g>=6),n:4,hint:g===0?'':'Find the missing number',qs:'font-size:clamp(28px,8.5vw,46px)'};
+}
+function miss(g){mcq(g,missq,[5,9,13],50)}
+/* ---------- Size Showdown ---------- */
+function fr(n,d){return {l:n+'/'+d,v:n/d}}
+function cmpq(g){
+  var A,B,rule='bigger';
+  if(g<=3){var m=ri(2);if(g<=2||m===0){var a=g<=2?rr(5,60):rr(100,899),b=a+(Math.random()<.5?-1:1)*rr(1,g<=2?9:40);A={l:String(a),v:a};B={l:String(b),v:b}}else{var d1=rr(2,8),d2=rr(2,8);while(d2===d1)d2=rr(2,8);A=fr(1,d1);B=fr(1,d2)}}
+  else if(g===4){var m4=ri(2);if(m4===0){var d=rr(4,10),n1=rr(1,d-1),n2=rr(1,d-1);while(n2===n1)n2=rr(1,d-1);A=fr(n1,d);B=fr(n2,d)}else{var x=rr(100,999),y=x+rr(1,60)*(Math.random()<.5?-1:1);A={l:String(x),v:x};B={l:String(y),v:y}}}
+  else if(g===5){var m5=ri(3);if(m5===0){var p=rr(1,9)/10,q2=p+(rr(1,9)/100)*(Math.random()<.5?1:-1);q2=Math.round(q2*100)/100;A={l:p.toFixed(1),v:p};B={l:q2.toFixed(2),v:q2}}else if(m5===1){var dd=rr(2,10),nn=rr(1,dd-1),dec=Math.round(rr(1,99))/100;A=fr(nn,dd);B={l:dec.toFixed(2),v:dec}}else{var d3=rr(3,9),n3=rr(1,d3-1),d4=rr(3,9),n4=rr(1,d4-1);A=fr(n3,d3);B=fr(n4,d4)}}
+  else{var m6=ri(3);if(m6===0){var u=rr(-20,20),w=rr(-20,20);A={l:String(u),v:u};B={l:String(w),v:w}}else if(m6===1){var pc=rr(10,95),dn=rr(2,8),nm=rr(1,dn-1);A={l:pc+'%',v:pc/100};B=fr(nm,dn)}else{var f1=rr(1,9)/10,f2=Math.round((f1+(rr(1,9)/100)*(Math.random()<.5?1:-1))*100)/100;A={l:'0.'+Math.round(f1*10),v:f1};B={l:f2.toFixed(2),v:f2}}if(Math.random()<.4)rule='smaller'}
+  if(A.v===B.v){return cmpq(g)}
+  var big=A.v>B.v?A:B,sm=A.v>B.v?B:A,ans=rule==='bigger'?big.l:sm.l;
+  if(A.l===B.l)return cmpq(g);
+  return {q:'',ans:ans,ch:sh([A.l,B.l]),n:2,hint:'Tap the '+rule+' one',bs:'font-size:clamp(30px,9vw,48px);min-height:120px'};
+}
+function cmp(g){mcq(g,cmpq,[6,10,14],45)}
+/* ---------- Sort Squad ---------- */
+var CATS={animals:['🐶','🐱','🐸','🐟','🐦','🐵','🐰','🦊'],food:['🍎','🍌','🍕','🍓','🍪','🥕','🍇','🍞'],rides:['🚗','🚌','✈️','🚲','🚀','🚂','🚁','🛵']};
+var PR=[2,3,5,7,11,13,17,19,23,29,31,37];
+function sortg(g){
+  var right=0,busy=false,TH=[3,5,7],t=timed(55,function(){end()}),tgt,found,items;
+  function end(){if(!run||run.over)return;finish(run.score,right>=TH[2]?3:right>=TH[1]?2:right>=TH[0]?1:0,right+' rounds')}
+  function next(){
+    busy=false;var k=rr(3,4),hint,yes,no,n,cols;
+    if(g<=3){var keys=sh(Object.keys(CATS)),tk=keys[0];yes=sh(CATS[tk]).slice(0,k);no=sh(CATS[keys[1]].concat(CATS[keys[2]])).slice(0,9-k);hint='Tap every '+({animals:'animal 🐾',food:'food 🍽️',rides:'ride 🚗'})[tk];n=9;cols=3}
+    else{var rules=[['even number',function(v){return v%2===0}],['multiple of 3',function(v){return v%3===0}],['multiple of 5',function(v){return v%5===0}],['prime number',function(v){return PR.indexOf(v)>=0}]],ru=rules[ri(g>=4?4:3)],pool=[];for(var v=2;v<=40;v++)pool.push(v);
+      var ys=sh(pool.filter(ru[1])).slice(0,k+1),ns=sh(pool.filter(function(v){return !ru[1](v)})).slice(0,12-ys.length);yes=ys.map(String);no=ns.map(String);hint='Tap every '+ru[0];n=12;cols=4}
+    items=sh(yes.map(function(v){return {v:v,y:1}}).concat(no.map(function(v){return {v:v,y:0}})));found=0;tgt=yes.length;
+    run.ans=items.map(function(x,i){return x.y?i:-1}).filter(function(i){return i>=0}).join(',');
+    var rows=Math.ceil(items.length/cols);
+    $m().innerHTML='<div class="cr" aria-live="polite">'+esc(hint)+'</div><div class="og" id="og" style="--cols:'+cols+'">'+items.map(function(x,i){return '<button data-i="'+i+'">'+esc(x.v)+'</button>'}).join('')+'</div>';
+    var og=document.getElementById('og');
+    resizeFn=function(){var w=Math.min(og.parentNode.clientWidth,window.innerWidth-28),hA=window.innerHeight-210;var cell=Math.max(48,Math.min((w-10*(cols-1))/cols,(hA-10*(rows-1))/rows));og.style.width=(cell*cols+10*(cols-1))+'px';og.style.setProperty('--fs',Math.floor(cell*(g<=3?.56:.42))+'px')};
+    resizeFn();
+    if(g<=1&&right===0)speak(hint.replace(/[^\w ]/g,''));
+  }
+  $m().addEventListener('pointerdown',function(e){
+    var b=e.target.closest('.og button');if(!b||busy||!run||run.over||b.classList.contains('ok'))return;
+    var it=items[+b.dataset.i];
+    if(it.y){b.classList.add('ok');found++;snd(600+found*80);if(found===tgt){busy=true;right++;run.streak++;run.score+=20+(run.streak>=3?5:0);setScore(run.score);ok();T(next,380)}}
+    else{run.streak=0;b.classList.add('no');bad();t.sub(2);T(function(){b.classList.remove('no')},320)}
+  });
+  next();
+}
+/* ---------- Digit Memory ---------- */
+function digit(g){
+  var back=g>=6,len=3,lives=2,bestLen=0,TH=back?[3,5,7]:[4,6,8],digits,entry,inp=false;
+  function round(){
+    digits=[];while(digits.length<len){var d=ri(10);if(digits[digits.length-1]!==d)digits.push(d)}
+    run.ans=(back?digits.slice().reverse():digits).join('');entry=[];inp=false;
+    $m().innerHTML='<div class="cr" id="dc" aria-live="polite">Remember '+len+' digits'+(back?' — then type them <b>BACKWARDS</b>':'')+'</div><div class="bq" id="dd" style="font-size:clamp(90px,30vw,150px);min-height:150px"></div><div class="fine">'+(lives>1?'❤️'.repeat(lives):'❤️')+'</div>';
+    digits.forEach(function(d,i){T(function(){var e=document.getElementById('dd');if(e)e.textContent=d;snd(440+d*40)},900+i*850);T(function(){var e=document.getElementById('dd');if(e)e.textContent=''},900+i*850+600)});
+    T(pad,900+len*850);
+  }
+  function pad(){
+    inp=true;var slots='';for(var i=0;i<len;i++)slots+='<button disabled data-s="'+i+'"></button>';
+    $m().innerHTML='<div class="cr">Type them'+(back?' <b>BACKWARDS</b>':' in order')+'</div><div class="wr" id="wr" style="--tw:'+Math.max(34,Math.min(54,Math.floor(320/len)))+'px">'+slots+'</div><div class="bc c3" id="kp" style="max-width:340px">'+[1,2,3,4,5,6,7,8,9,'⌫',0].map(function(k){return '<button data-k="'+k+'" style="min-height:62px;font-size:28px"'+(k==='⌫'?' aria-label="Delete"':'')+'>'+k+'</button>'}).join('')+'</div>';
+    paint();
+  }
+  function paint(){var wr=document.getElementById('wr');if(!wr)return;Array.prototype.forEach.call(wr.children,function(b,i){b.textContent=entry[i]!=null?entry[i]:'';b.classList.toggle('f',entry[i]!=null)})}
+  $m().addEventListener('pointerdown',function(e){
+    var b=e.target.closest('#kp button');if(!b||!inp||!run||run.over)return;
+    var k=b.dataset.k;
+    if(k==='⌫'){entry.pop();paint();return}
+    entry.push(+k);snd(500);paint();
+    if(entry.length===len){
+      inp=false;var good=entry.join('')===run.ans;
+      if(good){bestLen=len;run.score=bestLen*50;setScore(run.score);ok();len++;var w=document.getElementById('wr');if(w)w.classList.add('pop');if(len>12){T(function(){finish(run.score,3,'Incredible memory!')},500);return}T(round,800)}
+      else{lives--;bad();var w2=document.getElementById('wr');if(w2)w2.classList.add('no');if(lives<=0)T(function(){finish(bestLen*50,bestLen>=TH[2]?3:bestLen>=TH[1]?2:bestLen>=TH[0]?1:0,'Best: '+bestLen+' digits')},900);else T(round,1000)}
+    }
+  });
+  round();
+}
+
+window.BG={LINEUP:LINEUP,ans:function(){return run&&run.ans},GM:GM,view:view,open:open,close:close,rec:rec,best:best,totalStars:totalStars,css:injectCss,_dq:dq};
 })();
