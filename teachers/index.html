@@ -80,6 +80,7 @@ dialog::backdrop{background:rgba(18,26,48,.55)}
 <div class="letter" id="letter"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script src="ontario.js"></script>
 <script>
 (function(){
 'use strict';
@@ -90,7 +91,7 @@ var SUBJ={math:['Math','#d62828'],read:['Reading','#1d5fd1'],logic:['Logic','#7b
 var GM={mem:'Memory Match',seq:'Leaf Echo',dash:'Number Dash',odd:'Odd One Out',word:'Word Whiz',clash:'Color Clash',pat:'Pattern Pop',miss:'Number Detective',cmp:'Size Showdown',sort:'Sort Squad',digit:'Digit Memory'};
 var $=function(id){return document.getElementById(id)};
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
-var ses=null,classes=[],cur=null,members=[],plan=null,view='',tab='roster',sortK='name',sortD=1,timer=null,detailId=null;
+var ses=null,classes=[],cur=null,members=[],plan=null,view='',tab='roster',cg=0,sortK='name',sortD=1,timer=null,detailId=null;
 try{ses=JSON.parse(localStorage.getItem('mlt')||'null')}catch(e){}
 function uidOf(){try{if(ses&&ses.uid)return ses.uid;var p=ses.access.split('.')[1].replace(/-/g,'+').replace(/_/g,'/');return JSON.parse(atob(p)).sub}catch(e){return ''}}
 function setSes(s){ses=s;try{if(s)localStorage.setItem('mlt',JSON.stringify(s));else localStorage.removeItem('mlt')}catch(e){}}
@@ -158,7 +159,7 @@ function calc(m){
   var last=s.last||'';var seen=m.last_seen?dstr(new Date(m.last_seen)):'';var la=last>seen?last:seen;
   var idle=la?Math.round((new Date(today)-new Date(la))/864e5):99;
   var scrM=s.scr||{},scrD=[],scrW=0;for(i=13;i>=0;i--){scrD.push(+scrM[addD(today,-i)]||0)}for(i=6;i>=0;i--)scrW+=(+scrM[addD(today,-i)]||0);
-  return {id:m.id,cid:m.class_id,name:m.name,scrD:scrD,scrW:scrW,scrT:scrD[13],grade:s.g,wk:wk,days:days,xp:+s.wxp||0,txp:+s.xp||0,streak:+s.st||0,les:+s.les||0,q:t,acc:t?Math.round(c/t*100):null,bySub:bySub,stars:stars,bg:bg,idle:idle,la:la,joined:m.joined_at,perf:+s.perf||0,sk:s.sk||{}};
+  return {id:m.id,cid:m.class_id,name:m.name,scrD:scrD,scrW:scrW,scrT:scrD[13],grade:s.g,wk:wk,days:days,xp:+s.wxp||0,txp:+s.xp||0,streak:+s.st||0,les:+s.les||0,q:t,acc:t?Math.round(c/t*100):null,bySub:bySub,stars:stars,bg:bg,idle:idle,la:la,joined:m.joined_at,perf:+s.perf||0,sk:s.sk||{},ex:s.ex||{}};
 }
 function status(m,goal){
   if(!m.les&&!m.wk)return ['New','n'];
@@ -230,13 +231,35 @@ function currHTML(ms,forPrint){
   if(weak.length&&agg[weak[0]][0]/agg[weak[0]][1]<.75)h+='<div class="note">💡 <b>Focus area:</b> the class is finding <b>'+esc(STR[weak[0]][0])+'</b> ('+esc(STR[weak[0]][1])+') the hardest, at '+Math.round(agg[weak[0]][0]/agg[weak[0]][1]*100)+'% correct.</div>';
   if(miss.length&&!forPrint)h+='<p class="fine">Little or no practice yet in: '+miss.map(function(k){return esc(STR[k][0])}).join(', ')+'. Students reach these as they work through Math and Reading lessons.</p>';
   h+='<p class="fine">Green is 85% or above, yellow 60–84%, red below 60%. A dot (·) means fewer than 5 questions so far. Results show the share of practice questions answered correctly, not report-card marks.</p>';
-  h+='<div class="note" style="background:#eef3fb;border-color:#c9d8f0;font-weight:500"><b>About this alignment:</b> Maple Leap practice questions are organized by the strands of the Ontario Mathematics (2020) and Language (2023) curriculum, and the Kindergarten program. Alignment is at the strand level and is meant to support, not replace, classroom instruction and teacher judgement. Maple Leap is an independent product and is not endorsed by the Ontario Ministry of Education. Some practice may sit slightly above or below a grade’s expectations.</div></div>';
+  h+='<div class="note" style="background:#eef3fb;border-color:#c9d8f0;font-weight:500"><b>About this alignment:</b> Maple Leap practice questions are organized by the strands of the Ontario Mathematics (2020) and Language (2023) curriculum, and the Kindergarten program. Each question is matched to the closest specific expectation for the student’s grade. Matching is approximate, and the checklist is meant to support, not replace, classroom instruction and teacher judgement. Maple Leap is an independent product and is not endorsed by the Ontario Ministry of Education. Some practice may sit slightly above or below a grade’s expectations.</div></div>';
   return h;
 }
+
+var MS_=['B:Number','C:Algebra','D:Data','E:Spatial sense','F:Financial literacy'],LS_=['B:Foundations of language','C:Comprehension','D:Composition'];
+function expHTML(ms,g,forPrint){
+  var O=window.ONT&&window.ONT[g];if(!O)return '';
+  var tally={},who=0;ms.forEach(function(m){if(m.grade!==g)return;who++;Object.keys(m.ex||{}).forEach(function(k){var a=m.ex[k];tally[k]=tally[k]||[0,0];tally[k][0]+=a[0];tally[k][1]+=a[1]})});
+  var cov={};O.cov.forEach(function(c){cov[c]=1});
+  function block(title,pre,map,strands){
+    var codes=Object.keys(map),tot=codes.length,inApp=codes.filter(function(c){return cov[pre+':'+c]}).length;
+    var h='<h4 style="margin:16px 0 4px;font-size:17px">'+title+' <span class="fine" style="font-weight:600">· Maple Leap practises '+inApp+' of '+tot+' Grade '+g+' expectations</span></h4>';
+    strands.forEach(function(sd){var st=sd.split(':'),cs=codes.filter(function(c){return c[0]===st[0]});if(!cs.length)return;
+      h+='<div style="font-weight:800;margin:10px 0 2px;color:var(--navy)">'+st[0]+'. '+st[1]+'</div><div>'+cs.map(function(c){
+        var key=pre+':'+c,t=tally[key],st2;
+        if(cov[key]){st2=t&&t[1]?'<span class="chip '+(t[0]/t[1]>=.85?'g':t[0]/t[1]>=.6?'b':'r')+'">'+Math.round(t[0]/t[1]*100)+'% · '+t[1]+' q</span>':'<span class="chip b">In Maple Leap</span>'}else st2='<span class="chip" style="background:#eee;color:#555">Classroom activity</span>';
+        return '<div style="display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-top:1px solid #eee"><b style="width:40px;flex:none">'+c+'</b><span style="font-size:14px;flex:1;min-width:0">'+esc(map[c])+'</span><span style="flex:none">'+st2+'</span></div>'}).join('')+'</div>'});
+    return h}
+  var h='<div class="card"><div class="row"><h3 class="grow" style="font-size:18px">Expectation checklist, Grade '+g+'</h3>'+(forPrint?'':'<select id="cgs" aria-label="Grade" style="min-height:44px;border:2px solid var(--line,#ddd);border-radius:12px;padding:0 10px;font:inherit">'+[1,2,3,4,5,6].map(function(x){return '<option value="'+x+'"'+(x===g?' selected':'')+'>Grade '+x+'</option>'}).join('')+'</select>')+'</div>'+
+   '<div class="fine">Specific expectations from the Ontario Mathematics (2020) and Language (2023) curricula. Results are the class share of questions answered correctly, for the '+who+' Grade '+g+' student'+(who===1?'':'s')+' with data. “Classroom activity” means the expectation needs hands-on, spoken, or written work that a quiz app cannot assess, so plan it in class.</div>'+
+   block('Mathematics','M',O.M,MS_)+block('Language','L',O.L,LS_);
+  if(tally.X&&tally.X[1])h+='<p class="fine" style="margin-top:12px">Another '+tally.X[1]+' questions were enrichment or review outside the Grade '+g+' expectations ('+Math.round(tally.X[0]/tally.X[1]*100)+'% correct).</p>';
+  return h+'</div>'}
 function paintCurr(el){
   var ms=members;
-  el.innerHTML=currHTML(ms,false)+(ms.length?'<div class="row" style="margin-top:6px"><button class="btn sm blue" id="pcur">🖨️ Print curriculum report</button></div>':'');
-  if($('pcur'))$('pcur').onclick=function(){$('letter').innerHTML='<div style="max-width:7.5in;margin:0 auto"><h2 style="font-family:Georgia,serif">'+esc(view==='all'?'All classes':cur.name)+' · Ontario curriculum report</h2><p class="fine">Printed '+new Date().toLocaleDateString()+'</p>'+currHTML(ms,true)+'</div>';document.body.classList.add('pl');setTimeout(function(){window.print();setTimeout(function(){document.body.classList.remove('pl')},500)},120)};
+  if(!cg)cg=Math.min(6,Math.max(1,cur&&cur.grade?cur.grade:3));
+  el.innerHTML=currHTML(ms,false)+expHTML(ms,cg,false)+(ms.length?'<div class="row" style="margin-top:6px"><button class="btn sm blue" id="pcur">🖨️ Print curriculum report</button></div>':'');
+  if($('cgs'))$('cgs').onchange=function(){cg=+$('cgs').value;paintCurr(el)};
+  if($('pcur'))$('pcur').onclick=function(){$('letter').innerHTML='<div style="max-width:7.5in;margin:0 auto"><h2 style="font-family:Georgia,serif">'+esc(view==='all'?'All classes':cur.name)+' · Ontario curriculum report</h2><p class="fine">Printed '+new Date().toLocaleDateString()+'</p>'+currHTML(ms,true)+expHTML(ms,cg,true)+'</div>';document.body.classList.add('pl');setTimeout(function(){window.print();setTimeout(function(){document.body.classList.remove('pl')},500)},120)};
 }
 function paintRoster(){
   var el=$('roster');if(!el||!cur)return;

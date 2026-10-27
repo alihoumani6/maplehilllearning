@@ -295,7 +295,82 @@ function strandOf(q,subject){
  if(/[+−×÷]|gives|more\.|left|in all|each|packs|boxes|double|cost|remainder|\^|[²³⁴⁵]/i.test(t))return 'MB2';
  return 'MB1';
 }
-const _ml=makeLesson;function makeLessonT(g,subject,d){const L=_ml(g,subject,d);L.forEach(q=>{try{q.sk=strandOf(q,subject)}catch(e){}});return L;}
-const api={genK,makeLesson:makeLessonT,strandOf,STRANDS,MATH,READ,genMath,genRead,genLogic};
+/* ---- Ontario specific-expectation tagging (closest expectation; null = beyond / outside the grade's expectations) ---- */
+function exOf(q,g,subject){
+ const t=String(q.q||''),nums=(t.match(/\d+(?:\.\d+)?/g)||[]).map(Number),mx=nums.length?Math.max.apply(null,nums):0;
+ const M=c=>'M:'+c,Lg=c=>'L:'+c;
+ if(g<1||g>6)return null;
+ if(subject==='read'){
+  if(q.passage){if(/main idea|mostly about|best title|is this (story|passage|text) about/i.test(t))return Lg('C2.6');if(/why|infer|probably|suggest|feel|likely|lesson|moral/i.test(t))return Lg('C3.2');if(/metaphor|simile|imagery/i.test(t))return Lg('C3.1');return Lg('C1.1');}
+  if(q.t==='ord')return Lg('B3.1');
+  if(/spelled/i.test(t))return g===1?Lg('B2.5'):(g<=3?Lg('B2.2'):Lg('D2.6'));
+  if(/opposite|means the same|synonym/i.test(t))return g===1?Lg('B2.7'):(g<=3?Lg('B2.4'):Lg('B2.2'));
+  if(/metaphor|simile|figurative/i.test(t))return Lg('C3.1');
+  if(/correct|punctuat|capital|comma|apostrophe|colon|semicolon|quotation/i.test(t))return Lg('B3.3');
+  return Lg('B3.2');
+ }
+ if(subject==='logic'){if(/pattern|next|sequence|what comes|missing/i.test(t))return M('C1.3');return null;}
+ if(subject!=='math')return null;
+ const mon=/\$|¢|cents|dollar|toonie|loonie|change do you|HST/i.test(t);
+ if(/chance|likely|probab|impossible|certain|spinner|die\b|flipping/i.test(t)){if(/probability/i.test(t))return g>=5?M('D2.1'):null;return g<=4?M('D2.1'):null;}
+ if(mon){
+  if(/HST/.test(t))return g===5?M('F1.2'):null;
+  if(/nearest 5¢/.test(t))return null;
+  if(/change do you/.test(t))return g===3?M('F1.1'):(g===4?M('F1.2'):(g===5?M('F1.2'):null));
+  if(/cost|\$/.test(t)&&/pens|apples cost|What does/i.test(t))return g===5?M('F1.2'):(g===6?M('B2.12'):null);
+  if(/toonie|loonie|cents|¢|dollars/.test(t))return g<=2?M('F1.1'):null;
+ }
+ if(/skip count/i.test(t))return g===2?M('B1.4'):(g===3?M('B1.4'):null);
+ if(/pattern|sequence/i.test(t))return M('C1.3');
+ if(/mean\b|median|average/i.test(t))return g>=4?M('D1.5'):(g===3?M('D1.4'):null);
+ if(/mode\b/i.test(t))return g===2?M('D1.4'):(g===3?M('D1.4'):(g>=4?M('D1.5'):null));
+ if(/favourite|which has more|how many more .* than|answered in all|most popular/i.test(t))return M('D1.5');
+ if(/perimeter/i.test(t))return g===3?M('E2.1'):null;
+ if(/area/i.test(t)){if(/rectangle|garden/i.test(t))return g===4?M('E2.5'):(g===3?M('E2.9'):null);if(/triangle|parallelogram/i.test(t))return g===5?M('E2.5'):null;return null;}
+ if(/volume/i.test(t))return null;
+ if(/elapsed|starts at|lasts|class starts|how long is the class/i.test(t))return g===4?M('E2.3'):(g===3?M('E2.6'):null);
+ if(/what time is it/i.test(t))return g===2?M('E2.4'):(g===3?M('E2.6'):null);
+ if(/days are in a week/i.test(t))return g===1?M('E2.3'):null;
+ if(/hours are in one day|minutes are in one hour/i.test(t))return g===2?M('E2.4'):(g===3?M('E2.6'):null);
+ if(/longer|heavier|more water/i.test(t))return g===1?M('E2.2'):null;
+ if(/=\s*\?\s*(cm|mm|mL|g)\b|\d+ (m|kg|L|cm) = \?/.test(t)){if(/kg|mL|L\b/.test(t))return g===4?M('E2.1'):(g===5?M('E2.2'):(g===6?M('E2.1'):null));return g===3?M('E2.2'):(g===2?M('E2.2'):(g===5?M('E2.2'):(g===6?M('E2.1'):null)));}
+ if(/lines of symmetry|most lines of symmetry/i.test(t))return g===2?M('E1.1'):null;
+ if(/(sides|corners|faces) does a/i.test(t))return g<=3?M('E1.1'):null;
+ if(/angle/i.test(t)&&/third angle|triangle/i.test(t))return g===5?M('E1.1'):null;
+ if(/angle/i.test(t))return g===4?M('E2.4'):(g===5?M('E2.3'):null);
+ if(/Cartesian|grid|point \(/i.test(t))return g===4?M('E1.2'):(g===5?M('E1.4'):(g===6?M('E1.3'):null));
+ if(/How many\? /.test(t))return g===1?M('B1.1'):null;
+ if(/right (before|after)/i.test(t))return g===1?M('B1.5'):null;
+ if(/Which number is (bigger|smaller)/i.test(t))return g===1?M('B1.3'):null;
+ if(/in order from least|least to greatest/i.test(t))return g===6?M('B1.3'):null;
+ if(/which digit/i.test(t))return g===2?M('B1.1'):(g===3?M('B1.5'):null);
+ if(/Round .* to the nearest/i.test(t)){if(/nearest (10|100|1000|ten|hundred|thousand)/.test(t))return (g>=3&&g<=4)?M('B1.3'):null;if(/whole/.test(t))return g===4?M('B1.8'):null;if(/tenth/.test(t))return g===5?M('B1.6'):null;return null;}
+ if(/what is #?\d*\/\d* of|\bof \d+\??$/i.test(t)&&/\//.test(t))return g===3?M('B2.8'):null;
+ if(/fraction equals|\d+\.\d+/.test(t)&&/fraction/i.test(t))return g===4?M('B1.9'):null;
+ if(/\/\d+ \+ \d+\/\d+/.test(t))return g===5?M('B2.5'):(g===6?M('B2.5'):null);
+ if(/\/\d+ = \?\/\d+/.test(t))return g===5?M('B1.3'):null;
+ if(/prime|factor|\^|[²³⁴⁵]/i.test(t))return g===6?M('B2.6'):null;
+ if(/remainder/i.test(t))return g===4?M('B2.6'):null;
+ if(/\bx\b|\dx = /.test(t))return g===6?M('C2.3'):null;
+ if(/\?\s*=\s*\d|[+−]\s*\?\s*=|\d\s*[×÷]\s*\?/.test(t)||/\+ \? = /.test(t))return g===1||g===2||g===3?M('C2.3'):(g===4?M('C2.2'):(g===5?M('C2.3'):M('C2.3')));
+ if(/Double/i.test(t))return g===2?M('B2.3'):null;
+ if(/\d+\.\d+\s*[×+]/.test(t))return g===5?M('B1.5'):null;
+ if(/\(\d+ \+ \d+\) ×|\d+ \+ \d+ × /.test(t))return g===5?M('B2.1'):null;
+ if(/[−-]\s*\d+ \+|^−/.test(t))return null;
+ if(/boxes|packs|each|read .* pages|buys/i.test(t)){if(g===2)return M('B2.4');if(g===3)return M('B2.7');if(g===4)return M('B2.5');return M('B2.4');}
+ if(/gives|more\.|eats|left|in all/i.test(t))return g===1?M('B2.4'):(g===2?M('B2.4'):(g===3?M('B2.5'):M('B2.4')));
+ if(/\d+ ?[×]\s*\d+/.test(t))return g===3?(mx<=10&&nums.every(n=>[2,5,10].includes(n))?M('B2.2'):M('B2.6')):(g===4?(mx<=10?M('B2.2'):M('B2.5')):(g===5?(mx<=12?M('B2.2'):M('B2.6')):null));
+ if(/\d+ ?÷\s*\d+/.test(t))return g===3?(nums.some(n=>[2,5,10].includes(n))?M('B2.2'):M('B2.6')):(g===4?(mx<=100?M('B2.2'):M('B2.6')):(g===5?M('B2.7'):null));
+ if(/\d+ ?[+−]\s*\d+/.test(t)){
+  if(g===1)return mx<=10?M('B2.2'):M('B2.3');
+  if(g===2)return mx<=20?M('B2.2'):(mx<=50?M('B2.3'):M('B2.4'));
+  if(g===3)return mx<=200?M('B2.3'):M('B2.5');
+  if(g===4)return M('B2.4');
+  return M('B2.4');
+ }
+ return null;
+}
+const _ml=makeLesson;function makeLessonT(g,subject,d){const L=_ml(g,subject,d);L.forEach(q=>{try{q.sk=strandOf(q,subject);q.ex=exOf(q,g,subject)||'X'}catch(e){}});return L;}
+const api={genK,makeLesson:makeLessonT,strandOf,exOf,STRANDS,MATH,READ,genMath,genRead,genLogic};
 if(typeof module!=='undefined')module.exports=api;else root.MapleContent=api;
 })(typeof window!=='undefined'?window:globalThis);

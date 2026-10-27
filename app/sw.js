@@ -1,4 +1,4 @@
-const V='ml-v4',CORE=['./','index.html','content.js','games.js','icon-192.png','icon-512.png','../img/owl.png','../img/penguin.png','../img/fox.png','../img/panda.png','../img/raccoon.png','../img/beaver.png','../img/bunny.png','audio/manifest.json?v=2'];
+const V='ml-v5',CORE=['./','index.html','content.js','games.js','icon-192.png','icon-512.png','../img/owl.png','../img/penguin.png','../img/fox.png','../img/panda.png','../img/raccoon.png','../img/beaver.png','../img/bunny.png','audio/manifest.json?v=2'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(V).then(c=>Promise.all(CORE.map(u=>c.add(u).catch(()=>{})))).then(()=>self.skipWaiting()))});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==V).map(k=>caches.delete(k)))).then(()=>self.clients.claim()))});
 const put=(r,res)=>{try{if(res&&(res.ok||res.type==='opaque')){const c=res.clone();caches.open(V).then(x=>x.put(r,c)).catch(()=>{})}}catch(e){}return res};
