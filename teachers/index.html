@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Maple Leap for Teachers</title>
-<meta name="description" content="Classroom dashboard for Maple Leap, aligned to the Ontario curriculum. Free 30-day trial, then $1.99 CAD per student per month. Kindergarten to Grade 6.">
+<meta name="description" content="Classroom dashboard for Maple Leap, with Ontario curriculum expectations and provincial strand views. Free 30-day trial, then $1.99 CAD per student per month. Kindergarten to Grade 6.">
 <link rel="icon" href="../app/icon-192.png">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap">
 <style>
@@ -81,6 +81,7 @@ dialog::backdrop{background:rgba(18,26,48,.55)}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 <script src="ontario.js"></script>
+<script src="provinces.js"></script>
 <script>
 (function(){
 'use strict';
@@ -113,13 +114,13 @@ async function refresh(){
 /* ---------- login ---------- */
 function viewLogin(msg,email,stage){
   clearInterval(timer);$('who').textContent='';$('signout').hidden=true;
-  $('app').innerHTML='<div class="hero"><div style="font-size:64px" aria-hidden="true">🍎</div><h1>A classroom dashboard built for Ontario</h1><p>Create a class, give your students a 6-letter code, and see who is learning, who is stuck and who needs a nudge. Aligned to the Ontario curriculum, Kindergarten to Grade 6. Free for 30 days, then $1.99 CAD per student per month + tax.</p></div>'+
+  $('app').innerHTML='<div class="hero"><div style="font-size:64px" aria-hidden="true">🍎</div><h1>A classroom dashboard for Canadian schools</h1><p>Create a class, give your students a 6-letter code, and see who is learning, who is stuck and who needs a nudge. Follows your province’s curriculum, with a full Ontario expectation checklist. Kindergarten to Grade 6. Free for 30 days, then $1.99 CAD per student per month + tax.</p></div>'+
   '<div class="card" style="max-width:460px;margin:0 auto"><h3>'+(stage==='code'?'Check your email':'Teacher sign in')+'</h3>'+
   (stage==='code'?'<p class="fine">We sent a 6-digit code to <b>'+esc(email)+'</b>. Type it below.</p><label for="code">Code</label><input id="code" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="123456"><div class="err" id="err">'+esc(msg||'')+'</div><button class="btn full" id="go" style="width:100%">Sign in</button><p class="fine"><a href="#" id="back">Use a different email</a></p>'
-  :'<p class="fine">No password. We email you a code.</p><label for="em">School or personal email</label><input id="em" type="email" autocomplete="email" placeholder="you@school.ca" value="'+esc(email||'')+'"><div class="err" id="err">'+esc(msg||'')+'</div><button class="btn" id="go" style="width:100%">Email me a code</button>')+'</div>'+
+  :'<p class="fine">No password. We email you a code.</p><label for="em">School or school board email</label><input id="em" type="email" autocomplete="email" placeholder="you@school.ca" value="'+esc(email||'')+'"><div class="err" id="err">'+esc(msg||'')+'</div><button class="btn" id="go" style="width:100%">Email me a code</button>')+'</div>'+
   '<div class="steps"><div class="card"><div class="n">1</div><h3>Create a class</h3><p class="fine">Takes 20 seconds. Pick a name and grade.</p></div><div class="card"><div class="n">2</div><h3>Share the code</h3><p class="fine">Print a ready-made poster with a QR code, or send the join link.</p></div><div class="card"><div class="n">3</div><h3>Watch progress</h3><p class="fine">Minutes, accuracy by subject, streaks and brain-game stars. Export to CSV.</p></div></div>'+
   '<div class="note">🔒 <b>Student privacy:</b> students join with a first name only. We never collect student emails, photos or last names, there is no chat, and no ads are shown to students in your class. You can remove any student or delete the whole class at any time.</div>'+
-  '<div class="card"><h3>What students get</h3><p>Every student in your class gets <b>unlimited hearts and Maple Leap Plus features</b> while the class is active. You also get a weekly email report every Monday, an Ontario curriculum view, and screen time for every student. Try it free for 30 days (up to 35 students, no card), then $1.99 CAD per student per month + tax.</p></div>';
+  '<div class="card"><h3>What students get</h3><p>Every student in your class gets <b>unlimited hearts and Maple Leap Plus features</b> while the class is active. You also get a weekly email report every Monday, a curriculum view for your province, and screen time for every student. Try it free for 30 days (up to 35 students, no card), then $1.99 CAD per student per month + tax.</p></div>';
   var go=$('go');
   if(stage==='code'){
     $('code').focus();
@@ -131,16 +132,25 @@ function viewLogin(msg,email,stage){
     $('back').onclick=function(e){e.preventDefault();viewLogin('','','email')};
   }else{
     var send=async function(){var em=$('em').value.trim().toLowerCase();if(!/^\S+@\S+\.\S+$/.test(em)){$('err').textContent='Enter a valid email';return}go.disabled=true;
+      try{var ck=await fetch(SB.url+'/rest/v1/rpc/edu_email_ok',{method:'POST',headers:{apikey:SB.key,'Content-Type':'application/json'},body:JSON.stringify({p_email:em})});var okE=ck.ok?await ck.json():true;if(okE===false){eduBlock(em);return}}catch(e){}
       try{var r=await fetch(SB.url+'/auth/v1/otp',{method:'POST',headers:{apikey:SB.key,'Content-Type':'application/json'},body:JSON.stringify({email:em,create_user:true})});
         if(!r.ok){viewLogin('Could not send the code. Please try again in a minute.',em,'email');return}viewLogin('',em,'code')}catch(e){viewLogin('No connection. Try again.',em,'email')}};
     go.onclick=send;$('em').onkeydown=function(e){if(e.key==='Enter')send()};
   }
 }
 
+
+function eduBlock(em){
+  var e=$('err');e.innerHTML='Maple Leap for teachers needs your <b>school or school board email</b> (for example name@ocdsb.ca). Personal addresses such as Gmail or Hotmail cannot create classes.<div style="margin-top:8px"><a href="#" id="reqd">My board’s email isn’t recognised</a></div><div id="reqf" hidden style="margin-top:8px"><label for="rsch">School or board name</label><input id="rsch" maxlength="120" placeholder="e.g. Ottawa-Carleton District School Board"><button class="btn sm" id="reqg" style="margin-top:8px">Request approval</button></div>';
+  $('go').disabled=false;
+  $('reqd').onclick=function(ev){ev.preventDefault();$('reqf').hidden=false;$('rsch').focus()};
+  $('reqg').onclick=async function(){var sc=$('rsch').value.trim();if(!sc){$('rsch').focus();return}$('reqg').disabled=true;
+    try{var r=await fetch(SB.url+'/rest/v1/rpc/request_domain',{method:'POST',headers:{apikey:SB.key,'Content-Type':'application/json'},body:JSON.stringify({p_email:em,p_school:sc})});$('reqf').innerHTML=r.ok?'<b>Thank you.</b> We will review your request and email you within one school day.':'Could not send the request. Please try again.'}catch(x){$('reqf').innerHTML='No connection. Try again.'}};
+}
 /* ---------- data ---------- */
 async function loadPlan(){try{var r=await api('/rest/v1/rpc/my_teacher_plan',{method:'POST',body:'{}'});if(r.ok)plan=await r.json()}catch(e){}}
 async function loadClasses(){
-  var r=await api('/rest/v1/classes?select=id,name,grade,code,weekly_goal,closed,created_at&order=created_at.asc');
+  var r=await api('/rest/v1/classes?select=id,name,grade,code,weekly_goal,closed,province,created_at&order=created_at.asc');
   if(r.status===401){setSes(null);return false}
   classes=r.ok?await r.json():[];return true;
 }
@@ -215,7 +225,7 @@ var STR={
  MA:['Mathematical thinking & processes','Math A'],MB1:['Number sense','Math B1'],MB2:['Operations','Math B2'],MC1:['Patterns','Math C1'],MC2:['Equations & unknowns','Math C2'],MD1:['Data literacy','Math D1'],MD2:['Probability','Math D2'],ME1:['Geometry & spatial reasoning','Math E1'],ME2:['Measurement','Math E2'],MF1:['Financial literacy','Math F1'],
  LB:['Foundations of language','Language B'],LC:['Reading comprehension','Language C'],LD:['Composition & conventions','Language D'],KL:['Language & literacy','Kindergarten']};
 var KEYS=['MB1','MB2','MC1','MC2','MD1','MD2','ME1','ME2','MF1','MA','LB','LC','LD'];
-function tabBar(){if(!cur)return '';return '<div class="tabs" style="margin-top:6px"><button class="tab '+(tab==='roster'?'on':'')+'" data-tab="roster">👩‍🎓 Students</button><button class="tab '+(tab==='cur'?'on':'')+'" data-tab="cur">🍁 Ontario curriculum</button></div>'}
+function tabBar(){if(!cur)return '';return '<div class="tabs" style="margin-top:6px"><button class="tab '+(tab==='roster'?'on':'')+'" data-tab="roster">👩‍🎓 Students</button><button class="tab '+(tab==='cur'?'on':'')+'" data-tab="cur">🍁 Curriculum</button></div>'}
 function strandAgg(ms){var o={};ms.forEach(function(m){Object.keys(m.sk||{}).forEach(function(k){var a=m.sk[k];o[k]=o[k]||[0,0];o[k][0]+=a[0];o[k][1]+=a[1]})});return o}
 function heat(c,t){if(!t)return '<td style="text-align:center;color:#aaa" title="No practice yet">—</td>';var p=Math.round(c/t*100),bg=p>=85?'#cdeedb':p>=60?'#fff0c2':'#f9cfcf';return '<td style="text-align:center;background:'+bg+';font-weight:700" title="'+c+' of '+t+' correct">'+p+'%'+(t<5?'<sup style="font-weight:400"> ·</sup>':'')+'</td>'}
 function currHTML(ms,forPrint){
@@ -254,9 +264,24 @@ function expHTML(ms,g,forPrint){
    block('Mathematics','M',O.M,MS_)+block('Language','L',O.L,LS_);
   if(tally.X&&tally.X[1])h+='<p class="fine" style="margin-top:12px">Another '+tally.X[1]+' questions were enrichment or review outside the Grade '+g+' expectations ('+Math.round(tally.X[0]/tally.X[1]*100)+'% correct).</p>';
   return h+'</div>'}
+
+function provHTML(ms,code){
+  var P=window.PROV[code]||window.PROV.OT;
+  function agg(m,list){var c=0,t=0;list.forEach(function(k){var a=(m.sk||{})[k];if(a){c+=a[0];t+=a[1]}});return [c,t]}
+  var groups=P.math.concat(window.PROV_LANG);
+  var h='<div class="card"><h3 style="font-size:18px;margin-bottom:4px">'+esc(P.name)+' curriculum alignment</h3><div class="fine">'+esc(P.note||'')+(P.link?' <a href="'+P.link+'" target="_blank" rel="noopener">Official curriculum site</a>.':'')+'</div>';
+  if(P.unverified)h+='<div class="note" style="background:#fff8e1;border-color:#f3dc9a;font-weight:500">Strand names for this province have not been checked against its official documents yet. Please confirm them for your grade.</div>';
+  if(!ms.length||!ms.some(function(m){return Object.keys(m.sk||{}).length})){h+='<p>No curriculum data yet. Results appear after students complete lessons in the latest version of Maple Leap.</p></div>';return h}
+  h+='<div class="tw" style="margin-top:10px"><table><thead><tr><th>Student</th>'+groups.map(function(g){return '<th>'+esc(g[0])+'</th>'}).join('')+'</tr></thead><tbody>';
+  h+='<tr style="background:#f4f7fb"><td><b>Class</b></td>'+groups.map(function(g){var c=0,t=0;ms.forEach(function(m){var a=agg(m,g[1]);c+=a[0];t+=a[1]});return heat(c,t)}).join('')+'</tr>';
+  ms.slice().sort(function(a,b){return a.name.localeCompare(b.name)}).forEach(function(m){h+='<tr><td><b>'+esc(m.name)+'</b></td>'+groups.map(function(g){var a=agg(m,g[1]);return heat(a[0],a[1])}).join('')+'</tr>'});
+  h+='</tbody></table></div><p class="fine">Green is 85% or above, yellow 60–84%, red below 60%. A dot (·) means fewer than 5 questions so far. Maple Leap questions are organized by Ontario strands and mapped to this province’s organizers by topic, so the match is approximate. Language shows Maple Leap’s own reading categories. A full outcome-by-outcome checklist is currently available for Ontario only. Maple Leap is not endorsed by any provincial ministry of education.</p></div>';
+  return h}
 function paintCurr(el){
   var ms=members;
   if(!cg)cg=Math.min(6,Math.max(1,cur&&cur.grade?cur.grade:3));
+  var pv=curProv();
+  if(pv!=='ON'){el.innerHTML=provHTML(ms,pv);return}
   el.innerHTML=currHTML(ms,false)+expHTML(ms,cg,false)+(ms.length?'<div class="row" style="margin-top:6px"><button class="btn sm blue" id="pcur">🖨️ Print curriculum report</button></div>':'');
   if($('cgs'))$('cgs').onchange=function(){cg=+$('cgs').value;paintCurr(el)};
   if($('pcur'))$('pcur').onclick=function(){$('letter').innerHTML='<div style="max-width:7.5in;margin:0 auto"><h2 style="font-family:Georgia,serif">'+esc(view==='all'?'All classes':cur.name)+' · Ontario curriculum report</h2><p class="fine">Printed '+new Date().toLocaleDateString()+'</p>'+currHTML(ms,true)+expHTML(ms,cg,true)+'</div>';document.body.classList.add('pl');setTimeout(function(){window.print();setTimeout(function(){document.body.classList.remove('pl')},500)},120)};
@@ -322,23 +347,27 @@ function bind(){
 }
 function toast(t){var e=document.createElement('div');e.textContent=t;e.setAttribute('role','status');e.style.cssText='position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:#12306b;color:#fff;padding:10px 18px;border-radius:14px;font-weight:800;z-index:99';document.body.appendChild(e);setTimeout(function(){e.remove()},2200)}
 function joinLink(){return APP+'?class='+cur.code}
+
+function provOpts(sel){return Object.keys(window.PROV).map(function(k){return '<option value="'+k+'"'+(k===sel?' selected':'')+'>'+window.PROV[k].name+'</option>'}).join('')}
+function lastProv(){try{return localStorage.getItem('mlt_prov')||'ON'}catch(e){return 'ON'}}
+function curProv(){return (cur&&cur.province)||'ON'}
 function newClass(){
   var d=$('dlg');
-  d.innerHTML='<h2>New class</h2><label for="cn">Class name</label><input id="cn" maxlength="60" placeholder="Ms. Lee · Grade 3"><label for="cg">Grade</label><select id="cg">'+[0,1,2,3,4,5,6].map(function(g){return '<option value="'+g+'" '+(g===3?'selected':'')+'>'+gl(g)+'</option>'}).join('')+'</select>'+
+  d.innerHTML='<h2>New class</h2><label for="cn">Class name</label><input id="cn" maxlength="60" placeholder="Ms. Lee · Grade 3"><label for="cg">Grade</label><select id="cg">'+[0,1,2,3,4,5,6].map(function(g){return '<option value="'+g+'" '+(g===3?'selected':'')+'>'+gl(g)+'</option>'}).join('')+'</select><label for="cpv">Province or territory</label><select id="cpv">'+provOpts(lastProv())+'</select>'+
   '<label style="display:flex;gap:10px;align-items:flex-start;font-weight:600;margin-top:16px"><input type="checkbox" id="cc" style="width:22px;min-height:22px;margin-top:2px"><span>I am a teacher or educator, and I have my school\'s permission (and parent consent where required) for students to use Maple Leap. I will not ask students to enter last names, emails or other personal details.</span></label><div class="err" id="ce"></div><div class="row"><button class="btn ghost grow" id="cx">Cancel</button><button class="btn grow" id="cok">Create class</button></div>';
   d.showModal();$('cn').focus();$('cx').onclick=function(){d.close()};
   $('cok').onclick=async function(){var n=$('cn').value.trim();if(!n){$('ce').textContent='Give your class a name';return}if(!$('cc').checked){$('ce').textContent='Please confirm the statement above';return}$('cok').disabled=true;
-    var r=await api('/rest/v1/rpc/create_class',{method:'POST',body:JSON.stringify({p_name:n,p_grade:+$('cg').value})});
-    if(!r.ok){var j={};try{j=await r.json()}catch(e){}$('ce').textContent=/limit/i.test(j.message||'')?'You have reached the class limit (12).':'Could not create the class. Try again.';$('cok').disabled=false;return}
+    var r=await api('/rest/v1/rpc/create_class',{method:'POST',body:JSON.stringify({p_name:n,p_grade:+$('cg').value,p_province:$('cpv').value})});try{localStorage.setItem('mlt_prov',$('cpv').value)}catch(e){}
+    if(!r.ok){var j={};try{j=await r.json()}catch(e){}$('ce').textContent=/limit/i.test(j.message||'')?'You have reached the class limit (12).':/school email/i.test(j.message||'')?'Please sign in with your school or school board email to create a class.':'Could not create the class. Try again.';$('cok').disabled=false;return}
     d.close();await loadClasses();var rows=await r.json().catch(function(){return null});
     var row=Array.isArray(rows)?rows[0]:rows;cur=classes.find(function(c){return row&&c.id===row.id})||classes[classes.length-1];try{localStorage.setItem('mlt_cur',cur.id)}catch(e){}members=[];render();
   };
 }
 function settings(){
   var d=$('dlg');
-  d.innerHTML='<h2>Class settings</h2><label for="sn">Class name</label><input id="sn" maxlength="60" value="'+esc(cur.name)+'"><label for="sg">Weekly goal (minutes per student)</label><input id="sg" type="number" min="10" max="600" step="5" value="'+cur.weekly_goal+'"><label style="display:flex;gap:10px;align-items:center;font-weight:700;margin-top:14px"><input type="checkbox" id="sc" style="width:22px;min-height:22px" '+(cur.closed?'checked':'')+'> Pause joining (new students cannot use the code)</label><label style="display:flex;gap:10px;align-items:center;font-weight:700;margin-top:6px"><input type="checkbox" id="sr" style="width:22px;min-height:22px" '+(plan&&plan.report_optout?'':'checked')+'> Email me a weekly class report (Mondays)</label><div class="err" id="se"></div><div class="row"><button class="btn ghost grow" id="sx">Cancel</button><button class="btn grow" id="ss">Save</button></div><hr style="border:0;border-top:1px solid var(--line);margin:18px 0"><button class="btn red sm" id="sd">Delete this class</button><p class="fine">Deleting a class removes all of its student records permanently.</p>';
+  d.innerHTML='<h2>Class settings</h2><label for="sn">Class name</label><input id="sn" maxlength="60" value="'+esc(cur.name)+'"><label for="spv">Province or territory</label><select id="spv">'+provOpts(curProv())+'</select><label for="sg">Weekly goal (minutes per student)</label><input id="sg" type="number" min="10" max="600" step="5" value="'+cur.weekly_goal+'"><label style="display:flex;gap:10px;align-items:center;font-weight:700;margin-top:14px"><input type="checkbox" id="sc" style="width:22px;min-height:22px" '+(cur.closed?'checked':'')+'> Pause joining (new students cannot use the code)</label><label style="display:flex;gap:10px;align-items:center;font-weight:700;margin-top:6px"><input type="checkbox" id="sr" style="width:22px;min-height:22px" '+(plan&&plan.report_optout?'':'checked')+'> Email me a weekly class report (Mondays)</label><div class="err" id="se"></div><div class="row"><button class="btn ghost grow" id="sx">Cancel</button><button class="btn grow" id="ss">Save</button></div><hr style="border:0;border-top:1px solid var(--line);margin:18px 0"><button class="btn red sm" id="sd">Delete this class</button><p class="fine">Deleting a class removes all of its student records permanently.</p>';
   d.showModal();$('sx').onclick=function(){d.close()};
-  $('ss').onclick=async function(){var g=Math.max(10,Math.min(600,+$('sg').value||60)),n=$('sn').value.trim()||cur.name;var r=await api('/rest/v1/classes?id=eq.'+cur.id,{method:'PATCH',body:JSON.stringify({name:n,weekly_goal:g,closed:$('sc').checked})});if(!r.ok){$('se').textContent='Could not save';return}try{await api('/rest/v1/teacher_plans?owner=eq.'+uidOf(),{method:'PATCH',body:JSON.stringify({report_optout:!$('sr').checked})});await loadPlan()}catch(e){}d.close();var id=cur.id;await loadClasses();cur=classes.find(function(c){return c.id===id});render();await loadMembers();paintRoster()};
+  $('ss').onclick=async function(){var g=Math.max(10,Math.min(600,+$('sg').value||60)),n=$('sn').value.trim()||cur.name;var r=await api('/rest/v1/classes?id=eq.'+cur.id,{method:'PATCH',body:JSON.stringify({name:n,weekly_goal:g,closed:$('sc').checked,province:$('spv').value})});if(!r.ok){$('se').textContent='Could not save';return}try{await api('/rest/v1/teacher_plans?owner=eq.'+uidOf(),{method:'PATCH',body:JSON.stringify({report_optout:!$('sr').checked})});await loadPlan()}catch(e){}d.close();var id=cur.id;await loadClasses();cur=classes.find(function(c){return c.id===id});render();await loadMembers();paintRoster()};
   $('sd').onclick=async function(){if(!confirm('Permanently delete "'+cur.name+'" and all its student records?'))return;var r=await api('/rest/v1/classes?id=eq.'+cur.id,{method:'DELETE'});if(!r.ok){$('se').textContent='Could not delete';return}d.close();await loadClasses();cur=classes[0]||null;members=[];render();await loadMembers();paintRoster()};
 }
 function qrSvg(text){try{var q=qrcode(0,'M');q.addData(text);q.make();return q.createSvgTag({cellSize:6,margin:0,scalable:true})}catch(e){return ''}}
