@@ -255,6 +255,7 @@ h1,h2,.q{letter-spacing:-.012em}.btn,.tab,.nav button{letter-spacing:.02em}
 <div class="lf" id="lf"><div><button class="btn ghost" id="skip">Skip</button><button class="btn" id="chk" disabled>Check</button></div></div></div>
 <div id="modal"></div><div id="adv"></div><canvas class="cf" id="cf"></canvas>
 <script src="content.js"></script>
+<script src="games.js"></script>
 <script>
 /* ============ CONFIG ============ */
 const BILLING={checkoutUrl:'',links:{plus_month:'https://buy.stripe.com/14AcN5fPCbcM9CsfDqcs801',plus_year:'https://buy.stripe.com/fZu4gz6f294E8yoezmcs802',family_month:'https://buy.stripe.com/cNieVdfPCa8I6qgezmcs803',family_year:'https://buy.stripe.com/4gMcN5dHuft25mc3UIcs804',hearts:'https://buy.stripe.com/fZucN5avift26qgezmcs800'},supportEmail:'alihoumani6@gmail.com',/* set to a Stripe Payment Link / RevenueCat web checkout to take real payments. Empty = test mode (no charge). */
@@ -294,7 +295,7 @@ const save=()=>{try{localStorage.setItem('ml2',JSON.stringify(S))}catch(e){}try{
 const P=()=>S.ps[S.cur];
 const isPlus=()=>!!S.plan;
 const MAXKIDS=()=>S.plan&&S.plan.tier==='family'?6:1;
-function newP(d){return {id:Date.now()+ri(999),name:d.name||'Kid',av:d.av,grade:d.grade,goal:d.goal,xp:0,gems:50,streak:0,best:0,last:'',freezes:0,hearts:5,hAt:0,prog:{},stars:{},own:[],acc:'',lvl:1,gift:'',recent:[],rem:0,bd:[],chests:{},days:[],frozen:[],lessons:0,perfect:0,bosses:0,stats:{math:{c:0,t:0},read:{c:0,t:0},logic:{c:0,t:0},abc:{c:0,t:0},sound:{c:0,t:0},words:{c:0,t:0},write:{c:0,t:0}},secs:{},mist:[],q:{d:'',xp:0,les:0,great:0,claim:{}},wk:'',wxp:0,league:0,boost:0,limit:0,adn:0}}
+function newP(d){return {id:Date.now()+ri(999),name:d.name||'Kid',av:d.av,grade:d.grade,goal:d.goal,xp:0,gems:50,streak:0,best:0,last:'',freezes:0,hearts:5,hAt:0,prog:{},stars:{},own:[],acc:'',lvl:1,gift:'',recent:[],rem:0,bg:{},bgd:{},bd:[],chests:{},days:[],frozen:[],lessons:0,perfect:0,bosses:0,stats:{math:{c:0,t:0},read:{c:0,t:0},logic:{c:0,t:0},abc:{c:0,t:0},sound:{c:0,t:0},words:{c:0,t:0},write:{c:0,t:0}},secs:{},mist:[],q:{d:'',xp:0,les:0,great:0,claim:{}},wk:'',wxp:0,league:0,boost:0,limit:0,adn:0}}
 function hash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
 function rng(seed){let a=seed;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 function board(p,wk,xp,frac){const rows=BOTS.slice(0,29).map((n,i)=>{const r=rng(hash(wk+p.league+n));const tgt=(90+p.league*70)*(0.15+r()*1.5);return {n,x:Math.floor(tgt*Math.min(1,frac)),a:AN[i%6],bot:1}});rows.push({n:p.name,x:xp,a:p.av,me:1});rows.sort((a,b)=>b.x-a.x||(a.me?-1:1));return rows}
@@ -316,7 +317,7 @@ function fixP(p){p=(p&&typeof p==='object')?p:{};const gr0=Math.round(+p.grade),
  ['xp','gems','streak','best','freezes','wxp','lessons','perfect','bosses','adn','limit','rem'].forEach(k=>{o[k]=Math.max(0,Math.floor(+o[k])||0)});o.freezes=Math.min(2,o.freezes);o.league=Math.min(5,Math.max(0,Math.floor(+o.league)||0));o.hearts=Math.min(5,Math.max(0,Math.floor(+o.hearts)||0));o.hAt=+o.hAt||0;o.boost=+o.boost||0;
  Object.keys(o.prog).forEach(k=>{o.prog[k]=Math.min(15,Math.max(0,Math.floor(+o.prog[k])||0))});o.recent=o.recent.slice(-80);o.mist=o.mist.filter(q=>q&&typeof q.q==='string').slice(0,30);o.lvl=Math.max(1,Math.floor(o.xp/100)+1);if(typeof o.acc!=='string')o.acc='';return o}
 S.ps=(Array.isArray(S.ps)?S.ps:[]).filter(x=>x&&typeof x==='object').slice(0,6).map(fixP);S.cur=Math.min(Math.max(0,+S.cur||0),Math.max(0,S.ps.length-1));
-if(S.plan&&!(typeof S.plan==='object'&&['plus','family'].includes(S.plan.tier)))S.plan=null;if(!['learn','practice','league','quests','me'].includes(S.tab))S.tab='learn';if(!['math','read','logic'].includes(S.subj))S.subj='math';
+if(S.plan&&!(typeof S.plan==='object'&&['plus','family'].includes(S.plan.tier)))S.plan=null;if(!['learn','practice','brain','league','quests','me'].includes(S.tab))S.tab='learn';if(!['math','read','logic'].includes(S.subj))S.subj='math';
 S.ps.forEach(rollover);save();
 /* ============ HELPERS ============ */
 const av=k=>`../img/${k}.png`;
@@ -393,8 +394,8 @@ function applyTheme(){const k=themeKey();if(k===_thApplied)return;_thApplied=k;c
  for(let i=0;i<14;i++){const sp=document.createElement('span');sp.textContent=t.fx[i%t.fx.length];sp.style.cssText=`--x:${Math.round(rnd()*94)}%;--y:${Math.round(8+rnd()*80)}%;--sz:${Math.round(18+rnd()*18)}px;--dur:${Math.round(12+rnd()*12)}s;--dl:-${Math.round(rnd()*20)}s;--dx:${Math.round((rnd()-.5)*90)}px`;f.appendChild(sp)}}
 function render(){const p=P();let h='';$('nav').style.display='none';document.body.dataset.s=(!p||S.adding)?'hero':(S.tab=='learn'?S.subj:'math');applyTheme();{const _p=P();if(_p){const ks=subjKeys(_p);if(!ks.includes(S.subj)){S.subj=ks[0];document.body.dataset.s=(S.tab=='learn'?S.subj:'math')}}}
  if(!p||S.adding){h=onb();}else{rollover(p);const t=S.tab;
-  h=topbar(p)+(t=='learn'?vLearn(p):t=='practice'?vPractice(p):t=='league'?vLeague(p):t=='quests'?vQuests(p):vMe(p));
-  $('nav').style.display='flex';$('nav').innerHTML=[['learn','🗺️','Learn'],['practice','🎯','Practice'],['league','🏆','League'],['quests','🎁','Quests'],['me','🙂','Me']].map(a=>`<button data-act="tab" data-a="${a[0]}" class="${t==a[0]?'on':''}"><b>${a[1]}</b>${a[2]}</button>`).join('')}
+  h=topbar(p)+(t=='learn'?vLearn(p):t=='practice'?vPractice(p):t=='brain'?(window.BG?BG.view(p):'<p class="fine">Loading…</p>'):t=='league'?vLeague(p):t=='quests'?vQuests(p):vMe(p));
+  $('nav').style.display='flex';$('nav').innerHTML=[['learn','🗺️','Learn'],['practice','🎯','Practice'],['brain','🧠','Brain'],['league','🏆','League'],['quests','🎁','Quests'],['me','🙂','Me']].map(a=>`<button data-act="tab" data-a="${a[0]}" class="${t==a[0]?'on':''}"><b>${a[1]}</b>${a[2]}</button>`).join('')}
  $('app').innerHTML=h;if(S.msg){const m=S.msg;S.msg='';save();setTimeout(()=>toast(m),300)}}
 function onb(){const d=S.draft,o=S.onb;const dots=`<div class="dots">${[0,1,2,3,4].map(i=>`<i class="${i==o?'on':''}"></i>`).join('')}</div>`;
  if(o==0)return `<div class="hero"><img class="fm" style="left:2%;top:30px" src="${av('penguin')}" alt=""><img class="fm" style="right:2%;top:50px;animation-delay:.5s" src="${av('fox')}" alt=""><img class="main" src="${av('owl')}" alt=""><h1>Maple<span style="color:var(--red)">Leap</span></h1><p>Letters, reading, math and logic that feel like a game. Pre-K to Grade 6.</p><div class="row6">${['panda','raccoon','beaver','bunny','fox','penguin','owl'].map(k=>`<img src="${av(k)}" alt="">`).join('')}</div></div><button class="btn red full" data-act="onb" data-a="1">Get started</button><p class="fine">By Maple Hill Learning Press · No sign-up · Progress is saved on this device only</p>`;
@@ -494,7 +495,7 @@ shr(a){shareKind(a)},invite(){shareKind('progress')},rpt(a){const p=P(),t=report
  acctsync(){const on=$('syncck').checked;try{localStorage.setItem('mlSync',on?'1':'0')}catch(e){}if(on)pullSync().then(()=>{render();toast('Progress synced')})},
  async acctrefresh(){await refreshEnt();render();acctModal(S.plan?'Plan active: Maple Leap '+(S.plan.tier=='family'?'Family':'Plus'):'No active subscription found for this email.')},
  acctdel(){if(!confirm('Delete your parent account and any synced progress? Your subscription is not cancelled by this.'))return;sbReq('/rest/v1/sync?user_id=eq.'+AU.uid,{method:'DELETE'}).finally(()=>{setAU(null);if(S.plan&&S.plan.acct)S.plan=null;save();render();closeModal();toast('Account signed out. Email support to erase it fully.')})},
- tab(a){S.tab=a;save();render();scrollTo(0,0)},subj(a){S.subj=a;save();render()},close(){closeModal()},
+ bg(a){if(window.BG)BG.open(a)},tab(a){S.tab=a;save();render();scrollTo(0,0)},subj(a){S.subj=a;save();render()},close(){closeModal()},
  onb(a){if(S.onb==1){const v=$('nm');if(v)S.draft.name=v.value.trim()}if(S.onb==1&&!S.draft.name){toast('Type a name first');return}if(S.onb==1&&badName(S.draft.name)){S.draft.name='';const v=$('nm');if(v)v.value='';toast('Please pick a kind, friendly name');return}S.onb=+a;save();render()},
  dav(a){const v=$('nm');if(v)S.draft.name=v.value;S.draft.av=a;if(MASC[a])S.draft.grade=MASC[a][1];save();render()},dgr(a){S.draft.grade=+a;S.draft.av=GA[+a];save();render()},dgo(a){S.draft.goal=+a;save();render()},
  finishonb(a){if(badName(S.draft.name))S.draft.name='Kid';const p=newP(S.draft);if(S.ref&&!S.refUsed){S.refUsed=1;p.gems+=50;S.msg='🎁 Friend bonus! +💎50'}S.adding=0;S.ps.push(p);S.cur=S.ps.length-1;S.onb=0;S.draft={name:'',av:'owl',grade:1,goal:20};S.tab='learn';save();render();if(a==='1')setTimeout(()=>paywall(),300);else setTimeout(maybeGift,800)},
@@ -722,6 +723,7 @@ if(window.visualViewport){const f=()=>{$('lesson').style.height=visualViewport.h
 /* ============ BOOT ============ */
 if('serviceWorker' in navigator&&location.protocol.startsWith('http'))navigator.serviceWorker.register('sw.js').catch(()=>{});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&P()&&!L){rollover(P());save();render();setTimeout(maybeGift,400)}});
+try{if(new URLSearchParams(location.search).get('go')==='brain'&&P())S.tab='brain'}catch(e){}
 hashLogin().then(()=>{render()});handleReturn();rcInit();render();if(AU){refreshEnt().then(()=>{if(syncOn())return pullSync()}).then(()=>{render();if(S.verifyPay){S.verifyPay=0;let n=0;const t=setInterval(async()=>{await refreshEnt();render();if(S.plan||++n>8)clearInterval(t)},3000)}})}setTimeout(maybeGift,700);
 
 /* ---- sheet: drag down to dismiss (1:1 tracking, velocity projection, spring back) ---- */
