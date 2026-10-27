@@ -295,7 +295,7 @@ const save=()=>{try{localStorage.setItem('ml2',JSON.stringify(S))}catch(e){}try{
 const P=()=>S.ps[S.cur];
 const inClass=()=>{try{const p=P();return !!(p&&p.cls&&p.cls.id)}catch(e){return false}};const isPlus=()=>!!S.plan||inClass();
 const MAXKIDS=()=>S.plan&&S.plan.tier==='family'?6:1;
-function newP(d){return {id:Date.now()+ri(999),name:d.name||'Kid',av:d.av,grade:d.grade,goal:d.goal,xp:0,gems:50,streak:0,best:0,last:'',freezes:0,hearts:5,hAt:0,prog:{},stars:{},own:[],acc:'',lvl:1,gift:'',recent:[],rem:0,bg:{},bgd:{},cls:null,bd:[],chests:{},days:[],frozen:[],lessons:0,perfect:0,bosses:0,stats:{math:{c:0,t:0},read:{c:0,t:0},logic:{c:0,t:0},abc:{c:0,t:0},sound:{c:0,t:0},words:{c:0,t:0},write:{c:0,t:0}},secs:{},mist:[],q:{d:'',xp:0,les:0,great:0,claim:{}},wk:'',wxp:0,league:0,boost:0,limit:0,adn:0}}
+function newP(d){return {id:Date.now()+ri(999),name:d.name||'Kid',av:d.av,grade:d.grade,goal:d.goal,xp:0,gems:50,streak:0,best:0,last:'',freezes:0,hearts:5,hAt:0,prog:{},stars:{},own:[],acc:'',lvl:1,gift:'',recent:[],rem:0,bg:{},bgd:{},cls:null,scr:{},bd:[],chests:{},days:[],frozen:[],lessons:0,perfect:0,bosses:0,stats:{math:{c:0,t:0},read:{c:0,t:0},logic:{c:0,t:0},abc:{c:0,t:0},sound:{c:0,t:0},words:{c:0,t:0},write:{c:0,t:0}},secs:{},mist:[],q:{d:'',xp:0,les:0,great:0,claim:{}},wk:'',wxp:0,league:0,boost:0,limit:0,adn:0}}
 function hash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
 function rng(seed){let a=seed;return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 function board(p,wk,xp,frac){const rows=BOTS.slice(0,29).map((n,i)=>{const r=rng(hash(wk+p.league+n));const tgt=(90+p.league*70)*(0.15+r()*1.5);return {n,x:Math.floor(tgt*Math.min(1,frac)),a:AN[i%6],bot:1}});rows.push({n:p.name,x:xp,a:p.av,me:1});rows.sort((a,b)=>b.x-a.x||(a.me?-1:1));return rows}
@@ -443,6 +443,7 @@ function vMe(p){const L=LEAGUES[p.league];const t=dk(),d0=pd(t);const first=new 
  <div class="grid2"><div class="stat"><small>Day streak</small><span>🔥 ${p.streak}</span></div><div class="stat"><small>Total XP</small><span>⚡ ${p.xp}</span></div><div class="stat"><small>League</small><span>${L[1]} ${L[0]}</span></div><div class="stat"><small>Lessons</small><span>✅ ${p.lessons}</span></div></div>
  <div class="card"><h3>This month</h3>${cal}</div>
  ${S.plan?`<div class="card" style="border-color:var(--purple)"><h3>✨ Maple Leap ${S.plan.tier=='family'?'Family':'Plus'}</h3>Unlimited hearts · Mistakes practice · Weekly parent report. Manage in the Parent Zone.</div>`:p.cls?'':`<div class="card" style="border-color:var(--purple);background:#f8f3ff"><h3>Try Maple Leap Plus</h3>Unlimited hearts, mistakes practice and a weekly parent report. 7 days free.<br><br><button class="btn sm purple" data-act="paywall">Try 7 days free</button></div>`}
+ ${scrCard(p)}
  ${classCard(p)}
  <div class="card"><div class="row" style="margin:0"><span>👪 ${AU?AU.email:'Not signed in'}</span><button class="btn sm ghost" data-act="${AU?'signout':'acct'}">${AU?'Sign out':'Sign in'}</button></div>${testOn()?'<p class="fine" style="text-align:left">Test account is on.</p>':''}</div>
   <div class="card"><h3>Badges</h3>${BADGES.map(b=>`<span class="bd ${b[2](p)?'':'off'}" title="${b[1]}">${b[0]}</span>`).join('')}</div>
@@ -556,7 +557,8 @@ function gate(cb){const a=6+ri(4),b=6+ri(4);const m=$('modal');
 function clsSnap(p){const mins={};for(let i=13;i>=0;i--){const k=addD(dk(),-i);const m=Math.round((p.secs[k]||0)/60);if(m)mins[k]=m}
  const acc={};subjKeys(p).forEach(k=>{const s=p.stats[k]||{c:0,t:0};acc[k]=[s.c|0,s.t|0]});
  const bgs={};try{Object.keys(p.bg||{}).forEach(k=>{const r=p.bg[k];if(r&&r.s)bgs[k]=[r.s|0,r.b|0]})}catch(e){}
- return {v:1,g:p.grade,xp:p.xp|0,wxp:p.wxp|0,les:p.lessons|0,st:p.streak|0,best:p.best|0,last:p.last||'',lvl:p.lvl|0,perf:p.perfect|0,mins,acc,bg:bgs,at:Date.now()}}
+ const scr={};for(let i=13;i>=0;i--){const k=addD(dk(),-i);const m=scrDay(p,k);if(m)scr[k]=m}
+ return {v:1,scr,g:p.grade,xp:p.xp|0,wxp:p.wxp|0,les:p.lessons|0,st:p.streak|0,best:p.best|0,last:p.last||'',lvl:p.lvl|0,perf:p.perfect|0,mins,acc,bg:bgs,at:Date.now()}}
 let clsT=null;function clsSoon(){try{const p=P();if(!p||!p.cls||!p.cls.id)return;clearTimeout(clsT);clsT=setTimeout(clsPush,4000)}catch(e){}}
 async function clsPush(){const p=P();if(!p||!p.cls)return;try{const r=await sbReq('/rest/v1/rpc/class_sync',{method:'POST',body:JSON.stringify({p_member:p.cls.id,p_token:p.cls.tok,p_snap:clsSnap(p)})},false);if(!r.ok)return;const j=await r.json();if(j&&j.removed){p.cls=null;S.msg='You are no longer in the class.';save();render()}else if(j&&j.ok){let ch=false;if(p.cls.name!==j.class){p.cls.name=j.class;ch=true}if(p.cls.goal!==j.goal){p.cls.goal=j.goal;ch=true}if(ch){save()}}}catch(e){}}
 function classCard(p){if(p.cls){const wk=[0,1,2,3,4,5,6].reduce((a,i)=>a+Math.round((p.secs[addD(dk(),-i)]||0)/60),0),g=p.cls.goal||60,pc=Math.min(100,Math.round(wk/g*100));
@@ -591,6 +593,7 @@ function parentZone(){const p=P();const days=[];for(let i=6;i>=0;i--){const k=ad
  const ss=subjKeys(p).map(k=>({k,pc:p.stats[k].t?p.stats[k].c/p.stats[k].t:null,t:p.stats[k].t}));const w=ss.filter(s=>s.t>=8).sort((a,b)=>a.pc-b.pc)[0],s=ss.filter(s=>s.t>=8).sort((a,b)=>b.pc-a.pc)[0];
  modal(`${XB}<h2>👪 Parent Zone</h2>
  ${S.ps.length>1?`<div class="seg">${S.ps.map((c,i)=>`<button class="${i==S.cur?'on':''}" data-act="pkid" data-a="${i}">${c.name}</button>`).join('')}</div>`:''}
+ ${scrCard(p)}
  <div class="card"><h3>${p.name}'s week</h3><div class="grid2"><div class="stat"><small>Minutes</small><span>${wkMin}</span></div><div class="stat"><small>Streak</small><span>🔥${p.streak}</span></div><div class="stat"><small>Lessons</small><span>${p.lessons}</span></div><div class="stat"><small>Total XP</small><span>${p.xp}</span></div></div>
  <div class="bars">${days.map(d=>`<div><i style="height:${d[1]/mx*64}px"></i>${'SMTWTFS'[pd(d[0]).getDay()]}</div>`).join('')}</div></div>
  <div class="card"><h3>Skills</h3>${ss.map(x=>`<div class="row" style="margin:6px 0 0"><span>${SUBJ[x.k].e} ${SUBJ[x.k].n}</span><span>${x.t?Math.round(x.pc*100)+'% ('+x.t+' questions)':'Not started'}</span></div><div class="meter"><i style="width:${(x.pc||0)*100}%;background:${SUBJ[x.k].c}"></i></div>`).join('')}
@@ -705,6 +708,13 @@ function outOfHearts(){L.state='end';tickStop();const p=P();$('fb').style.displa
 Object.assign(ACT,{hbuy2(){gate(()=>buyHearts(true))},hprac2(){endLesson();startMixed(true)},hrefill2(){const p=P();if(p.gems<100){toast('You need 💎100');return}p.gems-=100;p.hearts=5;save();endLesson();toast('Hearts refilled!')},pw2(){endLesson();paywall()},home2(){endLesson()}});
 /* time tracking */
 let tk;function tickStart(){clearInterval(tk);tk=setInterval(()=>{if(!L||document.hidden)return;const p=P(),k=dk();p.secs[k]=(p.secs[k]||0)+1;if(p.limit&&p.secs[k]===p.limit*60){toast('Time is up for today!')}},1000)}function tickStop(){clearInterval(tk)}
+/* ---- screen time: foreground time on the app, counted only while the child is actually interacting ---- */
+let lastIn=Date.now(),scrDirty=0;['pointerdown','keydown','touchstart','scroll'].forEach(e=>addEventListener(e,()=>{lastIn=Date.now()},{passive:true,capture:true}));
+function scrMap(p){if(!p.scr||typeof p.scr!=='object'||Array.isArray(p.scr))p.scr={};return p.scr}
+const scrDay=(p,k)=>Math.round((+scrMap(p)[k]||0)/60);
+setInterval(()=>{try{if(document.hidden||Date.now()-lastIn>60000)return;const p=P();if(!p||S.adding)return;const m=scrMap(p),k=dk();m[k]=(+m[k]||0)+1;scrDirty++;if(scrDirty>=15){scrDirty=0;const ks=Object.keys(m);if(ks.length>70){ks.sort().slice(0,ks.length-60).forEach(x=>delete m[x])}save()}}catch(e){}},1000);
+addEventListener('pagehide',()=>{if(scrDirty){scrDirty=0;try{save()}catch(e){}}});
+function scrCard(p){const days=[];for(let i=6;i>=0;i--){const k=addD(dk(),-i);days.push([k,scrDay(p,k)])}const mx=Math.max(10,...days.map(d=>d[1])),wk=days.reduce((a,d)=>a+d[1],0),td=days[6][1],lim=p.limit?` · daily limit ${p.limit} min`:'';return `<div class="card"><h3>⏱️ Screen time</h3><div class="grid2" style="margin:6px 0 10px"><div class="stat"><small>Today</small><span>${td} min</span></div><div class="stat"><small>This week</small><span>${wk} min</span></div></div><div style="display:flex;gap:6px;align-items:flex-end;height:64px" role="img" aria-label="Minutes per day for the last 7 days">${days.map(d=>`<div style="flex:1;text-align:center"><div title="${d[0]}: ${d[1]} min" style="background:var(--blue);border-radius:6px 6px 0 0;height:${Math.max(4,Math.round(d[1]/mx*52))}px"></div></div>`).join('')}</div><div style="display:flex;gap:6px;font-size:11px;color:var(--mut);font-weight:700">${days.map(d=>`<span style="flex:1;text-align:center">${'SMTWTFS'[pd(d[0]).getDay()]}</span>`).join('')}</div><p class="fine" style="text-align:left;margin:8px 0 0">Time spent using Maple Leap while active${lim}.</p></div>`}
 const _b=begin;begin=function(o){_b(o);tickStart()};
 function finish(){tickStop();L.state='end';$('fb').style.display='none';$('lf').style.display='none';$('pb').style.width='100%';const p=P();
  const tot=L.total,acc=Math.round(L.ok1/tot*100),pass=acc>=70||L.kind==='heart',secs=Math.round((Date.now()-L.t0)/1000);const mult=p.boost>Date.now()?2:1;
