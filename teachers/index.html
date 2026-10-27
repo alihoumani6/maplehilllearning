@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Maple Leap for Teachers</title>
-<meta name="description" content="Free classroom dashboard for Maple Leap. Create a class, share a code, and see every student's progress. Pre-K to Grade 6.">
+<meta name="description" content="Classroom dashboard for Maple Leap, aligned to the Ontario curriculum. Free 30-day trial, then $1.99 CAD per student per month. Kindergarten to Grade 6.">
 <link rel="icon" href="../app/icon-192.png">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap">
 <style>
@@ -90,13 +90,13 @@ var SUBJ={math:['Math','#d62828'],read:['Reading','#1d5fd1'],logic:['Logic','#7b
 var GM={mem:'Memory Match',seq:'Leaf Echo',dash:'Number Dash',odd:'Odd One Out',word:'Word Whiz',clash:'Color Clash',pat:'Pattern Pop',miss:'Number Detective',cmp:'Size Showdown',sort:'Sort Squad',digit:'Digit Memory'};
 var $=function(id){return document.getElementById(id)};
 function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
-var ses=null,classes=[],cur=null,members=[],plan=null,view='',sortK='name',sortD=1,timer=null,detailId=null;
+var ses=null,classes=[],cur=null,members=[],plan=null,view='',tab='roster',sortK='name',sortD=1,timer=null,detailId=null;
 try{ses=JSON.parse(localStorage.getItem('mlt')||'null')}catch(e){}
 function uidOf(){try{if(ses&&ses.uid)return ses.uid;var p=ses.access.split('.')[1].replace(/-/g,'+').replace(/_/g,'/');return JSON.parse(atob(p)).sub}catch(e){return ''}}
 function setSes(s){ses=s;try{if(s)localStorage.setItem('mlt',JSON.stringify(s));else localStorage.removeItem('mlt')}catch(e){}}
 function dstr(d){d=d||new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function addD(k,n){var p=k.split('-');var d=new Date(+p[0],+p[1]-1,+p[2]+n);return dstr(d)}
-function gl(g){return g===0?'Pre-K':'Grade '+g}
+function gl(g){return g===0?'Kindergarten':'Grade '+g}
 
 async function api(path,o,retry){
   o=o||{};var h={apikey:SB.key,'Content-Type':'application/json',Authorization:'Bearer '+(ses?ses.access:SB.key)};
@@ -112,13 +112,13 @@ async function refresh(){
 /* ---------- login ---------- */
 function viewLogin(msg,email,stage){
   clearInterval(timer);$('who').textContent='';$('signout').hidden=true;
-  $('app').innerHTML='<div class="hero"><div style="font-size:64px" aria-hidden="true">🍎</div><h1>A free classroom dashboard</h1><p>Create a class, give your students a 6-letter code, and see who is learning, who is stuck and who needs a nudge. Works for Pre-K to Grade 6.</p></div>'+
+  $('app').innerHTML='<div class="hero"><div style="font-size:64px" aria-hidden="true">🍎</div><h1>A classroom dashboard built for Ontario</h1><p>Create a class, give your students a 6-letter code, and see who is learning, who is stuck and who needs a nudge. Aligned to the Ontario curriculum, Kindergarten to Grade 6. Free for 30 days, then $1.99 CAD per student per month + tax.</p></div>'+
   '<div class="card" style="max-width:460px;margin:0 auto"><h3>'+(stage==='code'?'Check your email':'Teacher sign in')+'</h3>'+
   (stage==='code'?'<p class="fine">We sent a 6-digit code to <b>'+esc(email)+'</b>. Type it below.</p><label for="code">Code</label><input id="code" inputmode="numeric" autocomplete="one-time-code" maxlength="8" placeholder="123456"><div class="err" id="err">'+esc(msg||'')+'</div><button class="btn full" id="go" style="width:100%">Sign in</button><p class="fine"><a href="#" id="back">Use a different email</a></p>'
   :'<p class="fine">No password. We email you a code.</p><label for="em">School or personal email</label><input id="em" type="email" autocomplete="email" placeholder="you@school.ca" value="'+esc(email||'')+'"><div class="err" id="err">'+esc(msg||'')+'</div><button class="btn" id="go" style="width:100%">Email me a code</button>')+'</div>'+
   '<div class="steps"><div class="card"><div class="n">1</div><h3>Create a class</h3><p class="fine">Takes 20 seconds. Pick a name and grade.</p></div><div class="card"><div class="n">2</div><h3>Share the code</h3><p class="fine">Print a ready-made poster with a QR code, or send the join link.</p></div><div class="card"><div class="n">3</div><h3>Watch progress</h3><p class="fine">Minutes, accuracy by subject, streaks and brain-game stars. Export to CSV.</p></div></div>'+
   '<div class="note">🔒 <b>Student privacy:</b> students join with a first name only. We never collect student emails, photos or last names, there is no chat, and no ads are shown to students in your class. You can remove any student or delete the whole class at any time.</div>'+
-  '<div class="card"><h3>What students get</h3><p>Every student in your class gets <b>unlimited hearts and Maple Leap Plus features for free</b> while they are in the class. Maple Leap is free for teachers.</p></div>';
+  '<div class="card"><h3>What students get</h3><p>Every student in your class gets <b>unlimited hearts and Maple Leap Plus features</b> while the class is active. You also get a weekly email report every Monday, an Ontario curriculum view, and screen time for every student. Try it free for 30 days (up to 35 students, no card), then $1.99 CAD per student per month + tax.</p></div>';
   var go=$('go');
   if(stage==='code'){
     $('code').focus();
@@ -158,7 +158,7 @@ function calc(m){
   var last=s.last||'';var seen=m.last_seen?dstr(new Date(m.last_seen)):'';var la=last>seen?last:seen;
   var idle=la?Math.round((new Date(today)-new Date(la))/864e5):99;
   var scrM=s.scr||{},scrD=[],scrW=0;for(i=13;i>=0;i--){scrD.push(+scrM[addD(today,-i)]||0)}for(i=6;i>=0;i--)scrW+=(+scrM[addD(today,-i)]||0);
-  return {id:m.id,cid:m.class_id,name:m.name,scrD:scrD,scrW:scrW,scrT:scrD[13],grade:s.g,wk:wk,days:days,xp:+s.wxp||0,txp:+s.xp||0,streak:+s.st||0,les:+s.les||0,q:t,acc:t?Math.round(c/t*100):null,bySub:bySub,stars:stars,bg:bg,idle:idle,la:la,joined:m.joined_at,perf:+s.perf||0};
+  return {id:m.id,cid:m.class_id,name:m.name,scrD:scrD,scrW:scrW,scrT:scrD[13],grade:s.g,wk:wk,days:days,xp:+s.wxp||0,txp:+s.xp||0,streak:+s.st||0,les:+s.les||0,q:t,acc:t?Math.round(c/t*100):null,bySub:bySub,stars:stars,bg:bg,idle:idle,la:la,joined:m.joined_at,perf:+s.perf||0,sk:s.sk||{}};
 }
 function status(m,goal){
   if(!m.les&&!m.wk)return ['New','n'];
@@ -200,16 +200,47 @@ function render(){
     h+='<div class="hero" style="padding-top:20px"><div style="font-size:56px" aria-hidden="true">🏫</div><h1>Create your first class</h1><p>Name it, pick a grade, and you will get a join code for your students. Your first 30 days are free.</p><button class="btn" id="newc2">Create a class</button></div>';
     $('app').innerHTML=h;bind();return;
   }
-  if(view==='all'){h+='<div id="roster"></div>';$('app').innerHTML=h;paintRoster();bind();return}
+  if(view==='all'){h+=tabBar()+'<div id="roster"></div>';$('app').innerHTML=h;paintRoster();bind();return}
   h+='<div class="card"><div class="row"><div class="grow"><h2>'+esc(cur.name)+'</h2><div class="fine">'+gl(cur.grade)+' · weekly goal '+cur.weekly_goal+' min · '+(cur.closed?'<b style="color:var(--red)">joining is paused</b>':'joining is open')+'</div></div>'+
    '<div style="text-align:center"><div class="fine" style="margin-bottom:4px">Class code</div><div class="code" id="codeb" aria-label="Class code '+cur.code.split('').join(' ')+'">'+esc(cur.code)+'</div></div></div>'+
    '<div class="row" style="margin-top:14px"><button class="btn sm blue" id="pposter">🖨️ Print join poster</button><button class="btn sm ghost" id="clink">🔗 Copy join link</button><button class="btn sm ghost" id="pletter">✉️ Parent letter</button><button class="btn sm ghost" id="csv">⬇️ Export CSV</button><button class="btn sm ghost" id="settings">⚙️ Class settings</button></div></div>';
-  h+='<div id="roster"></div>';
+  h+=tabBar()+'<div id="roster"></div>';
   $('app').innerHTML=h;paintRoster();bind();
 }
 function bars(arr,labels,color,h){var mx=Math.max.apply(null,arr.concat([10]));return '<div class="spark" style="height:'+(h||54)+'px">'+arr.map(function(v,i){return '<i title="'+(labels?labels[i]+': ':'')+v+' min" style="height:'+Math.max(5,Math.round(v/mx*100))+'%;'+(color?'background:'+color:'')+'"></i>'}).join('')+'</div>'}
+
+/* ---------- Ontario curriculum ---------- */
+var STR={
+ MA:['Mathematical thinking & processes','Math A'],MB1:['Number sense','Math B1'],MB2:['Operations','Math B2'],MC1:['Patterns','Math C1'],MC2:['Equations & unknowns','Math C2'],MD1:['Data literacy','Math D1'],MD2:['Probability','Math D2'],ME1:['Geometry & spatial reasoning','Math E1'],ME2:['Measurement','Math E2'],MF1:['Financial literacy','Math F1'],
+ LB:['Foundations of language','Language B'],LC:['Reading comprehension','Language C'],LD:['Composition & conventions','Language D'],KL:['Language & literacy','Kindergarten']};
+var KEYS=['MB1','MB2','MC1','MC2','MD1','MD2','ME1','ME2','MF1','MA','LB','LC','LD'];
+function tabBar(){if(!cur)return '';return '<div class="tabs" style="margin-top:6px"><button class="tab '+(tab==='roster'?'on':'')+'" data-tab="roster">👩‍🎓 Students</button><button class="tab '+(tab==='cur'?'on':'')+'" data-tab="cur">🍁 Ontario curriculum</button></div>'}
+function strandAgg(ms){var o={};ms.forEach(function(m){Object.keys(m.sk||{}).forEach(function(k){var a=m.sk[k];o[k]=o[k]||[0,0];o[k][0]+=a[0];o[k][1]+=a[1]})});return o}
+function heat(c,t){if(!t)return '<td style="text-align:center;color:#aaa" title="No practice yet">—</td>';var p=Math.round(c/t*100),bg=p>=85?'#cdeedb':p>=60?'#fff0c2':'#f9cfcf';return '<td style="text-align:center;background:'+bg+';font-weight:700" title="'+c+' of '+t+' correct">'+p+'%'+(t<5?'<sup style="font-weight:400"> ·</sup>':'')+'</td>'}
+function currHTML(ms,forPrint){
+  var agg=strandAgg(ms),grades={};ms.forEach(function(m){if(m.grade!=null)grades[m.grade]=1});var gs=Object.keys(grades).sort().map(function(g){return gl(+g)}).join(', ')||gl(cur.grade);
+  var keys=KEYS.filter(function(k){return agg[k]});if(Object.keys(agg).indexOf('KL')>=0)keys.unshift('KL');
+  var h='<div class="card"><h3 style="font-size:18px;margin-bottom:4px">Ontario curriculum alignment</h3><div class="fine">'+esc(gs)+' · Mathematics (2020) strands A–F and Language (2023) strands B–D, with the Kindergarten program for the youngest learners.</div>';
+  if(!keys.length){h+='<p>No curriculum data yet. Strand results appear after students complete lessons in the latest version of Maple Leap.</p></div>';return h}
+  h+='<div class="tw" style="margin-top:10px"><table><thead><tr><th>Student</th>'+keys.map(function(k){return '<th title="'+esc(STR[k][1])+'">'+esc(STR[k][0])+'<div class="fine" style="font-weight:400">'+esc(STR[k][1])+'</div></th>'}).join('')+'</tr></thead><tbody>';
+  h+='<tr style="background:#f4f7fb"><td><b>Class</b></td>'+keys.map(function(k){var a=agg[k]||[0,0];return heat(a[0],a[1])}).join('')+'</tr>';
+  ms.slice().sort(function(a,b){return a.name.localeCompare(b.name)}).forEach(function(m){h+='<tr><td><b>'+esc(m.name)+'</b></td>'+keys.map(function(k){var a=(m.sk||{})[k]||[0,0];return heat(a[0],a[1])}).join('')+'</tr>'});
+  h+='</tbody></table></div>';
+  var weak=keys.filter(function(k){return agg[k][1]>=15}).sort(function(a,b){return agg[a][0]/agg[a][1]-agg[b][0]/agg[b][1]}),miss=KEYS.filter(function(k){return !agg[k]||agg[k][1]<10});
+  if(weak.length&&agg[weak[0]][0]/agg[weak[0]][1]<.75)h+='<div class="note">💡 <b>Focus area:</b> the class is finding <b>'+esc(STR[weak[0]][0])+'</b> ('+esc(STR[weak[0]][1])+') the hardest, at '+Math.round(agg[weak[0]][0]/agg[weak[0]][1]*100)+'% correct.</div>';
+  if(miss.length&&!forPrint)h+='<p class="fine">Little or no practice yet in: '+miss.map(function(k){return esc(STR[k][0])}).join(', ')+'. Students reach these as they work through Math and Reading lessons.</p>';
+  h+='<p class="fine">Green is 85% or above, yellow 60–84%, red below 60%. A dot (·) means fewer than 5 questions so far. Results show the share of practice questions answered correctly, not report-card marks.</p>';
+  h+='<div class="note" style="background:#eef3fb;border-color:#c9d8f0;font-weight:500"><b>About this alignment:</b> Maple Leap practice questions are organized by the strands of the Ontario Mathematics (2020) and Language (2023) curriculum, and the Kindergarten program. Alignment is at the strand level and is meant to support, not replace, classroom instruction and teacher judgement. Maple Leap is an independent product and is not endorsed by the Ontario Ministry of Education. Some practice may sit slightly above or below a grade’s expectations.</div></div>';
+  return h;
+}
+function paintCurr(el){
+  var ms=members;
+  el.innerHTML=currHTML(ms,false)+(ms.length?'<div class="row" style="margin-top:6px"><button class="btn sm blue" id="pcur">🖨️ Print curriculum report</button></div>':'');
+  if($('pcur'))$('pcur').onclick=function(){$('letter').innerHTML='<div style="max-width:7.5in;margin:0 auto"><h2 style="font-family:Georgia,serif">'+esc(view==='all'?'All classes':cur.name)+' · Ontario curriculum report</h2><p class="fine">Printed '+new Date().toLocaleDateString()+'</p>'+currHTML(ms,true)+'</div>';document.body.classList.add('pl');setTimeout(function(){window.print();setTimeout(function(){document.body.classList.remove('pl')},500)},120)};
+}
 function paintRoster(){
   var el=$('roster');if(!el||!cur)return;
+  if(tab==='cur'){paintCurr(el);return}
   var all=view==='all',goal=all?60:cur.weekly_goal,ms=members.slice();
   var cname={};classes.forEach(function(c){cname[c.id]=c.name});
   if(!ms.length){el.innerHTML='<div class="card" style="text-align:center"><h3>No students yet</h3>'+(all?'<p>Once students join your classes they will all appear here.</p>':'<p>Students open <b>maplehilllearning.com/app</b> (or the Maple Leap app), tap <b>Me → Join with a code</b>, and type <b>'+esc(cur.code)+'</b>.</p><p class="fine">Tip: print the poster, it includes a QR code that fills in the code automatically.</p>')+'</div>';return}
@@ -256,6 +287,7 @@ function showStudent(id){
 /* ---------- actions ---------- */
 function bind(){
   Array.prototype.forEach.call(document.querySelectorAll('[data-cls]'),function(b){b.onclick=async function(){view='';cur=classes.find(function(c){return c.id===b.dataset.cls});try{localStorage.setItem('mlt_cur',cur.id)}catch(e){}members=[];render();await loadMembers();paintRoster()}});
+  Array.prototype.forEach.call(document.querySelectorAll('[data-tab]'),function(b){b.onclick=function(){tab=b.dataset.tab;render()}});
   var al=document.querySelector('[data-all]');if(al)al.onclick=async function(){view='all';try{localStorage.setItem('mlt_cur','all')}catch(e){}members=[];render();await loadMembers();paintRoster()};
   var nc=$('newc'),nc2=$('newc2');if(nc)nc.onclick=newClass;if(nc2)nc2.onclick=newClass;
   if($('pposter'))$('pposter').onclick=printPoster;
@@ -293,13 +325,13 @@ function printPoster(){
 }
 function printLetter(){
   var l=joinLink();
-  $('letter').innerHTML='<div style="max-width:6.5in;margin:0 auto"><h2 style="font-family:Georgia,serif;color:#000">Maple Leap in our classroom</h2><p>Dear families,</p><p>This year our class is using <b>Maple Leap</b>, a free learning app for Pre-K to Grade 6 from Maple Hill Learning Press. It covers math, reading and logic, with short lessons and brain games that children enjoy.</p><p><b>How it works.</b> Your child joins our class with a short class code and their <b>first name only</b>. I can see their first name, grade and learning progress (for example minutes practised and accuracy by subject) so I can support them. There is no chat, no ads, and no student emails, photos or last names are collected. While in our class, your child gets unlimited hearts and Plus features at no cost. You can ask your child to leave the class at any time from the Me tab.</p><p><b>To join at home or at school:</b></p><ol><li>Open <b>maplehilllearning.com/app</b> on a phone, tablet or computer (or install the Maple Leap app).</li><li>Tap <b>Me</b>, then <b>Join with a code</b>.</li><li>Class code: <b style="font-size:20px;letter-spacing:.15em">'+esc(cur.code)+'</b>. Type your child\'s first name.</li></ol><p>Direct link: '+esc(l)+'</p><p>Learning a little every day helps most. Our weekly goal is <b>'+cur.weekly_goal+' minutes</b>. Thank you for your support!</p><p>Sincerely,<br>'+esc(ses&&ses.email||'Your teacher')+'</p><p style="font-size:12px;color:#444">Privacy: maplehilllearning.com/privacy.html · Questions: ali.houmani@exprealty.com</p></div>';
+  $('letter').innerHTML='<div style="max-width:6.5in;margin:0 auto"><h2 style="font-family:Georgia,serif;color:#000">Maple Leap in our classroom</h2><p>Dear families,</p><p>This year our class is using <b>Maple Leap</b>, a learning app for Kindergarten to Grade 6 from Maple Hill Learning Press. It covers math, reading and logic, with short lessons and brain games that children enjoy.</p><p><b>How it works.</b> Your child joins our class with a short class code and their <b>first name only</b>. I can see their first name, grade and learning progress (for example minutes practised and accuracy by subject) so I can support them. There is no chat, no ads, and no student emails, photos or last names are collected. While in our class, your child gets unlimited hearts and Plus features at no cost. You can ask your child to leave the class at any time from the Me tab.</p><p><b>To join at home or at school:</b></p><ol><li>Open <b>maplehilllearning.com/app</b> on a phone, tablet or computer (or install the Maple Leap app).</li><li>Tap <b>Me</b>, then <b>Join with a code</b>.</li><li>Class code: <b style="font-size:20px;letter-spacing:.15em">'+esc(cur.code)+'</b>. Type your child\'s first name.</li></ol><p>Direct link: '+esc(l)+'</p><p>Learning a little every day helps most. Our weekly goal is <b>'+cur.weekly_goal+' minutes</b>. Thank you for your support!</p><p>Sincerely,<br>'+esc(ses&&ses.email||'Your teacher')+'</p><p style="font-size:12px;color:#444">Privacy: maplehilllearning.com/privacy.html · Questions: ali.houmani@exprealty.com</p></div>';
   document.body.classList.add('pl');setTimeout(function(){window.print();setTimeout(function(){document.body.classList.remove('pl')},500)},120);
 }
 function csvCell(v){v=String(v==null?'':v);if(/^[=+\-@\t\r]/.test(v))v="'"+v;return '"'+v.replace(/"/g,'""')+'"'}
 function exportCsv(){
-  var head=['Name','Grade','Minutes (7d)','XP this week','Total XP','Questions answered','Accuracy %','Streak','Lessons','Brain stars','Last active','Status'];
-  var rows=members.map(function(m){return [m.name,m.grade==null?'':gl(m.grade),m.wk,m.xp,m.txp,m.q,m.acc==null?'':m.acc,m.streak,m.les,m.stars,m.la,status(m,cur.weekly_goal)[0]].map(csvCell).join(',')});
+  var head=['Name','Grade','Screen minutes (today)','Screen minutes (7d)','Learning minutes (7d)','XP this week','Total XP','Questions answered','Accuracy %','Streak','Lessons','Brain stars','Last active','Status'];
+  var rows=members.map(function(m){return [m.name,m.grade==null?'':gl(m.grade),m.scrT,m.scrW,m.wk,m.xp,m.txp,m.q,m.acc==null?'':m.acc,m.streak,m.les,m.stars,m.la,status(m,cur.weekly_goal)[0]].map(csvCell).join(',')});
   var blob=new Blob(['﻿'+[head.map(csvCell).join(',')].concat(rows).join('\r\n')],{type:'text/csv'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=(cur.name.replace(/[^\w]+/g,'_')||'class')+'_'+dstr()+'.csv';document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(a.href)},2000);
 }
 window.__t={calc:calc,status:status};

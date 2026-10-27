@@ -78,6 +78,42 @@ const MATH={
  d=>{const n=ri(2,6),c=ri(2,5);return mc(`${n*3} apples cost $${n*c*3/3*1}. What does 1 apple cost?`,'$'+(n*c/(n*3)).toFixed(2),['$'+(c).toFixed(2),'$'+(c/2).toFixed(2),'$'+(n).toFixed(2)])},
  d=>{const arr=shuffle([-7,-3,0,2,5]).slice(0,4);const s=arr.slice().sort((a,b)=>a-b);return mc(`Which list is in order from least to greatest?`,s.join(', '),[s.slice().reverse().join(', '),shuffle(s).join(', '),arr.join(', ')]);}]
 };
+/* ---- Ontario-aligned additions: data, probability, geometry, measurement, money ---- */
+(function(){
+const cm$=v=>'$'+v.toFixed(2);
+const fr=(a,b)=>a+'/'+b;
+const PETS=[['dogs','🐶'],['cats','🐱'],['fish','🐟'],['birds','🐦'],['rabbits','🐰']];
+const FRUIT=[['apples','🍎'],['bananas','🍌'],['grapes','🍇'],['pears','🍐'],['oranges','🍊']];
+const dataLow=d=>{const [a,b]=shuffle(FRUIT).slice(0,2);const x=ri(2,6),y=ri(1,x-1);if(Math.random()<.5)return mc(`${a[1].repeat(x)} ${a[0]}, ${b[1].repeat(y)} ${b[0]}. Which has more?`,a[0],[b[0],'They are the same','Cannot tell']);return mcn(`${a[1].repeat(x)} ${a[0]}, ${b[1].repeat(y)} ${b[0]}. How many more ${a[0]} than ${b[0]}?`,x-y,{},[x+y]);};
+const dataMid=d=>{const p=shuffle(PETS).slice(0,3),v=[ri(6,12),ri(3,8),ri(1,5)];const t=`Favourite pets: ${p.map((e,i)=>e[0]+' '+v[i]).join(', ')}.`;const k=ri(0,2);if(k===0)return mcn(`${t} How many students answered in all?`,v[0]+v[1]+v[2]);if(k===1)return mc(`${t} Which pet is the most popular?`,p[0][0],[p[1][0],p[2][0],'They are tied']);return mcn(`${t} How many more chose ${p[0][0]} than ${p[2][0]}?`,v[0]-v[2],{},[v[0]+v[2]]);};
+const dataHigh=d=>{const n=ri(5,7);let a=[];for(let i=0;i<n;i++)a.push(ri(2,9));const m=pick(a);a=a.concat([m,m]);a=shuffle(a);const cnt={};a.forEach(x=>cnt[x]=(cnt[x]||0)+1);const best=Object.keys(cnt).sort((x,y)=>cnt[y]-cnt[x]);if(cnt[best[0]]===cnt[best[1]])return null;return mcn(`What is the mode of ${a.join(', ')}?`,+best[0],{},[+best[1],Math.max.apply(null,a)]);};
+const probLow=d=>{const r=ri(4,7),b=ri(1,2);return mc(`A bag has ${r} red 🔴 and ${b} blue 🔵 counters. You pick without looking. Which colour is more likely?`,'red',['blue','They are equally likely','Cannot tell']);};
+const probLow2=d=>{const o=shuffle([['The sun will rise tomorrow','certain'],['You will find a unicorn at school','impossible'],['A coin lands on heads','possible'],['You flip a coin and get heads or tails','certain']])[0];return mc(`${o[0]}. Is this impossible, possible or certain?`,o[1],['impossible','possible','certain'].filter(x=>x!==o[1]).concat(['unlikely']));};
+const probMid=d=>{const n=pick([4,5,8,10]),k=ri(1,n-1);return mc(`A spinner has ${n} equal parts and ${k} of them are red. What is the probability of landing on red?`,fr(k,n),[fr(n-k,n),fr(k,n+2),fr(1,k+1),fr(n,k)]);};
+const probHigh=d=>{const q=pick([['an even number on a regular 6-sided die','3/6'],['a number greater than 4 on a 6-sided die','2/6'],['a 3 on a 6-sided die','1/6'],['heads on a fair coin','1/2']]);return mc(`What is the probability of rolling or flipping ${q[0]}?`,q[1],['1/3','2/3','1/4','5/6','1/6','3/6','1/2'].filter(x=>x!==q[1]));};
+const geo1=d=>{const s=pick([['cube',6,'faces'],['cube',8,'corners'],['rectangular prism',6,'faces'],['triangle',3,'sides'],['square pyramid',5,'faces']]);return mcn(`How many ${s[2]} does a ${s[0]} have?`,s[1]);};
+const geoSym=d=>{const s=pick([['square',4],['rectangle',2],['equilateral triangle',3],['circle','many']]);if(s[1]==='many')return mc('Which shape has the most lines of symmetry?','circle',['square','rectangle','triangle']);return mcn(`How many lines of symmetry does a ${s[0]} have?`,s[1]);};
+const geoAng=d=>{const a=pick([30,45,60,90,100,120,135,150]);const t=a<90?'acute':(a===90?'right':'obtuse');return mc(`An angle measures ${a}°. What kind of angle is it?`,t,['acute','right','obtuse','straight'].filter(x=>x!==t));};
+const geoCoord=d=>{const x=ri(1,8),y=ri(1,8),dx=ri(1,4);return mc(`Start at the point (${x}, ${y}) on a grid. Move ${dx} to the right. Where are you now?`,`(${x+dx}, ${y})`,[`(${x}, ${y+dx})`,`(${x-dx<0?x+dx+1:x-dx}, ${y})`,`(${y+dx}, ${x})`]);};
+const geoTri=d=>{const a=ri(30,80),b=ri(30,80);if(a+b>=150)return null;return mcn(`Two angles in a triangle are ${a}° and ${b}°. What is the third angle (°)?`,180-a-b);};
+const meaLow=d=>{const s=pick([['How many days are in a week?',7],['How many hours are in one day?',24],['How many minutes are in one hour?',60]]);return mcn(s[0],s[1]);};
+const meaLow2=d=>{const s=pick([['a pencil','a bus','longer'],['a mouse','an elephant','heavier'],['a spoon','a swimming pool','holds more water']]);return mc(`Which one is ${s[2].replace('holds more water','able to hold more water')}?`,s[1],[s[0],'They are the same','Cannot tell']);};
+const meaMid=d=>{const k=pick([['m','cm',100],['kg','g',1000],['L','mL',1000],['cm','mm',10]]);const n=ri(2,9);return mcn(`${n} ${k[0]} = ? ${k[1]}`,n*k[2],{},[n*k[2]/10,n*k[2]*10]);};
+const meaElapsed=d=>{const h=ri(1,5),m=pick([15,30,45]);const sh=ri(7,11);const eh=sh+h;const f=(H,M)=>`${H}:${String(M).padStart(2,'0')}`;return mc(`A class starts at ${f(sh,0)} and ends at ${f(eh,m)}. How long is the class?`,`${h} h ${m} min`,[`${h+1} h ${m} min`,`${h} h ${m===30?15:30} min`,`${h-1<1?2:h-1} h ${m} min`]);};
+const meaArea=d=>{const b=ri(3,12),h=ri(3,9);return mcn(`A parallelogram has base ${b} cm and height ${h} cm. What is its area (cm²)?`,b*h,{},[2*(b+h)]);};
+const monLow=d=>{const t=pick([[1,'toonie',2],[2,'loonies',2],[3,'loonies',3]]);return mcn(`You have ${t[0]===1?'a':t[0]} ${t[1]}. How many dollars is that?`,t[0]*(t[1]==='toonie'?2:1));};
+const monMid=d=>{const p=pick([1.25,2.35,3.4,4.15,5.6,6.75,7.5]);const pay=pick([10,20]);return mc(`You buy a snack for ${cm$(p)} and pay with $${pay}. How much change do you get?`,cm$(pay-p),[cm$(pay-p+1),cm$(pay-p-0.1),cm$(p+pay)]);};
+const monNickel=d=>{const c=ri(101,499)/100;const r=Math.round(c*20)/20;const wr=[c,r+0.05,r-0.05].map(cm$);return mc(`In Canada, cash totals round to the nearest 5¢. What does ${cm$(c)} round to when paying cash?`,cm$(r),wr.filter(x=>x!==cm$(r)).concat([cm$(r+0.1)]));};
+const monHst=d=>{const p=pick([10,20,30,40,50,60]);return mc(`In Ontario, HST is 13%. A book costs $${p}. How much HST is added?`,cm$(p*.13),[cm$(p*.1),cm$(p*.15),cm$(p*.013),cm$(p*1.13)]);};
+const monHst2=d=>{const p=pick([10,20,50,100]);return mc(`In Ontario, HST is 13%. A game costs $${p}. What is the total with HST?`,cm$(p*1.13),[cm$(p*1.1),cm$(p*1.15),cm$(p+13),cm$(p*.13)]);};
+const add=(g,fs)=>fs.forEach(f=>MATH[g].push(f));
+add(1,[dataLow,probLow,geo1,meaLow,meaLow2,monLow]);
+add(2,[dataLow,probLow,probLow2,geo1,geoSym,meaLow,meaLow2,monMid]);
+add(3,[dataMid,probLow2,probMid,geoSym,geoAng,meaMid,monMid,monNickel]);
+add(4,[dataMid,probMid,geoAng,geoCoord,meaMid,meaElapsed,monNickel]);
+add(5,[dataMid,dataHigh,probMid,probHigh,geoAng,geoCoord,geoTri,meaMid,meaElapsed,monHst,monNickel]);
+add(6,[dataHigh,probHigh,geoCoord,geoTri,meaMid,meaArea,monHst,monHst2]);
+})();
 /* fix up generated nulls and bad ones */
 function genMath(g,d,n){const gens=MATH[g];const out=[];let guard=0;while(out.length<n&&guard++<200){const f=gens[ri(0,gens.length-1)];let q;try{q=f(d);}catch(e){q=null;}if(!q)continue;if(q.t==='mc'&&(q.choices.length<4||!q.choices.includes(q.a)))continue;if(out.some(o=>o.q===q.q))continue;out.push(q);}return out;}
 /* ---------------- READING ---------------- */
@@ -239,6 +275,27 @@ function genKWrite(d,n){const pool=d<1?TR_A:(d<2?TR_A.concat(TR_B.slice(0,8)):(d
  return out;}
 function genK(subject,d,n){return subject==='abc'?genKAbc(d,n):(subject==='sound'?genKSound(d,n):(subject==='words'?genKWords(d,n):genKWrite(d,n)));}
 function makeLesson(g,subject,d){if(g===0){const n=subject==='write'?6:8;const out=[],seen=new Set();for(let t=0;t<8&&out.length<n;t++){genK(subject,d,n*2).forEach(q=>{const k=q.q+(q.svg||'')+q.a;if(!seen.has(k)&&out.length<n){seen.add(k);out.push(q)}})}return out;}const L=subject==='math'?genMath(g,d,8):(subject==='read'?genRead(g,8):genLogic(g,d,8));const pq=pairQ(g,subject);if(pq&&L.length>=4)L.splice(3,1,pq);return L;}
-const api={genK,makeLesson,MATH,READ,genMath,genRead,genLogic};
+/* ---- Ontario curriculum strand tagging (strand level, Math 2020 / Language 2023 / Kindergarten) ---- */
+const STRANDS={
+MA:['Mathematical thinking & processes','Math A'],MB1:['Number sense','Math B1'],MB2:['Operations','Math B2'],MC1:['Patterns','Math C1'],MC2:['Equations & unknowns','Math C2'],
+MD1:['Data literacy','Math D1'],MD2:['Probability','Math D2'],ME1:['Geometry & spatial reasoning','Math E1'],ME2:['Measurement','Math E2'],MF1:['Financial literacy','Math F1'],
+LB:['Foundations of language (word study & vocabulary)','Language B'],LC:['Comprehension (reading)','Language C'],LD:['Composition (sentences & conventions)','Language D'],KL:['Kindergarten: language & literacy','Kindergarten']};
+function strandOf(q,subject){
+ if(subject==='abc'||subject==='sound'||subject==='words'||subject==='write')return 'KL';
+ const t=String(q.q||'');
+ if(subject==='read'){if(q.passage)return 'LC';if(q.t==='ord')return 'LD';if(/spelled|opposite|means the same|same as|synonym|meaning/i.test(t))return 'LB';return 'LD';}
+ if(subject==='logic'){if(/pattern|next|sequence|what comes|missing/i.test(t))return 'MC1';if(/riddle|I am a number|number am I/i.test(t))return 'MB1';return 'MA';}
+ if(/chance|likely|probab|impossible|certain|spinner|die\b/i.test(t))return 'MD2';
+ if(/\$|¢|cents|dollar|toonie|loonie|HST|change do you/i.test(t))return 'MF1';
+ if(/mean\b|median|mode\b|average|favourite|graph|tally|which has more|how many more .* than/i.test(t)&&!/\d+\s*[+×÷]/.test(t))return 'MD1';
+ if(/perimeter|area|volume|minutes|hours?\b|\bh\b|clock|time is it|starts at|lasts|\bcm\b|\bmm\b|\bkg\b|\bmL\b|\bL\b|\bm\b|=\s*\?\s*(cm|mm|g|mL)/i.test(t))return 'ME2';
+ if(/sides|corners|faces|angle|symmetr|triangle|square|rectangle|circle|coordinate|grid|\(\d+, \d+\)/i.test(t))return 'ME1';
+ if(/skip count|pattern|sequence/i.test(t))return 'MC1';
+ if(/\bx\b|\?\s*=\s*\d|[+−]\s*\?\s*=|\d\s*[+−×÷]\s*\?/.test(t))return 'MC2';
+ if(/[+−×÷]|gives|more\.|left|in all|each|packs|boxes|double|cost|remainder|\^|[²³⁴⁵]/i.test(t))return 'MB2';
+ return 'MB1';
+}
+const _ml=makeLesson;function makeLessonT(g,subject,d){const L=_ml(g,subject,d);L.forEach(q=>{try{q.sk=strandOf(q,subject)}catch(e){}});return L;}
+const api={genK,makeLesson:makeLessonT,strandOf,STRANDS,MATH,READ,genMath,genRead,genLogic};
 if(typeof module!=='undefined')module.exports=api;else root.MapleContent=api;
 })(typeof window!=='undefined'?window:globalThis);
