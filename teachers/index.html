@@ -192,7 +192,7 @@ async function boot(){
   var hm=(location.hash||'').match(/th=([^&]+)&e=([^&]+)/);
   if(hm){var th=decodeURIComponent(hm[1]),he=decodeURIComponent(hm[2]);var cm=(location.hash||'').match(/&c=([A-Za-z0-9]+)/);if(cm){try{localStorage.setItem('mlt_inv',cm[1])}catch(e){}}
     try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}
-    try{var vr=await fetch(SB.url+'/auth/v1/verify',{method:'POST',headers:{apikey:SB.key,'Content-Type':'application/json'},body:JSON.stringify({type:'magiclink',token_hash:th,email:he})});var vj=await vr.json();
+    try{var vr=await fetch(SB.url+'/auth/v1/verify',{method:'POST',headers:{apikey:SB.key,'Content-Type':'application/json'},body:JSON.stringify({type:'magiclink',token_hash:th})});var vj=await vr.json();
       if(vr.ok&&vj.access_token){setSes({access:vj.access_token,refresh:vj.refresh_token,email:(vj.user&&vj.user.email)||he,uid:vj.user&&vj.user.id})}
       else{setSes(null);viewLogin('That sign-in link has expired or was already used. Enter your email for a new one.',he,'email');return}
     }catch(e){viewLogin('No connection. Try again.',he,'email');return}}
