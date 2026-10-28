@@ -190,6 +190,10 @@ function status(m,goal){
 /* ---------- main view ---------- */
 async function boot(){
   var hm=(location.hash||'').match(/th=([^&]+)&e=([^&]+)/);
+  if(hm&&!window.__go){var th0=decodeURIComponent(hm[1]),he0=decodeURIComponent(hm[2]);var cm0=(location.hash||'').match(/&c=([A-Za-z0-9]+)/);
+    clearInterval(timer);$('who').textContent='';$('signout').hidden=true;
+    $('app').innerHTML='<div class="card" style="max-width:460px;margin:40px auto;text-align:center"><div style="font-size:56px" aria-hidden="true">🍎</div><h3>Welcome to Maple Leap for Teachers</h3><p class="fine">Signing in as <b>'+esc(he0)+'</b></p><button class="btn" id="opn" style="width:100%">Open my dashboard</button></div>';
+    $('opn').onclick=function(){window.__go=1;boot()};return}
   if(hm){var th=decodeURIComponent(hm[1]),he=decodeURIComponent(hm[2]);var cm=(location.hash||'').match(/&c=([A-Za-z0-9]+)/);if(cm){try{localStorage.setItem('mlt_inv',cm[1])}catch(e){}}
     try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}
     try{var vr=await fetch(SB.url+'/auth/v1/verify',{method:'POST',headers:{apikey:SB.key,'Content-Type':'application/json'},body:JSON.stringify({type:'magiclink',token_hash:th})});var vj=await vr.json();
