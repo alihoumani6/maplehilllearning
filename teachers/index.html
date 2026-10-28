@@ -189,16 +189,16 @@ function status(m,goal){
 
 /* ---------- main view ---------- */
 async function boot(){
-  var hm=(location.hash||'').match(/th=([^&]+)&e=([^&]+)/);
-  if(hm&&!window.__go){var th0=decodeURIComponent(hm[1]),he0=decodeURIComponent(hm[2]);var cm0=(location.hash||'').match(/&c=([A-Za-z0-9]+)/);
+  var hm=(location.hash||'').match(/[#&]t=([a-f0-9]+)&e=([^&]+)/);
+  if(hm&&!window.__go){var he0=decodeURIComponent(hm[2]);
     clearInterval(timer);$('who').textContent='';$('signout').hidden=true;
     $('app').innerHTML='<div class="card" style="max-width:460px;margin:40px auto;text-align:center"><div style="font-size:56px" aria-hidden="true">🍎</div><h3>Welcome to Maple Leap for Teachers</h3><p class="fine">Signing in as <b>'+esc(he0)+'</b></p><button class="btn" id="opn" style="width:100%">Open my dashboard</button></div>';
-    $('opn').onclick=function(){window.__go=1;boot()};return}
-  if(hm){var th=decodeURIComponent(hm[1]),he=decodeURIComponent(hm[2]);var cm=(location.hash||'').match(/&c=([A-Za-z0-9]+)/);if(cm){try{localStorage.setItem('mlt_inv',cm[1])}catch(e){}}
+    $('opn').onclick=function(){$('opn').disabled=true;window.__go=1;boot()};return}
+  if(hm){var tk=hm[1],he=decodeURIComponent(hm[2]);var cm=(location.hash||'').match(/&c=([A-Za-z0-9]+)/);if(cm){try{localStorage.setItem('mlt_inv',cm[1])}catch(e){}}
     try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}
-    try{var vr=await fetch(SB.url+'/auth/v1/verify',{method:'POST',headers:{apikey:SB.key,'Content-Type':'application/json'},body:JSON.stringify({type:'magiclink',token_hash:th})});var vj=await vr.json();
+    try{var vr=await fetch(SB.url+'/functions/v1/teacher-verify',{method:'POST',headers:{apikey:SB.key,'Content-Type':'application/json'},body:JSON.stringify({t:tk})});var vj=await vr.json();
       if(vr.ok&&vj.access_token){setSes({access:vj.access_token,refresh:vj.refresh_token,email:(vj.user&&vj.user.email)||he,uid:vj.user&&vj.user.id})}
-      else{setSes(null);viewLogin('That sign-in link has expired or was already used. Enter your email for a new one.',he,'email');return}
+      else{setSes(null);viewLogin('That sign-in link has expired. Enter your email and we will send a new one.',he,'email');return}
     }catch(e){viewLogin('No connection. Try again.',he,'email');return}}
   if(!ses){viewLogin('','','email');return}
   $('who').textContent=ses.email||'';$('signout').hidden=false;
@@ -218,6 +218,10 @@ function planBanner(){
   var used=plan.used,seats=plan.seats,buy=BUY+'?client_reference_id='+encodeURIComponent(uidOf())+(ses.email?'&prefilled_email='+encodeURIComponent(ses.email):'');
   if(plan.paid){
     return '<div class="note" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap"><div class="grow">💳 <b>Classroom plan active:</b> '+used+' of '+seats+' student seats in use. $1.99 CAD per student per month + tax.'+(plan.status==='past_due'?' <b style="color:var(--red)">Payment past due, please update your card.</b>':'')+'</div><a class="btn sm ghost" href="'+PORTAL+'" target="_blank" rel="noopener" style="text-decoration:none;display:inline-flex;align-items:center">Manage billing / seats</a></div>';
+  }
+  if(plan.invited&&!plan.paid&&plan.trial_active){
+    var dy=Math.max(0,Math.ceil((new Date(plan.trial_end)-new Date())/864e5));
+    return '<div class="note" style="background:#e8f7ec;border-color:#a9dbb8"><div>🎓 <b>Free for teachers:</b> your Maple Leap classroom access is free until <b>'+new Date(plan.trial_end).toLocaleDateString('en-CA',{year:'numeric',month:'long',day:'numeric'})+'</b> ('+dy+' days). Up to 35 students, nothing to pay.</div></div>';
   }
   if(plan.trial_active){
     var days=Math.max(0,Math.ceil((new Date(plan.trial_end)-new Date())/864e5));
