@@ -71,7 +71,7 @@ dialog::backdrop{background:rgba(18,26,48,.55)}
 </style>
 </head>
 <body>
-<div class="top"><div class="in"><b>🍁 Maple Leap · Teachers</b><span id="who" class="fine" style="color:#fff;opacity:.9"></span><button id="signout" hidden>Sign out</button><a href="../">Home</a></div></div>
+<div class="top"><div class="in"><b>🍁 Maple Leap for Teachers</b><span id="who" class="fine" style="color:#fff;opacity:.9"></span><button id="signout" hidden>Sign out</button><a href="../">Home</a></div></div>
 <div class="wrap" id="app"></div>
 
 <dialog id="dlg"></dialog>
@@ -236,7 +236,7 @@ function render(){
     $('app').innerHTML=h;bind();return;
   }
   if(view==='all'){h+=tabBar()+'<div id="roster"></div>';$('app').innerHTML=h;paintRoster();bind();return}
-  h+='<div class="card"><div class="row"><div class="grow"><h2>'+esc(cur.name)+'</h2><div class="fine">'+gl(cur.grade)+' · weekly goal '+cur.weekly_goal+' min · '+(cur.closed?'<b style="color:var(--red)">joining is paused</b>':'joining is open')+'</div></div>'+
+  h+='<div class="card"><div class="row"><div class="grow"><h2>'+esc(cur.name)+'</h2><div class="fine">'+gl(cur.grade)+', weekly goal '+cur.weekly_goal+' min, '+(cur.closed?'<b style="color:var(--red)">joining is paused</b>':'joining is open')+'</div></div>'+
    '<div style="text-align:center"><div class="fine" style="margin-bottom:4px">Class code</div><div class="code" id="codeb" aria-label="Class code '+cur.code.split('').join(' ')+'">'+esc(cur.code)+'</div></div></div>'+
    '<div class="row" style="margin-top:14px"><button class="btn sm blue" id="pposter">🖨️ Print join poster</button><button class="btn sm ghost" id="clink">🔗 Copy join link</button><button class="btn sm ghost" id="pletter">✉️ Parent letter</button><button class="btn sm ghost" id="csv">⬇️ Export CSV</button><button class="btn sm ghost" id="settings">⚙️ Class settings</button></div></div>';
   h+=tabBar()+'<div id="roster"></div>';
@@ -255,7 +255,7 @@ function heat(c,t){if(!t)return '<td style="text-align:center;color:#aaa" title=
 function currHTML(ms,forPrint){
   var agg=strandAgg(ms),grades={};ms.forEach(function(m){if(m.grade!=null)grades[m.grade]=1});var gs=Object.keys(grades).sort().map(function(g){return gl(+g)}).join(', ')||gl(cur.grade);
   var keys=KEYS.filter(function(k){return agg[k]});if(Object.keys(agg).indexOf('KL')>=0)keys.unshift('KL');
-  var h='<div class="card"><h3 style="font-size:18px;margin-bottom:4px">Ontario curriculum alignment</h3><div class="fine">'+esc(gs)+' · Mathematics (2020) strands A–F and Language (2023) strands B–D, with the Kindergarten program for the youngest learners.</div>';
+  var h='<div class="card"><h3 style="font-size:18px;margin-bottom:4px">Ontario curriculum alignment</h3><div class="fine">'+esc(gs)+', Mathematics (2020) strands A–F and Language (2023) strands B–D, with the Kindergarten program for the youngest learners.</div>';
   if(!keys.length){h+='<p>No curriculum data yet. Strand results appear after students complete lessons in the latest version of Maple Leap.</p></div>';return h}
   h+='<div class="tw" style="margin-top:10px"><table><thead><tr><th>Student</th>'+keys.map(function(k){return '<th title="'+esc(STR[k][1])+'">'+esc(STR[k][0])+'<div class="fine" style="font-weight:400">'+esc(STR[k][1])+'</div></th>'}).join('')+'</tr></thead><tbody>';
   h+='<tr style="background:#f4f7fb"><td><b>Class</b></td>'+keys.map(function(k){var a=agg[k]||[0,0];return heat(a[0],a[1])}).join('')+'</tr>';
@@ -264,7 +264,7 @@ function currHTML(ms,forPrint){
   var weak=keys.filter(function(k){return agg[k][1]>=15}).sort(function(a,b){return agg[a][0]/agg[a][1]-agg[b][0]/agg[b][1]}),miss=KEYS.filter(function(k){return !agg[k]||agg[k][1]<10});
   if(weak.length&&agg[weak[0]][0]/agg[weak[0]][1]<.75)h+='<div class="note">💡 <b>Focus area:</b> the class is finding <b>'+esc(STR[weak[0]][0])+'</b> ('+esc(STR[weak[0]][1])+') the hardest, at '+Math.round(agg[weak[0]][0]/agg[weak[0]][1]*100)+'% correct.</div>';
   if(miss.length&&!forPrint)h+='<p class="fine">Little or no practice yet in: '+miss.map(function(k){return esc(STR[k][0])}).join(', ')+'. Students reach these as they work through Math and Reading lessons.</p>';
-  h+='<p class="fine">Green is 85% or above, yellow 60–84%, red below 60%. A dot (·) means fewer than 5 questions so far. Results show the share of practice questions answered correctly, not report-card marks.</p>';
+  h+='<p class="fine">Green is 85% or above, yellow 60–84%, red below 60%. A dot means fewer than 5 questions so far. Results show the share of practice questions answered correctly, not report-card marks.</p>';
   h+='<div class="note" style="background:#eef3fb;border-color:#c9d8f0;font-weight:500"><b>About this alignment:</b> Maple Leap practice questions are organized by the strands of the Ontario Mathematics (2020) and Language (2023) curriculum, and the Kindergarten program. Each question is matched to the closest specific expectation for the student’s grade. Matching is approximate, and the checklist is meant to support, not replace, classroom instruction and teacher judgement. Maple Leap is an independent product and is not endorsed by the Ontario Ministry of Education. Some practice may sit slightly above or below a grade’s expectations.</div></div>';
   return h;
 }
@@ -280,7 +280,7 @@ function expHTML(ms,g,forPrint){
     strands.forEach(function(sd){var st=sd.split(':'),cs=codes.filter(function(c){return c[0]===st[0]});if(!cs.length)return;
       h+='<div style="font-weight:800;margin:10px 0 2px;color:var(--navy)">'+st[0]+'. '+st[1]+'</div><div>'+cs.map(function(c){
         var key=pre+':'+c,t=tally[key],st2;
-        if(cov[key]){st2=t&&t[1]?'<span class="chip '+(t[0]/t[1]>=.85?'g':t[0]/t[1]>=.6?'b':'r')+'">'+Math.round(t[0]/t[1]*100)+'% · '+t[1]+' q</span>':'<span class="chip b">In Maple Leap</span>'}else st2='<span class="chip" style="background:#eee;color:#555">Classroom activity</span>';
+        if(cov[key]){st2=t&&t[1]?'<span class="chip '+(t[0]/t[1]>=.85?'g':t[0]/t[1]>=.6?'b':'r')+'">'+Math.round(t[0]/t[1]*100)+'%, '+t[1]+' q</span>':'<span class="chip b">In Maple Leap</span>'}else st2='<span class="chip" style="background:#eee;color:#555">Classroom activity</span>';
         return '<div style="display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-top:1px solid #eee"><b style="width:40px;flex:none">'+c+'</b><span style="font-size:14px;flex:1;min-width:0">'+esc(map[c])+'</span><span style="flex:none">'+st2+'</span></div>'}).join('')+'</div>'});
     return h}
   var h='<div class="card"><div class="row"><h3 class="grow" style="font-size:18px">Expectation checklist, Grade '+g+'</h3>'+(forPrint?'':'<select id="cgs" aria-label="Grade" style="min-height:44px;border:2px solid var(--line,#ddd);border-radius:12px;padding:0 10px;font:inherit">'+[1,2,3,4,5,6].map(function(x){return '<option value="'+x+'"'+(x===g?' selected':'')+'>Grade '+x+'</option>'}).join('')+'</select>')+'</div>'+
@@ -299,7 +299,7 @@ function provHTML(ms,code){
   h+='<div class="tw" style="margin-top:10px"><table><thead><tr><th>Student</th>'+groups.map(function(g){return '<th>'+esc(g[0])+'</th>'}).join('')+'</tr></thead><tbody>';
   h+='<tr style="background:#f4f7fb"><td><b>Class</b></td>'+groups.map(function(g){var c=0,t=0;ms.forEach(function(m){var a=agg(m,g[1]);c+=a[0];t+=a[1]});return heat(c,t)}).join('')+'</tr>';
   ms.slice().sort(function(a,b){return a.name.localeCompare(b.name)}).forEach(function(m){h+='<tr><td><b>'+esc(m.name)+'</b></td>'+groups.map(function(g){var a=agg(m,g[1]);return heat(a[0],a[1])}).join('')+'</tr>'});
-  h+='</tbody></table></div><p class="fine">Green is 85% or above, yellow 60–84%, red below 60%. A dot (·) means fewer than 5 questions so far. Maple Leap questions are organized by Ontario strands and mapped to this province’s organizers by topic, so the match is approximate. Language shows Maple Leap’s own reading categories. A full outcome-by-outcome checklist is currently available for Ontario only. Maple Leap is not endorsed by any provincial ministry of education.</p></div>';
+  h+='</tbody></table></div><p class="fine">Green is 85% or above, yellow 60–84%, red below 60%. A dot means fewer than 5 questions so far. Maple Leap questions are organized by Ontario strands and mapped to this province’s organizers by topic, so the match is approximate. Language shows Maple Leap’s own reading categories. A full outcome-by-outcome checklist is currently available for Ontario only. Maple Leap is not endorsed by any provincial ministry of education.</p></div>';
   return h}
 function paintCurr(el){
   var ms=members;
@@ -308,7 +308,7 @@ function paintCurr(el){
   if(pv!=='ON'){el.innerHTML=provHTML(ms,pv);return}
   el.innerHTML=currHTML(ms,false)+expHTML(ms,cg,false)+(ms.length?'<div class="row" style="margin-top:6px"><button class="btn sm blue" id="pcur">🖨️ Print curriculum report</button></div>':'');
   if($('cgs'))$('cgs').onchange=function(){cg=+$('cgs').value;paintCurr(el)};
-  if($('pcur'))$('pcur').onclick=function(){$('letter').innerHTML='<div style="max-width:7.5in;margin:0 auto"><h2 style="font-family:Georgia,serif">'+esc(view==='all'?'All classes':cur.name)+' · Ontario curriculum report</h2><p class="fine">Printed '+new Date().toLocaleDateString()+'</p>'+currHTML(ms,true)+expHTML(ms,cg,true)+'</div>';document.body.classList.add('pl');setTimeout(function(){window.print();setTimeout(function(){document.body.classList.remove('pl')},500)},120)};
+  if($('pcur'))$('pcur').onclick=function(){$('letter').innerHTML='<div style="max-width:7.5in;margin:0 auto"><h2 style="font-family:Georgia,serif">'+esc(view==='all'?'All classes':cur.name)+', Ontario curriculum report</h2><p class="fine">Printed '+new Date().toLocaleDateString()+'</p>'+currHTML(ms,true)+expHTML(ms,cg,true)+'</div>';document.body.classList.add('pl');setTimeout(function(){window.print();setTimeout(function(){document.body.classList.remove('pl')},500)},120)};
 }
 function paintRoster(){
   var el=$('roster');if(!el||!cur)return;
@@ -343,7 +343,7 @@ function showStudent(id){
   var subs=Object.keys(m.bySub).filter(function(k){return m.bySub[k].t>0});
   var labels=m.days.map(function(_,i){return addD(today,i-13)});
   var d=$('dlg');
-  d.innerHTML='<div class="row"><h2 class="grow">'+esc(m.name)+'</h2><button class="btn sm ghost" id="dx" aria-label="Close">✕</button></div><div class="fine">'+(m.grade==null?'':gl(m.grade)+' · ')+'joined '+new Date(m.joined).toLocaleDateString()+'</div>'+
+  d.innerHTML='<div class="row"><h2 class="grow">'+esc(m.name)+'</h2><button class="btn sm ghost" id="dx" aria-label="Close">✕</button></div><div class="fine">'+(m.grade==null?'':gl(m.grade)+', ')+'joined '+new Date(m.joined).toLocaleDateString()+'</div>'+
   '<div class="stats"><div class="stat"><small>Screen today</small><span>'+m.scrT+' min</span></div><div class="stat"><small>Screen (7d)</small><span>'+m.scrW+' min</span></div><div class="stat"><small>Learning (7d)</small><span>'+m.wk+' min</span></div><div class="stat"><small>Accuracy</small><span>'+(m.acc==null?'—':m.acc+'%')+'</span></div><div class="stat"><small>Streak</small><span>🔥'+m.streak+'</span></div><div class="stat"><small>Total XP</small><span>'+m.txp+'</span></div></div>'+
   '<h3 style="font-size:18px">Screen time, last 14 days (minutes)</h3>'+bars(m.scrD,labels,'var(--purple)')+
   '<h3 style="font-size:18px;margin-top:12px">Learning time in lessons, last 14 days</h3>'+bars(m.days,labels)+
@@ -377,7 +377,7 @@ function lastProv(){try{return localStorage.getItem('mlt_prov')||'ON'}catch(e){r
 function curProv(){return (cur&&cur.province)||'ON'}
 function newClass(){
   var d=$('dlg');
-  d.innerHTML='<h2>New class</h2><label for="cn">Class name</label><input id="cn" maxlength="60" placeholder="Ms. Lee · Grade 3"><label for="cg">Grade</label><select id="cg">'+[0,1,2,3,4,5,6].map(function(g){return '<option value="'+g+'" '+(g===3?'selected':'')+'>'+gl(g)+'</option>'}).join('')+'</select><label for="cpv">Province or territory</label><select id="cpv">'+provOpts(lastProv())+'</select>'+
+  d.innerHTML='<h2>New class</h2><label for="cn">Class name</label><input id="cn" maxlength="60" placeholder="Ms. Lee, Grade 3"><label for="cg">Grade</label><select id="cg">'+[0,1,2,3,4,5,6].map(function(g){return '<option value="'+g+'" '+(g===3?'selected':'')+'>'+gl(g)+'</option>'}).join('')+'</select><label for="cpv">Province or territory</label><select id="cpv">'+provOpts(lastProv())+'</select>'+
   '<label style="display:flex;gap:10px;align-items:flex-start;font-weight:600;margin-top:16px"><input type="checkbox" id="cc" style="width:22px;min-height:22px;margin-top:2px"><span>I am a teacher or educator, and I have my school\'s permission (and parent consent where required) for students to use Maple Leap. I will not ask students to enter last names, emails or other personal details.</span></label><div class="err" id="ce"></div><div class="row"><button class="btn ghost grow" id="cx">Cancel</button><button class="btn grow" id="cok">Create class</button></div>';
   d.showModal();$('cn').focus();$('cx').onclick=function(){d.close()};
   $('cok').onclick=async function(){var n=$('cn').value.trim();if(!n){$('ce').textContent='Give your class a name';return}if(!$('cc').checked){$('ce').textContent='Please confirm the statement above';return}$('cok').disabled=true;
@@ -401,7 +401,7 @@ function printPoster(){
 }
 function printLetter(){
   var l=joinLink();
-  $('letter').innerHTML='<div style="max-width:6.5in;margin:0 auto"><h2 style="font-family:Georgia,serif;color:#000">Maple Leap in our classroom</h2><p>Dear families,</p><p>This year our class is using <b>Maple Leap</b>, a learning app for Kindergarten to Grade 6 from Maple Hill Learning Press. It covers math, reading and logic, with short lessons and brain games that children enjoy.</p><p><b>How it works.</b> Your child joins our class with a short class code and their <b>first name only</b>. I can see their first name, grade and learning progress (for example minutes practised and accuracy by subject) so I can support them. There is no chat, no ads, and no student emails, photos or last names are collected. While in our class, your child gets unlimited hearts and Plus features at no cost. You can ask your child to leave the class at any time from the Me tab.</p><p><b>To join at home or at school:</b></p><ol><li>Open <b>maplehilllearning.com/app</b> on a phone, tablet or computer (or install the Maple Leap app).</li><li>Tap <b>Me</b>, then <b>Join with a code</b>.</li><li>Class code: <b style="font-size:20px;letter-spacing:.15em">'+esc(cur.code)+'</b>. Type your child\'s first name.</li></ol><p>Direct link: '+esc(l)+'</p><p>Learning a little every day helps most. Our weekly goal is <b>'+cur.weekly_goal+' minutes</b>. Thank you for your support!</p><p>Sincerely,<br>'+esc(ses&&ses.email||'Your teacher')+'</p><p style="font-size:12px;color:#444">Privacy: maplehilllearning.com/privacy.html · Questions: ali.houmani@exprealty.com</p></div>';
+  $('letter').innerHTML='<div style="max-width:6.5in;margin:0 auto"><h2 style="font-family:Georgia,serif;color:#000">Maple Leap in our classroom</h2><p>Dear families,</p><p>This year our class is using <b>Maple Leap</b>, a learning app for Kindergarten to Grade 6 from Maple Hill Learning Press. It covers math, reading and logic, with short lessons and brain games that children enjoy.</p><p><b>How it works.</b> Your child joins our class with a short class code and their <b>first name only</b>. I can see their first name, grade and learning progress (for example minutes practised and accuracy by subject) so I can support them. There is no chat, no ads, and no student emails, photos or last names are collected. While in our class, your child gets unlimited hearts and Plus features at no cost. You can ask your child to leave the class at any time from the Me tab.</p><p><b>To join at home or at school:</b></p><ol><li>Open <b>maplehilllearning.com/app</b> on a phone, tablet or computer (or install the Maple Leap app).</li><li>Tap <b>Me</b>, then <b>Join with a code</b>.</li><li>Class code: <b style="font-size:20px;letter-spacing:.15em">'+esc(cur.code)+'</b>. Type your child\'s first name.</li></ol><p>Direct link: '+esc(l)+'</p><p>Learning a little every day helps most. Our weekly goal is <b>'+cur.weekly_goal+' minutes</b>. Thank you for your support!</p><p>Sincerely,<br>'+esc(ses&&ses.email||'Your teacher')+'</p><p style="font-size:12px;color:#444">Privacy: maplehilllearning.com/privacy.html, Questions: ali.houmani@exprealty.com</p></div>';
   document.body.classList.add('pl');setTimeout(function(){window.print();setTimeout(function(){document.body.classList.remove('pl')},500)},120);
 }
 function csvCell(v){v=String(v==null?'':v);if(/^[=+\-@\t\r]/.test(v))v="'"+v;return '"'+v.replace(/"/g,'""')+'"'}

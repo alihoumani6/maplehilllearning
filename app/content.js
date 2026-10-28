@@ -414,7 +414,51 @@ function exOf(q,g,subject){
  }
  return null;
 }
-const _ml=makeLesson;function makeLessonT(g,subject,d){const L=_ml(g,subject,d);L.forEach(q=>{try{if(!q.sk)q.sk=strandOf(q,subject);if(!q.ex)q.ex=exOf(q,g,subject)||'X'}catch(e){}});return L;}
-const api={genK,makeLesson:makeLessonT,strandOf,exOf,STRANDS,MATH,READ,genMath,genRead,genLogic};
+
+/* ---- "Here's why": a short, true explanation for every question, built from the question itself ---- */
+const TOPIC={MA:'Problem solving',MB1:'Numbers',MB2:'Adding, subtracting, multiplying, dividing',MC1:'Patterns',MC2:'Missing numbers',MD1:'Graphs and data',MD2:'Chance',ME1:'Shapes',ME2:'Measuring and time',MF1:'Money',LB:'Words and spelling',LC:'Reading stories',LD:'Writing sentences',KL:'Letters and sounds'};
+function whyOf(q,subject){
+ try{
+  const t=String(q.q||''),a=String(q.a==null?'':q.a);
+  if(q.explain)return String(q.explain);
+  if(q.t==='ord'&&q.full)return 'The sentence reads: “'+q.full+'” It starts with a capital letter and ends with a punctuation mark.';
+  if(q.t==='pair')return 'The matches are: '+a+'.';
+  if(q.t==='trace')return 'Go slowly and keep your finger on the gray shape.';
+  let m;
+  if((m=t.match(/means almost the same as “(.+?)”/)))return '“'+m[1]+'” and “'+a+'” mean almost the same thing.';
+  if((m=t.match(/means the opposite of “(.+?)”/)))return '“'+m[1]+'” and “'+a+'” are opposites.';
+  if(/spelled correctly/i.test(t))return 'It is spelled “'+a+'”. Say it slowly and listen for each part.';
+  if(t.includes('___')){const full=t.replace('___',a);return 'It reads: “'+full+'”. Say the sentence in your head to check that it sounds right.';}
+  if(/which sentence is correct/i.test(t))return '“'+a+'” has the capital letter and punctuation in the right places.';
+  if(q.passage){
+   const sents=q.passage.split(/(?<=[.!?])\s+/),words=(a+' '+t).toLowerCase().replace(/[^a-z0-9' ]/g,' ').split(/\s+/).filter(w=>w.length>2&&!['the','what','who','where','why','how','does','did','was','are','and','which','this','that'].includes(w));
+   let best=null,bs=0;sents.forEach(x=>{const xl=x.toLowerCase();let sc=0;words.forEach(w=>{if(xl.includes(w))sc+=(a.toLowerCase().includes(w)?3:1)});if(sc>bs){bs=sc;best=x}});
+   return best?'Look back at the story: “'+best.trim()+'”':'Go back to the story and look for the answer in the words.';
+  }
+  if((m=t.match(/what kind of word is “(.+?)”/))){const d={noun:'names a person, place or thing',verb:'shows an action',adjective:'describes a noun',adverb:'tells how, when or where something happens',preposition:'shows where or when, like in, on or under',pronoun:'takes the place of a noun',conjunction:'joins words or sentences'};return '“'+m[1]+'” is a '+a+(d[a]?': a '+a+' '+d[a]+'.':'.');}
+  if((m=t.match(/^Double (\d+)/i)))return m[1]+' + '+m[1]+' = '+a+'. Double means two of the same number.';
+  if((m=t.match(/^Half of (\d+)/i)))return 'Split '+m[1]+' into 2 equal parts: '+m[1]+' ÷ 2 = '+a+'.';
+  if((m=t.match(/factor of (\d+)/i))&&Number(m[1])%Number(a)===0)return a+' × '+(Number(m[1])/Number(a))+' = '+m[1]+', so '+a+' divides '+m[1]+' with nothing left over.';
+  if((m=t.match(/multiple of (\d+)/i))&&Number(a)%Number(m[1])===0)return m[1]+' × '+(Number(a)/Number(m[1]))+' = '+a+', so '+a+' is in the '+m[1]+' times table.';
+  if((m=t.match(/prefix “(.+?)”/)))return 'The prefix “'+m[1]+'” goes at the start of a word. It means “'+a+'”.';
+  if((m=t.match(/suffix “(.+?)”/)))return 'The suffix “'+m[1]+'” goes at the end of a word. It means “'+a+'”.';
+  if((m=t.match(/(\d+)\/(\d+) of (\d+)/))&&Number(m[3])%Number(m[2])===0&&Math.abs(Number(m[3])/Number(m[2])*Number(m[1])-Number(a))<1e-9)return 'Split '+m[3]+' into '+m[2]+' equal groups: '+m[3]+' ÷ '+m[2]+' = '+(Number(m[3])/Number(m[2]))+(m[1]==='1'?'.':'. Then take '+m[1]+' of those groups: '+a+'.');
+  {const ns=(t.match(/\d+(?:\.\d+)?/g)||[]).map(Number);if(ns.length===2&&/[a-z]{3,}/i.test(t)&&!/[$¢%]/.test(t)){const [x,y]=ns,A=Number(a);const c=[[x+y,x+' + '+y],[Math.abs(x-y),Math.max(x,y)+' − '+Math.min(x,y)],[x*y,x+' × '+y],[y?x/y:NaN,x+' ÷ '+y]];const hit=c.find(z=>Math.abs(z[0]-A)<1e-9);if(hit)return hit[1]+' = '+a+'.';}}
+  const mm=t.match(/(\d+(?:\.\d+)?)\s*([+−\-×÷x*\/])\s*(\d+(?:\.\d+)?)\s*(?:=|\?|$)/);
+  if(mm&&!/[a-z]{4,}/i.test(t.replace(/(what|is|the|answer|solve|find|equals|how|much|many)/gi,''))){
+   const x=+mm[1],y=+mm[3],o=mm[2];let r=null,tip='';
+   if(o==='+'){r=x+y;tip='Count up from '+x+', or split the numbers into tens and ones.'}
+   else if(o==='−'||o==='-'){r=x-y;tip='Count back '+y+' from '+x+', or think: '+y+' plus what makes '+x+'?'}
+   else if(o==='×'||o==='x'||o==='*'){r=x*y;tip='Think of '+x+' groups of '+y+', or skip count by '+y+'.'}
+   else{r=x/y;tip='Think: '+y+' times what number makes '+x+'?'}
+   if(r!==null&&Math.abs(r-Number(a))<1e-9)return x+' '+o+' '+y+' = '+a+'. '+tip;
+  }
+  const sk=q.sk||strandOf(q,subject);
+  const tips={MB1:'Think carefully about the sizes of the numbers or things you are comparing.',MB2:'Work it out one step at a time, then check by doing the opposite operation.',MC1:'Look at how the numbers or shapes change each time. That change is the rule.',MC2:'Put your answer back in the problem. If both sides match, it is right.',MD1:'Read the graph or table carefully, then count or compare the numbers.',MD2:'Think about how many outcomes there are and how many match.',ME1:'Picture the shape and compare it with the names and properties you know.',ME2:'Check the units and read the measurement carefully.',MF1:'Add the money up in steps, coins or bills together.',MA:'Read the problem again and decide what it is asking before you calculate.',LB:'Say each choice out loud, slowly, and listen to it.',LC:'',LD:'Read the sentence out loud and listen for what sounds right.',KL:'Say the sound slowly and match it to the letter.'};
+  return tips[sk]||'';
+ }catch(e){return ''}
+}
+const _ml=makeLesson;function makeLessonT(g,subject,d){const L=_ml(g,subject,d);L.forEach(q=>{try{if(!q.sk)q.sk=strandOf(q,subject);if(!q.ex)q.ex=exOf(q,g,subject)||'X';if(!q.explain){const w=whyOf(q,subject);if(w)q.explain=w}}catch(e){}});return L;}
+const api={genK,makeLesson:makeLessonT,strandOf,exOf,whyOf,TOPIC,STRANDS,MATH,READ,genMath,genRead,genLogic};
 if(typeof module!=='undefined')module.exports=api;else root.MapleContent=api;
 })(typeof window!=='undefined'?window:globalThis);
