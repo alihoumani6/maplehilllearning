@@ -252,6 +252,47 @@ h1,h2,.q{letter-spacing:-.012em}.btn,.tab,.nav button{letter-spacing:.02em}
 .rev{text-align:left;background:#fff;border:2px solid var(--line);border-radius:18px;padding:14px 16px;margin:14px 0}.rev h3{margin:0 0 6px;color:var(--navy);font-size:21px}.rev .ri{padding:10px 0;border-top:1px solid var(--line);font-weight:700;line-height:1.4;color:var(--ink)}.rev .rq{font-weight:800;color:var(--navy);margin-bottom:2px}.rev .why{color:#14703f}
 .earn{color:var(--ink);margin:18px auto 0;max-width:360px;background:#fff;border:2px solid var(--line);border-radius:16px;padding:12px 16px;text-align:left;font-weight:700;line-height:1.5}.earn h3{margin:0 0 4px;color:var(--navy);font-size:18px}
 .chl{position:absolute;font-size:13px;font-weight:800;color:var(--orange);margin-top:84px}
+
+/* ===== world map ===== */
+.wsign{position:relative;margin:22px 0 -4px;display:flex;align-items:center;gap:12px;padding:12px 16px;border-radius:18px 18px 6px 6px;color:#fff;background:linear-gradient(180deg,#8a5a2e,#6b4423);border:3px solid #4d2f14;box-shadow:0 5px 0 rgba(0,0,0,.2);z-index:2}
+.wsign::before,.wsign::after{content:"";position:absolute;top:8px;width:7px;height:7px;border-radius:50%;background:#e8c58d;box-shadow:inset 0 -1px 0 rgba(0,0,0,.3)}
+.wsign::before{left:6px}.wsign::after{right:6px}
+.wsign .wnum{background:var(--c);border:2px solid rgba(255,255,255,.7);border-radius:10px;padding:3px 9px;font:800 12px 'Baloo 2';letter-spacing:.06em;white-space:nowrap}
+.wsign h3{margin:0;font-size:20px;line-height:1.1;text-shadow:0 2px 0 rgba(0,0,0,.25)}.wsign p{margin:2px 0 0;font-size:13px;font-weight:700;opacity:.95}
+.wsign .wem{font-size:34px;animation:bob 2.2s ease-in-out infinite}
+.wsign .wdiff{display:flex;flex-direction:column;align-items:center;gap:1px;font:800 11px 'Baloo 2';letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;background:rgba(0,0,0,.22);border-radius:10px;padding:3px 8px}
+.wdiff b{font-size:13px;letter-spacing:1px;color:#ffd43b;font-weight:400}.wdiff b i{font-style:normal;color:rgba(255,255,255,.3)}
+.wsign[data-w="woods"]{background:linear-gradient(180deg,#9a4a1a,#6e3210);border-color:#4a200a}
+.wsign[data-w="volcano"]{background:linear-gradient(180deg,#4a3a58,#2a2034);border-color:#161019}
+.wm[data-k="volcano"]{border-color:#161019;background:#403650}.wm[data-k="woods"]{border-color:#4a200a;background:#f2c06b}
+.wm[data-k="volcano"] .wn.wl2.cur,.wm[data-k="volcano"] .wn.wt.cur{box-shadow:0 0 0 4px rgba(255,138,30,.55),0 4px 0 rgba(0,0,0,.3)}
+.wm{position:relative;width:100%;aspect-ratio:360/540;border-radius:6px 6px 24px 24px;overflow:hidden;border:3px solid #4d2f14;border-top:0;box-shadow:0 8px 0 rgba(0,0,0,.14);margin-bottom:6px;background:#9be06a;isolation:isolate}
+.wmsvg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.wm.wlock .wmsvg{filter:saturate(.45) brightness(.97)}
+.wcl{position:absolute;height:26px;width:90px;border-radius:99px;background:rgba(255,255,255,.55);filter:blur(1px);animation:drift2 46s linear infinite;pointer-events:none;z-index:1}
+.wcl::before{content:"";position:absolute;left:18px;top:-12px;width:44px;height:30px;border-radius:50%;background:inherit}
+.wcl.a{top:14%;animation-delay:-14s}.wcl.b{top:62%;transform:scale(.8);animation-duration:64s;animation-delay:-40s;opacity:.7}
+@keyframes drift2{from{left:-120px}to{left:105%}}
+.wn{position:absolute;transform:translate(-50%,-50%);border:0;border-radius:50%;width:58px;height:58px;display:grid;place-items:center;font:800 26px 'Baloo 2';color:#fff;z-index:3;
+ background:radial-gradient(circle at 32% 26%,rgba(255,255,255,.5),rgba(255,255,255,0) 46%),var(--c0,#d62828);border:4px solid #fff;box-shadow:0 5px 0 rgba(0,0,0,.28),0 0 0 3px rgba(0,0,0,.1);text-shadow:0 2px 0 rgba(0,0,0,.25);transition:transform .12s}
+.wn:active{transform:translate(-50%,-44%);box-shadow:0 1px 0 rgba(0,0,0,.28)}
+.wn.done{background:radial-gradient(circle at 32% 26%,rgba(255,255,255,.6),rgba(255,255,255,0) 46%),#ffbe1a;color:#7a4a00;text-shadow:none}
+.wn.lock{background:#d3d8e2;color:#8a93a6;border-color:#f3f5f9;box-shadow:0 5px 0 #aab1c0;font-size:22px;text-shadow:none}
+.wn.cur{animation:wpulse 1.6s ease-in-out infinite}
+@keyframes wpulse{0%,100%{box-shadow:0 5px 0 rgba(0,0,0,.28),0 0 0 3px rgba(0,0,0,.1),0 0 0 0 rgba(255,255,255,.9)}60%{box-shadow:0 5px 0 rgba(0,0,0,.28),0 0 0 3px rgba(0,0,0,.1),0 0 0 14px rgba(255,255,255,0)}}
+.wn.wt{width:74px;height:74px;border-radius:22px;--c0:#9b5de5;border-color:#ffe08a}
+.wn.wt.lock{border-color:#f3f5f9}
+.wn.wc{border-radius:16px;--c0:#f47b20;width:54px;height:54px;font-size:26px}
+.wn.wc.done{background:#5ec26a;color:#fff}.wn.wc.lock{font-size:22px}
+.wm .stv{bottom:-23px;font-size:14px;filter:drop-shadow(0 1px 0 rgba(0,0,0,.25))}
+.wl{position:absolute;transform:translate(-50%,24px);font-weight:800;font-size:13px;color:#fff;background:var(--orange);border-radius:10px;padding:1px 8px;z-index:3;white-space:nowrap;box-shadow:0 2px 0 rgba(0,0,0,.25);margin-top:10px}
+.wpin{position:absolute;transform:translate(-50%,-100%);z-index:5;pointer-events:none;width:64px;margin-top:-18px}
+.wpin .wav{display:block;animation:wbob 1.3s ease-in-out infinite;transform-origin:50% 100%}
+.wpin.hop .wav{animation:whop .32s ease-in-out infinite}
+@keyframes wbob{50%{transform:translateY(-5px)}}@keyframes whop{50%{transform:translateY(-16px) scale(1.06,.94)}}
+.wpin .wsh{position:absolute;left:50%;bottom:-2px;width:38px;height:9px;margin-left:-19px;border-radius:50%;background:rgba(0,0,0,.25)}
+.wpin .wgo{position:absolute;left:50%;top:-24px;transform:translateX(-50%);background:#fff;color:var(--red);font:800 12px 'Baloo 2';border:2px solid var(--line);border-radius:10px;padding:0 8px;white-space:nowrap;box-shadow:0 3px 0 var(--line);animation:wbob 1.3s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){.wcl,.wn.cur,.wpin .wav,.wsign .wem,.wpin .wgo{animation:none}}
 </style></head><body>
 <span class="cld" aria-hidden="true">☁️</span><span class="cld b" aria-hidden="true">☁️</span><div class="wrap" id="app"></div><nav class="nav" id="nav"></nav>
 <div id="lesson"><div class="lh"><button class="x" data-act="quit" aria-label="Quit">✕</button><div class="bar"><i id="pb"></i></div><div class="hearts" id="hh"></div></div>
@@ -401,7 +442,7 @@ function render(){const p=P();let h='';$('nav').style.display='none';document.bo
  if(!p||S.adding){h=onb();}else{rollover(p);const t=S.tab;
   h=topbar(p)+(t=='learn'?vLearn(p):t=='practice'?vPractice(p):t=='brain'?(window.BG?BG.view(p):'<p class="fine">Loading…</p>'):t=='league'?vLeague(p):t=='quests'?vQuests(p):vMe(p));
   $('nav').style.display='flex';$('nav').innerHTML=[['learn','🗺️','Learn'],['practice','🎯','Practice'],['brain','🧠','Brain'],['league','🏆','League'],['quests','🎁','Quests'],['me','🙂','Me']].map(a=>`<button data-act="tab" data-a="${a[0]}" class="${t==a[0]?'on':''}"><b>${a[1]}</b>${a[2]}</button>`).join('')}
- $('app').innerHTML=h;if(S.msg){const m=S.msg;S.msg='';save();setTimeout(()=>toast(m),300)}}
+ $('app').innerHTML=h;try{wmAfter()}catch(e){}if(S.msg){const m=S.msg;S.msg='';save();setTimeout(()=>toast(m),300)}}
 function onb(){const d=S.draft,o=S.onb;const dots=`<div class="dots">${[0,1,2,3,4].map(i=>`<i class="${i==o?'on':''}"></i>`).join('')}</div>`;
  if(o==0)return `<div class="hero"><img class="fm" style="left:2%;top:30px" src="${av('penguin')}" alt=""><img class="fm" style="right:2%;top:50px;animation-delay:.5s" src="${av('fox')}" alt=""><img class="main" src="${av('owl')}" alt=""><h1>Maple<span style="color:var(--red)">Leap</span></h1><p>Letters, reading, math and logic that feel like a game. Pre-K to Grade 6.</p><div class="row6">${['panda','raccoon','beaver','bunny','fox','penguin','owl'].map(k=>`<img src="${av(k)}" alt="">`).join('')}</div></div><button class="btn red full" data-act="onb" data-a="1">Get started</button><p class="fine">By Maple Hill Learning Press, No sign-up, Progress is saved on this device only</p>`;
  if(o==1)return dots+`<div class="step"><h2>Who's learning?</h2><input class="in" id="nm" maxlength="14" placeholder="First name or nickname" value="${d.name}" autocomplete="off"><p class="fine">Pick a name that isn't their full name. Nothing leaves this device.</p><div class="avs">${AN.map(k=>`<button class="gc ${d.av==k?'on':''}" data-act="dav" data-a="${k}"><img src="${av(k)}" alt="">${MASC[k][0]}</button>`).join('')}</div><p><button class="btn blue full" data-act="onb" data-a="2">Continue</button></p></div>`;
@@ -411,18 +452,147 @@ function onb(){const d=S.draft,o=S.onb;const dots=`<div class="dots">${[0,1,2,3,
 function starsHtml(n){return `<span class="stv" aria-label="${n} of 3 stars">${'★'.repeat(n)}<i>${'★'.repeat(3-n)}</i></span>`}
 function repairCost(p){return Math.min(300,80+Math.round((p.lost?p.lost.n:0)*10))}
 function repairBanner(p){if(!p.lost||p.lost.d!==dk())return '';const c=repairCost(p);return `<div class="card" style="border-color:var(--orange);background:#fff6e8"><h3>💔 Your ${p.lost.n}-day streak ended</h3>Bring it back today! <button class="btn sm red" data-act="repair">Repair for 💎${c}</button></div>`}
+/* ===== WORLD MAP (overworld-style learning path) ===== */
+/* Each unit is its own biome with its own trail, and difficulty climbs: meadow -> woods -> volcano peak */
+const WM_W=360,WM_H=540;
+const WM_LES=[0,1,3,4,5];              /* lesson index in a unit -> stop slot (slot 2 is the gift) */
+const WM_DEF=[
+ {P:[[18,21],[54,22],[82,34],[62,50],[27,61],[30,76],[62,87]],S:[0,1,2,3,4,6]},
+ {P:[[14,21],[48,19],[84,31],[72,48],[30,50],[14,66],[40,78],[80,87]],S:[0,1,2,3,5,7]},
+ {P:[[82,20],[44,22],[14,33],[42,45],[80,52],[58,65],[22,71],[30,84],[70,88]],S:[0,1,2,4,6,8]}];
+const WM_SETS={
+ math:[
+  {n:'Sunny Meadow',lv:'Easy',st:1,k:'meadow',g:['#9be06a','#58b34a'],w:'#6ec6ee',t:['#2f9e44','#37b24d','#69db7c'],cl:'rgba(255,255,255,.55)',tr:'#ffe08a',tu:'#f1e6c9',rf:'#d62828',wl:'#f4f0e8',sg:['#8a5a2e','#6b4423','#4d2f14']},
+  {n:'Maple Woods',lv:'Medium',st:2,k:'woods',g:['#f2c06b','#d3822f'],w:'#6db9e3',t:['#d9480f','#f76707','#fcc419'],cl:'rgba(255,255,255,.5)',tr:'#ffe08a',tu:'#ecd7ae',rf:'#d62828',wl:'#f4f0e8',sg:['#9a4a1a','#6e3210','#4a200a']},
+  {n:'Ember Peak',lv:'Hard',st:3,k:'volcano',dark:1,g:['#7a6580','#403650'],w:'#ff7a1a',t:['#5c4a5e','#6e5a70','#85708a'],cl:'rgba(70,58,82,.6)',tr:'#ffd27a',tu:'#9c8a9e',rf:'#ff6a00',wl:'#cbbfd0',sg:['#4a3a58','#2a2034','#161019']}],
+ read:[
+  {n:'Story Shore',lv:'Easy',st:1,k:'beach',g:['#ffeeb5','#f3cd82'],w:'#38bdf8',t:['#2f9e44','#51cf66','#8ce99a'],cl:'rgba(255,255,255,.6)',tr:'#fffaf0',tu:'#d9c496',rf:'#e8590c',wl:'#fff',sg:['#1c7ed6','#1864ab','#0b3d73']},
+  {n:'Bookwood Hollow',lv:'Medium',st:2,k:'hollow',dark:1,g:['#58c4a6','#1e6a68'],w:'#b197fc',t:['#7048e8','#9775fa','#e599f7'],cl:'rgba(255,255,255,.3)',tr:'#fff0a8',tu:'#8fcfc2',rf:'#9c36b5',wl:'#f3e8ff',sg:['#6741d9','#4a2fa3','#2d1b69']},
+  {n:'Cloud Kingdom',lv:'Hard',st:3,k:'sky',g:['#8fcbff','#4f94e6'],w:'#74c0fc',t:['#ffffff','#f1f3f5','#e7f5ff'],cl:'rgba(255,255,255,.9)',tr:'#ffd666',tu:'#dbe7f7',rf:'#f06595',wl:'#fff',sg:['#3b82d6','#2a62b0','#173d73']}],
+ logic:[
+  {n:'Puzzle Desert',lv:'Easy',st:1,k:'desert',g:['#f8d894','#e29a4e'],w:'#3bc9db',t:['#2f9e44','#40c057','#69db7c'],cl:'rgba(255,255,255,.45)',tr:'#fff5dc',tu:'#c9a46c',rf:'#c2410c',wl:'#f5e6c8',sg:['#b8741f','#8f5612','#5e3507']},
+  {n:'Frozen Maze',lv:'Medium',st:2,k:'snow',g:['#eef7ff','#b4d4ee'],w:'#74c0fc',t:['#2b8a6e','#37a483','#63c7a6'],cl:'rgba(255,255,255,.7)',tr:'#ffd666',tu:'#c0d3e4',rf:'#1c7ed6',wl:'#fff',sg:['#3a7bb8','#265c8f','#143a5e']},
+  {n:'Cosmic Vault',lv:'Hard',st:3,k:'space',dark:1,g:['#2d2c74','#0c0a2c'],w:'#22b8cf',t:['#845ef7','#5c7cfa','#22b8cf'],cl:'rgba(170,160,255,.22)',tr:'#ffe066',tu:'#67669a',rf:'#f03e3e',wl:'#d5d8ff',sg:['#2c2a6b','#17154a','#0a0826']}]};
+const WM_MAPS={math:'math',read:'read',logic:'logic',words:'read',abc:'read',write:'math',sound:'logic'};
+const wmSet=s=>WM_SETS[WM_MAPS[s]||'math'];
+function wmBuild(def){const P=def.P.map(a=>[a[0]*WM_W/100,a[1]*WM_H/100]),n=P.length,seg=[];
+ for(let i=0;i<n-1;i++){const p0=P[Math.max(0,i-1)],p1=P[i],p2=P[i+1],p3=P[Math.min(n-1,i+2)];
+  seg.push({p1,c1:[p1[0]+(p2[0]-p0[0])/6,p1[1]+(p2[1]-p0[1])/6],c2:[p2[0]-(p3[0]-p1[0])/6,p2[1]-(p3[1]-p1[1])/6],p2})}
+ const samp=[];seg.forEach(s=>{for(let k=0;k<=10;k++){const t=k/10,u=1-t;samp.push([u*u*u*s.p1[0]+3*u*u*t*s.c1[0]+3*u*t*t*s.c2[0]+t*t*t*s.p2[0],u*u*u*s.p1[1]+3*u*u*t*s.c1[1]+3*u*t*t*s.c2[1]+t*t*t*s.p2[1]])}});
+ return {pct:def.P,P,seg,samp,S:def.S}}
+const WM_L=WM_DEF.map(wmBuild);
+function wmSegD(L,a,b){let d='';for(let i=a;i<b;i++){const s=L.seg[i];d+=(i==a?`M${s.p1[0].toFixed(1)} ${s.p1[1].toFixed(1)}`:'')+`C${s.c1[0].toFixed(1)} ${s.c1[1].toFixed(1)} ${s.c2[0].toFixed(1)} ${s.c2[1].toFixed(1)} ${s.p2[0].toFixed(1)} ${s.p2[1].toFixed(1)}`}return d}
+function wmDecor(key,th,L){const r=rng(hash(key)),out=[];const near=(x,y,m)=>L.samp.some(q=>Math.hypot(q[0]-x,q[1]-y)<m);
+ const placed=[];const free=(x,y,m,m2)=>x>16&&x<344&&y>16&&y<524&&!near(x,y,m)&&!placed.some(q=>Math.hypot(q[0]-x,q[1]-y)<m2);
+ const spot=(m,m2)=>{for(let k=0;k<50;k++){const x=r()*360,y=r()*540;if(free(x,y,m,m2)){placed.push([x,y]);return [x,y]}}return null};
+ const K=th.k,ro=th.ro,pick=a=>a[Math.floor(r()*a.length)];
+ const rep=(n,m,m2,f)=>{for(let i=0;i<n;i++){const q=spot(m,m2);if(q)out.push(f(q[0],q[1],r()))}};
+ const sh=(rx,y)=>`<ellipse cy="${y}" rx="${rx}" ry="${rx*.32}" fill="rgba(0,0,0,.16)"/>`;
+ const em=(c,x,y,s)=>`<text x="${x}" y="${y}" font-size="${s||14}" text-anchor="middle">${c}</text>`;
+ const pool=(x,y,rx,ry,ring,col)=>`<g><ellipse cx="${x}" cy="${y+4}" rx="${rx+5}" ry="${ry+5}" fill="rgba(0,0,0,.14)"/><ellipse cx="${x}" cy="${y}" rx="${rx+4}" ry="${ry+4}" fill="${ring}"/><ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" fill="${col}"/><path d="M${x-rx*.5} ${y-ry*.2}q${rx*.2} -${ry*.3} ${rx*.4} 0M${x} ${y+ry*.3}q${rx*.2} -${ry*.3} ${rx*.4} 0" stroke="rgba(255,255,255,.7)" stroke-width="2" fill="none" stroke-linecap="round"/></g>`;
+ const spark=(x,y,s,c)=>`<path transform="translate(${x} ${y}) scale(${s})" d="M0 -6Q1 -1 6 0Q1 1 0 6Q-1 1 -6 0Q-1 -1 0 -6Z" fill="${c}"/>`;
+ const pine=(x,y,s,c,snow)=>`<g transform="translate(${x} ${y}) scale(${s})">${sh(9,12)}<rect x="-2" y="4" width="4" height="8" fill="#6b4a2b"/><path d="M0 -22L12 -2H-12Z" fill="${c}"/><path d="M0 -12L14 6H-14Z" fill="${c}"/>${snow?'<path d="M0 -22L5 -13H-5ZM0 -12L7 -2H-7Z" fill="#fff"/>':''}</g>`;
+ if(K=='volcano'){
+  rep(2,48,40,(x,y)=>{const rx=26+r()*10,ry=15+r()*6;return `<g><ellipse cx="${x}" cy="${y+3}" rx="${rx+5}" ry="${ry+5}" fill="rgba(0,0,0,.3)"/><ellipse cx="${x}" cy="${y}" rx="${rx+3}" ry="${ry+3}" fill="#2a2330"/><ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" fill="#ff6a00"/><ellipse cx="${x-4}" cy="${y-2}" rx="${rx*.6}" ry="${ry*.55}" fill="#ffb347"/><circle cx="${x+rx*.3}" cy="${y-ry*.1}" r="3" fill="#fff1b8"/></g>`});
+  rep(1,64,60,(x,y)=>`<g transform="translate(${x} ${y}) scale(1.25)"><ellipse cy="22" rx="48" ry="9" fill="rgba(0,0,0,.3)"/><path d="M-46 22L-14 -26H14L46 22Z" fill="#4d3f58"/><path d="M-14 -26H14L8 -20H-8Z" fill="#ff6a00"/><path d="M-14 -26L-46 22H-24Z" fill="rgba(0,0,0,.2)"/><path d="M-3 -20Q-7 -8 -2 4Q2 12 -3 22" stroke="#ff9a3c" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="2" cy="-36" r="9" fill="rgba(210,200,220,.55)"/><circle cx="-6" cy="-48" r="11" fill="rgba(210,200,220,.4)"/><circle cx="8" cy="-62" r="12" fill="rgba(210,200,220,.28)"/></g>`);
+  rep(7,24,20,(x,y,q)=>`<g transform="translate(${x} ${y}) scale(${.8+q*.7})">${sh(12,9)}<path d="M-12 9L-6 -10L0 -3L6 -14L13 9Z" fill="${pick(th.t)}"/><path d="M6 -14L13 9H7Z" fill="rgba(0,0,0,.2)"/></g>`);
+  rep(4,24,22,(x,y)=>`<g transform="translate(${x} ${y})">${sh(8,10)}<path d="M0 10V-12M0 -2L-8 -9M0 -6L7 -13" stroke="#2b2230" stroke-width="3.4" fill="none" stroke-linecap="round"/></g>`);
+  rep(8,14,10,(x,y,q)=>`<circle cx="${x}" cy="${y}" r="${1.5+q*1.8}" fill="#ffb347" opacity=".8"/>`);
+ }else if(K=='beach'){
+  rep(2,58,48,(x,y,q)=>pool(x,y,34+q*12,20+q*8,'#fff6d6',th.w));
+  rep(2,40,34,(x,y,q)=>`<g transform="translate(${x} ${y}) scale(${.9+q*.4})"><ellipse cy="12" rx="34" ry="8" fill="rgba(0,0,0,.08)"/><path d="M-34 12Q-20 -14 0 -10Q22 -14 34 12Z" fill="#f0c36e"/><path d="M-20 4Q-8 -6 4 -4" stroke="rgba(255,255,255,.5)" stroke-width="3" fill="none" stroke-linecap="round"/></g>`);
+  rep(7,26,22,(x,y,q)=>`<g transform="translate(${x} ${y}) scale(${.85+q*.4})">${sh(10,14)}<path d="M0 14Q5 0 -2 -14" stroke="#8b5a2b" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M-2 -14Q-14 -16 -20 -8M-2 -14Q-8 -24 -18 -22M-2 -14Q8 -24 18 -20M-2 -14Q12 -14 20 -6" stroke="${pick(th.t)}" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="-3" cy="-12" r="2.6" fill="#6b4423"/></g>`);
+  rep(2,24,22,(x,y)=>`<g transform="translate(${x} ${y})">${sh(9,10)}<path d="M0 10V-8" stroke="#8b5a2b" stroke-width="2.4"/><path d="M-14 -8A14 12 0 0 1 14 -8Z" fill="#fa5252"/><path d="M-5 -8A5 12 0 0 1 5 -8Z" fill="#fff"/></g>`);
+  rep(8,16,12,(x,y)=>em(pick(['🐚','⭐','🦀','🐚']),x,y));
+ }else if(K=='hollow'){
+  rep(1,50,40,(x,y)=>pool(x,y,30,18,'#5b3f9e',th.w));
+  rep(6,30,26,(x,y,q)=>{const c=pick(['#e64980','#9775fa','#f76707','#ae3ec9']);return `<g transform="translate(${x} ${y}) scale(${.9+q*.7})">${sh(12,14)}<rect x="-4" y="-2" width="8" height="16" rx="3" fill="#f3e8d0"/><path d="M-17 0Q-16 -20 0 -21Q16 -20 17 0Z" fill="${c}"/><circle cx="-6" cy="-9" r="2.4" fill="#fff" opacity=".85"/><circle cx="5" cy="-13" r="2" fill="#fff" opacity=".85"/><circle cx="8" cy="-5" r="1.8" fill="#fff" opacity=".85"/></g>`});
+  rep(6,24,20,(x,y,q)=>`<g transform="translate(${x} ${y}) scale(${.9+q*.5})">${sh(11,13)}<path d="M0 13Q-5 2 2 -6Q6 -10 0 -16" stroke="#14403f" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="0" cy="-18" r="12" fill="#2a8f86"/><circle cx="-5" cy="-22" r="4" fill="rgba(255,255,255,.2)"/></g>`);
+  rep(14,14,10,(x,y,q)=>`<g><circle cx="${x}" cy="${y}" r="7" fill="#fff6a8" opacity=".25"/><circle cx="${x}" cy="${y}" r="${1.8+q*1.2}" fill="#fff6a8"/></g>`);
+  rep(3,20,16,(x,y)=>em('📖',x,y,13));
+ }else if(K=='sky'){
+  const cloud=(x,y,s)=>`<g transform="translate(${x} ${y}) scale(${s})"><ellipse cy="14" rx="34" ry="7" fill="rgba(60,110,190,.18)"/><circle cx="-16" cy="2" r="12" fill="#fff"/><circle cx="2" cy="-6" r="16" fill="#fff"/><circle cx="20" cy="2" r="12" fill="#fff"/><rect x="-26" y="2" width="52" height="11" rx="5" fill="#fff"/></g>`;
+  rep(1,60,50,(x,y)=>{const cx=180,cy=y;return `<g opacity=".95"><path d="M${cx-110} ${cy+40}A110 90 0 0 1 ${cx+110} ${cy+40}" fill="none" stroke="#ff6b6b" stroke-width="8" opacity=".5"/><path d="M${cx-100} ${cy+40}A100 82 0 0 1 ${cx+100} ${cy+40}" fill="none" stroke="#ffd43b" stroke-width="8" opacity=".5"/><path d="M${cx-90} ${cy+40}A90 74 0 0 1 ${cx+90} ${cy+40}" fill="none" stroke="#51cf66" stroke-width="8" opacity=".5"/><path d="M${cx-80} ${cy+40}A80 66 0 0 1 ${cx+80} ${cy+40}" fill="none" stroke="#4dabf7" stroke-width="8" opacity=".5"/></g>`});
+  rep(7,40,36,(x,y,q)=>cloud(x,y,.8+q*.6));
+  rep(10,16,14,(x,y,q)=>spark(x,y,.7+q*.8,'#fff'));
+  rep(3,22,18,(x,y)=>em(pick(['🎈','🪁','🕊️']),x,y,18));
+ }else if(K=='desert'){
+  rep(3,36,30,(x,y,q)=>`<g transform="translate(${x} ${y}) scale(${.9+q*.5})"><ellipse cy="12" rx="42" ry="8" fill="rgba(0,0,0,.06)"/><path d="M-42 12Q-24 -18 0 -8Q22 -20 42 12Z" fill="#e8a95a"/><path d="M-24 2Q-8 -10 8 -4" stroke="rgba(255,255,255,.35)" stroke-width="3" fill="none" stroke-linecap="round"/></g>`);
+  rep(1,60,50,(x,y)=>pool(x,y,28,17,'#f7e7b0',th.w)+`<g transform="translate(${x+24} ${y-10})"><path d="M0 14Q4 0 -2 -12" stroke="#8b5a2b" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M-2 -12Q-12 -14 -17 -7M-2 -12Q8 -22 16 -18M-2 -12Q-8 -20 -16 -19" stroke="#2f9e44" stroke-width="4.5" fill="none" stroke-linecap="round"/></g>`);
+  rep(1,50,44,(x,y)=>`<g transform="translate(${x} ${y})"><ellipse cy="22" rx="46" ry="8" fill="rgba(0,0,0,.14)"/><path d="M-44 22L0 -30L44 22Z" fill="#e9c27a"/><path d="M0 -30L44 22H8Z" fill="#c99a4e"/><path d="M-24 6H34M-14 -6H20" stroke="rgba(120,80,20,.25)" stroke-width="2"/></g>`);
+  rep(7,24,20,(x,y,q)=>`<g transform="translate(${x} ${y}) scale(${.85+q*.5})">${sh(8,12)}<rect x="-4.5" y="-14" width="9" height="26" rx="4.5" fill="#2f9e44"/><path d="M-4 0H-10V-9" stroke="#2f9e44" stroke-width="4.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 -3H10V-12" stroke="#2f9e44" stroke-width="4.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/><path d="M-1 -12V8" stroke="rgba(255,255,255,.25)" stroke-width="2"/></g>`);
+  rep(4,16,12,(x,y)=>em(pick(['🏺','🪨','🦂','🐪']),x,y,14));
+ }else if(K=='snow'){
+  rep(2,52,42,(x,y,q)=>pool(x,y,30+q*8,17+q*5,'#ffffff','#a5d8ff'));
+  rep(9,24,20,(x,y,q)=>pine(x,y,.85+q*.6,pick(th.t),1));
+  rep(1,40,34,(x,y)=>`<g transform="translate(${x} ${y})"><ellipse cy="14" rx="30" ry="6" fill="rgba(0,0,0,.12)"/><path d="M-28 14A28 26 0 0 1 28 14Z" fill="#fff" stroke="#a5c8e4" stroke-width="2"/><path d="M-16 4H16M-8 -8H8M0 -20V4" stroke="#c9dff0" stroke-width="1.6"/><path d="M-9 14A9 9 0 0 1 9 14Z" fill="#6aa0c8"/></g>`);
+  rep(2,24,20,(x,y)=>`<g transform="translate(${x} ${y})">${sh(11,13)}<circle cy="6" r="10" fill="#fff" stroke="#c9dff0" stroke-width="1.6"/><circle cy="-8" r="7" fill="#fff" stroke="#c9dff0" stroke-width="1.6"/><circle cx="-2.4" cy="-9" r="1.2" fill="#1d2433"/><circle cx="2.4" cy="-9" r="1.2" fill="#1d2433"/><path d="M0 -7l5 1.4" stroke="#f76707" stroke-width="2" stroke-linecap="round"/></g>`);
+  rep(8,16,12,(x,y,q)=>spark(x,y,.6+q*.7,'#fff'));
+  rep(3,20,16,(x,y)=>`<g transform="translate(${x} ${y})"><ellipse cy="3" rx="13" ry="4" fill="#fff"/><ellipse cx="-4" cy="0" rx="8" ry="4" fill="#fff"/></g>`);
+ }else if(K=='space'){
+  for(let i=0;i<34;i++){const x=r()*360,y=r()*540;if(!near(x,y,14))out.push(`<circle cx="${x}" cy="${y}" r="${.6+r()*1.4}" fill="#fff" opacity="${.35+r()*.6}"/>`)}
+  rep(2,44,40,(x,y,q)=>{const c=pick(['#ff922b','#be4bdb','#20c997','#4dabf7']),s=18+q*12;return `<g transform="translate(${x} ${y})"><ellipse cx="0" cy="0" rx="${s*1.7}" ry="${s*.45}" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="4" transform="rotate(-18)"/><circle r="${s}" fill="${c}"/><path d="M${-s*.8} ${-s*.2}Q0 ${-s*.5} ${s*.8} ${-s*.3}M${-s*.7} ${s*.3}Q0 ${s*.1} ${s*.75} ${s*.35}" stroke="rgba(255,255,255,.28)" stroke-width="3" fill="none"/><circle cx="${-s*.3}" cy="${-s*.35}" r="${s*.3}" fill="rgba(255,255,255,.18)"/></g>`});
+  rep(2,30,26,(x,y,q)=>`<g transform="translate(${x} ${y}) scale(${.8+q*.5})"><circle r="14" fill="#c5c7e6"/><circle cx="-4" cy="-3" r="4" fill="#9a9dc8"/><circle cx="5" cy="5" r="3" fill="#9a9dc8"/><circle cx="6" cy="-6" r="2" fill="#9a9dc8"/></g>`);
+  rep(1,34,30,(x,y)=>`<g transform="translate(${x} ${y}) rotate(35)"><path d="M0 -20Q9 -8 8 12H-8Q-9 -8 0 -20Z" fill="#f1f3f5"/><circle cy="-4" r="4" fill="#4dabf7"/><path d="M-8 12L-15 20L-8 6ZM8 12L15 20L8 6Z" fill="#f03e3e"/><path d="M-4 14Q0 26 4 14" fill="#ffa94d"/></g>`);
+  rep(1,34,30,(x,y)=>`<g transform="translate(${x} ${y})"><ellipse cy="0" rx="22" ry="7" fill="#adb5bd"/><path d="M-11 -2Q0 -18 11 -2Z" fill="#74c0fc" opacity=".9"/><circle cx="-12" cy="2" r="1.6" fill="#ffe066"/><circle cx="0" cy="3" r="1.6" fill="#ffe066"/><circle cx="12" cy="2" r="1.6" fill="#ffe066"/></g>`);
+  rep(5,20,16,(x,y,q)=>`<path transform="translate(${x} ${y}) scale(${.7+q*.6})" d="M-9 2L-4 -7L4 -8L10 0L5 8L-5 7Z" fill="#8c8fb8"/>`);
+ }else{
+  /* meadow + woods */
+  rep(1,60,38,(x,y,q)=>pool(x,y,(K=='woods'?30:34)+q*10,20+q*8,'#f4e7b4',th.w));
+  rep(K=='woods'?1:2,46,38,(x,y,q)=>`<g transform="translate(${x} ${y}) scale(${.9+q*.5})"><ellipse cy="14" rx="36" ry="8" fill="rgba(0,0,0,.14)"/><path d="M-36 14Q-30 -24 0 -26Q30 -24 36 14Z" fill="${th.g[1]}" stroke="rgba(0,0,0,.16)" stroke-width="2"/><path d="M-22 -2Q-14 -18 0 -19" stroke="rgba(255,255,255,.45)" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="-9" cy="-4" r="2.4" fill="#1d2433"/><circle cx="9" cy="-4" r="2.4" fill="#1d2433"/><path d="M-5 3Q0 7 5 3" stroke="#1d2433" stroke-width="2" fill="none" stroke-linecap="round"/></g>`);
+  rep(K=='woods'?15:9,24,K=='woods'?17:22,(x,y,q)=>{const s=(K=='woods'?.95:.8)+q*.5;
+   if(K=='woods'&&r()<.35)return pine(x,y,s,'#2f7d4f');
+   return `<g transform="translate(${x} ${y}) scale(${s})">${sh(10,12)}<rect x="-2.5" y="2" width="5" height="10" rx="1" fill="#8b5a2b"/><circle cy="-4" r="11" fill="${pick(th.t)}"/><circle cx="-4" cy="-8" r="4" fill="rgba(255,255,255,.22)"/></g>`});
+  rep(9,18,12,(x,y)=>{const q=r();
+   if(q<.35)return `<g transform="translate(${x} ${y})">${sh(9,5)}<circle cx="-5" cy="0" r="5.5" fill="${th.t[1]}"/><circle cx="4" cy="-1" r="6.5" fill="${th.t[0]}"/><circle cx="0" cy="-4" r="4.5" fill="${th.t[2]}"/></g>`;
+   if(q<.7)return em(ro,x,y);
+   if(K=='woods'&&q<.85)return `<g transform="translate(${x} ${y})">${sh(9,4)}<rect x="-9" y="-3" width="18" height="8" rx="4" fill="#8b5a2b"/><ellipse cx="9" cy="1" rx="2.6" ry="4" fill="#d9a066"/></g>`;
+   return `<g transform="translate(${x} ${y})">${sh(7,4)}<path d="M-7 4Q-6 -5 0 -5Q6 -5 7 4Z" fill="#a9b2c0"/><path d="M-3 -2Q0 -4 2 -3" stroke="#fff" stroke-width="1.6" fill="none" opacity=".7"/></g>`});
+ }
+ return out.join('')}
+function wmMap(p,u,d,sb){
+ const L=WM_L[u],th=Object.assign({},wmSet(S.subj)[u],{ro:{math:'🍁',abc:'🌼',words:'🌷',sound:'🐚',write:'🍂',read:'📚',logic:'💎'}[S.subj]||'🍁'}),base=u*UL,S6=L.S;
+ const stat=k=>{if(k==2){const open=d>=base+2;return open?(p.chests[p.grade+S.subj+u]?'done':'cur'):'lock'}const li=k<2?k:k-1;const n=base+li;return n<d?'done':(n==d?'cur':'lock')};
+ const lit=[];for(let k=0;k<6;k++){const s=stat(k);lit[k]=(k==0)?true:(s!=='lock')}
+ const vol=!!th.dark;
+ let svg=`<svg class="wmsvg" viewBox="0 0 ${WM_W} ${WM_H}" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs><linearGradient id="wg${u}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${th.g[0]}"/><stop offset="1" stop-color="${th.g[1]}"/></linearGradient><pattern id="wp${u}" width="24" height="24" patternUnits="userSpaceOnUse"><circle cx="5" cy="6" r="1.6" fill="rgba(255,255,255,${vol?.1:.22})"/><circle cx="17" cy="16" r="1.6" fill="rgba(0,0,0,.08)"/></pattern></defs><rect width="${WM_W}" height="${WM_H}" fill="url(#wg${u})"/><rect width="${WM_W}" height="${WM_H}" fill="url(#wp${u})"/>`;
+ svg+=wmDecor(S.subj+p.grade+u,th,L);
+ for(let k=0;k<5;k++){const dd=wmSegD(L,S6[k],S6[k+1]);
+  svg+=`<path d="${dd}" fill="none" stroke="rgba(0,0,0,.2)" stroke-width="19" stroke-linecap="round" transform="translate(0 3)"/><path d="${dd}" fill="none" stroke="${lit[k+1]?th.tr:th.tu}" stroke-width="16" stroke-linecap="round"/>`+
+  (lit[k+1]?`<path d="${dd}" fill="none" stroke="#fff3c4" stroke-width="5" stroke-linecap="round" opacity=".9"/>`:`<path d="${dd}" fill="none" stroke="rgba(0,0,0,.3)" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="1 9"/>`)}
+ svg+='</svg>';
+ let nodes='';
+ S6.forEach((pi,k)=>{const [px,py]=L.pct[pi],st=stat(k),pos=`left:${px}%;top:${py}%`;
+  if(k==2){const got=p.chests[p.grade+S.subj+u];nodes+=`<button class="wn wc ${st}" style="${pos}" data-act="chest" data-a="${p.grade+S.subj+u}" aria-label="Unit reward: 20 gems${got?', collected':''}"><span>${got?'✔':'🎁'}</span></button>${got||st=='lock'?'':`<span class="wl" style="left:${px}%;top:${py}%">+20 💎</span>`}`;return}
+  const li=k<2?k:k-1,n=base+li,isT=(k==5);
+  const lab=isT?'Unit test castle':'Lesson '+(li+1);
+  const roof=th.rf,wall=th.wl;
+  const ico=st=='lock'?'🔒':(isT?`<svg viewBox="0 0 48 44" width="44" height="40" aria-hidden="true"><rect x="6" y="18" width="36" height="24" rx="2" fill="${wall}" stroke="#7a6f86" stroke-width="2"/><rect x="3" y="12" width="9" height="30" fill="${wall}" stroke="#7a6f86" stroke-width="2"/><rect x="36" y="12" width="9" height="30" fill="${wall}" stroke="#7a6f86" stroke-width="2"/><path d="M3 12l4.5 -7l4.5 7zM36 12l4.5 -7l4.5 7z" fill="${roof}"/><rect x="19" y="26" width="10" height="16" rx="5" fill="#5b3f2a"/><path d="M24 18V4" stroke="#4d2f14" stroke-width="2"/><path d="M24 4l11 3.5l-11 3.5z" fill="#ffc928"/></svg>`:(li+1));
+  nodes+=`<button class="wn ${isT?'wt':'wl2'} ${st}" style="${pos}" data-act="node" data-a="${n}" aria-label="${lab}, ${st=='lock'?'locked':(st=='done'?'completed':'ready')}">${ico}${st=='done'?starsHtml(p.stars[p.grade+S.subj+n]||1):''}</button>`});
+ let pin='';
+ const hu=Math.min(UNITS-1,Math.floor(d/UL));
+ if(hu==u){const done=d>=TOTAL,li=done?4:d%UL,pi=S6[WM_LES[li]],[hx,hy]=L.pct[pi];
+  const pk='wmp'+p.grade+S.subj;let from=null;try{from=JSON.parse(sessionStorage.getItem(pk)||'null')}catch(e){}
+  let fx=hx,fy=hy,fi=pi;if(from&&from.u===u&&(from.li!==li||from.done!==done)){fi=S6[WM_LES[Math.min(4,from.li)]];const q=L.pct[fi];fx=q[0];fy=q[1]}
+  pin=`<div class="wpin" id="wpin" data-lu="${u}" data-tx="${hx}" data-ty="${hy}" data-fi="${fi}" data-ti="${pi}" data-pk="${pk}" data-st='${JSON.stringify({u,li,done})}' style="left:${fx}%;top:${fy}%"><span class="wgo">${done?'Done!':'GO!'}</span><span class="wsh"></span><span class="wav">${avh(p,58,'idle')}</span></div>`}
+ const cl=`<i class="wcl a" style="background:${th.cl}"></i><i class="wcl b" style="background:${th.cl}"></i>`;
+ return `<div class="wm ${d<base?'wlock':''}" data-k="${th.k}" style="--c0:${sb.c};border-color:${th.sg[2]};background:${th.g[1]}">${svg}${cl}${nodes}${pin}</div>`}
 function vLearn(p){const sb=SUBJ[S.subj],d=p.prog[p.grade+S.subj]||0;const m=MASC[p.av][0];
  let h=`<div class="tabs">${subjKeys(p).map(k=>`<button class="tab" data-act="subj" data-a="${k}" style="${k==S.subj?`background:${SUBJ[k].c};color:#fff;border-color:transparent;box-shadow:0 3px 0 rgba(0,0,0,.25)`:''}">${SUBJ[k].e} ${SUBJ[k].n}</button>`).join('')}</div>`;h+=themeBanner()+repairBanner(p);
  if(p.q.d===dk()&&p.q.xp<p.goal)h+=`<div class="card" style="padding:10px 14px"><div class="row" style="margin:0"><span>🎯 Daily goal</span><span>${p.q.xp}/${p.goal} XP</span></div><div class="meter"><i style="width:${p.q.xp/p.goal*100}%"></i></div></div>`;
- for(let u=0;u<UNITS;u++){const un=sb.units[u];h+=`<div class="unit" style="background:${sb.c}"><div style="flex:1"><small>${gradeLabel(p).toUpperCase()}, UNIT ${u+1}</small><h3>${un[0]}</h3><p>${un[1]}</p></div><span style="font-size:34px">${sb.e}</span></div><div class="path">`;
-  const seq=['l','l','c','l','l','t'];let li=0;
-  seq.forEach((k,j)=>{const off=[0,-46,-62,-26,30,56][j];let node;
-   if(k=='c'){const id=p.grade+S.subj+u,open=(d>=u*UL+2),got=p.chests[id];node=`<button class="node chest ${open&&!got?'cur':(open?'done':'lock')}" data-act="chest" data-a="${id}" aria-label="Unit reward: 20 gems">${got?'✔':'🎁'}</button><span class="chl">${got?'':'+20 💎'}</span>`}
-   else{const n=u*UL+li;li++;const st=n<d?'done':(n==d?'cur':'lock');const isT=k=='t';
-    node=`${n==d?'<div class="tag">START</div>':''}${n==d?`<span class="pm">${avh(p,62,'idle')}</span>`:''}<button class="node ${st}" aria-label="${isT?'Unit test':'Lesson '+((n%UL)+1)}, ${st=='lock'?'locked':(st=='done'?'completed':'ready')}" data-act="node" data-a="${n}" style="background:${isT?'var(--orange)':sb.c}">${st=='lock'?'🔒':(isT?'🏆':(n%UL)+1)}</button>${st=='done'?starsHtml(p.stars[p.grade+S.subj+n]||1):''}`}
-   const SCN=themeScn(S.subj)||{abc:['🍎','🐻','🎈','⭐','🦋','🐱'],sound:['🎵','🐦','🔔','🎶','🥁','🌈'],words:['📖','🐱','🐶','🌈','⭐','🎈'],write:['✏️','🖍️','🌈','⭐','📝','🎨'],math:['🌳','🌼','🍄','🦋','🌻','🐝'],read:['📚','🌷','🕯️','🦉','🍂','✏️'],logic:['🧩','🔮','⭐','🎲','💡','🪄']}[S.subj]||[];const sc=SCN.length?`<span class="sc ${off>0?'l':'r'}" style="animation-delay:-${(j*7+u*3)%9/3}s">${SCN[(j+u*2)%SCN.length]}</span>`:'';h+=`<div class="pn" style="transform:translateX(${off}px)">${node}${sc}</div>`});h+='</div>'}
- if(d>=TOTAL)h+=`<div class="card" style="text-align:center"><h3>🏆 Path complete!</h3>${m} is so proud. Replay any lesson for XP or try another subject.<br><br><button class="btn sm" data-act="node" data-a="r">Practise again</button></div>`;
+ for(let u=0;u<UNITS;u++){const un=sb.units[u],B=wmSet(S.subj)[u];
+  h+=`<div class="wsign" style="--c:${sb.c};background:linear-gradient(180deg,${B.sg[0]},${B.sg[1]});border-color:${B.sg[2]}" data-w="${B.k}"><span class="wnum">WORLD ${u+1}</span><div style="flex:1;min-width:0"><h3>${un[0]}</h3><p>${B.n}, ${un[1]}</p></div><span class="wdiff" aria-label="${B.lv} level"><b>${'★'.repeat(B.st)}<i>${'★'.repeat(3-B.st)}</i></b>${B.lv}</span></div>`+wmMap(p,u,d,sb)}
+ if(d>=TOTAL)h+=`<div class="card" style="text-align:center"><h3>🏆 All worlds cleared!</h3>${m} is so proud. Replay any level for XP or try another subject.<br><br><button class="btn sm" data-act="node" data-a="r">Practise again</button></div>`;
  return h+adBanner(p)}
+function wmWalk(el,L,a,b){const pts=[];const lo=Math.min(a,b),hi=Math.max(a,b);for(let i=lo;i<hi;i++){const s=L.seg[i];for(let k=0;k<12;k++){const t=k/12,u=1-t;pts.push([u*u*u*s.p1[0]+3*u*u*t*s.c1[0]+3*u*t*t*s.c2[0]+t*t*t*s.p2[0],u*u*u*s.p1[1]+3*u*u*t*s.c1[1]+3*u*t*t*s.c2[1]+t*t*t*s.p2[1]])}}
+ pts.push(L.P[hi]);if(a>b)pts.reverse();const T=Math.min(2600,500+(hi-lo)*380),t0=performance.now();el.classList.add('hop');
+ const step=now=>{if(!el.isConnected)return;const f=Math.min(1,(now-t0)/T),e=f<.5?2*f*f:1-Math.pow(-2*f+2,2)/2,q=pts[Math.min(pts.length-1,Math.round(e*(pts.length-1)))];el.style.left=(q[0]/WM_W*100)+'%';el.style.top=(q[1]/WM_H*100)+'%';if(f<1)requestAnimationFrame(step);else el.classList.remove('hop')};requestAnimationFrame(step)}
+function wmAfter(){const el=document.getElementById('wpin');if(!el)return;const tx=el.dataset.tx,ty=el.dataset.ty,pk=el.dataset.pk;let st=null;try{st=JSON.parse(el.dataset.st)}catch(e){}
+ const moved=(el.style.left!==tx+'%'||el.style.top!==ty+'%');
+ if(moved){const a=+el.dataset.fi,b=+el.dataset.ti,L=WM_L[+el.dataset.lu];setTimeout(()=>{const e2=document.getElementById('wpin');if(e2)wmWalk(e2,L,a,b)},450)}
+ try{sessionStorage.setItem(pk,JSON.stringify(st))}catch(e){}
+ const k=(S.subj||'')+'|'+(st?st.u+'.'+st.li+st.done:'');if(window.__wmK!==k){window.__wmK=k;setTimeout(()=>{try{const e2=document.getElementById('wpin');if(e2){const r=e2.getBoundingClientRect();if(moved||r.top<150||r.bottom>innerHeight-120)e2.scrollIntoView({block:'center',behavior:moved?'smooth':'auto'})}}catch(e){}},moved?200:60)}}
+
 function vPractice(p){const tot=p.lessons;return `<h2 style="color:var(--navy);margin:8px 0">Practice</h2>
  <div class="card"><h3>🔁 Mixed review</h3>A quick mix from every subject for ${gradeLabel(p)}.<br><br><button class="btn sm" data-act="mixed">Start +10 XP</button></div>
  <div class="card"><h3>🧠 Mistakes practice ${isPlus()?'':'<span class="chip plus" style="display:inline-flex;font-size:11px">PLUS</span>'}</h3>${p.mist.length?`Replay the ${p.mist.length} questions that tripped you up and master them.`:'No mistakes saved yet. Finish a lesson and they will show up here.'}<br><br><button class="btn sm purple" data-act="mist" ${p.mist.length||!isPlus()?'':'disabled'}>${isPlus()?'Practise mistakes':'Unlock with Plus'}</button></div>
